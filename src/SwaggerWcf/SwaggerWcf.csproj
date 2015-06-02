@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
@@ -101,9 +102,11 @@
     <Compile Include="Support\Serializer.cs" />
     <Compile Include="Support\DefinitionsBuilder.cs" />
     <Compile Include="Support\ServiceBuilder.cs" />
+    <Compile Include="Support\StaticContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="www\swagger-ui.zip" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
