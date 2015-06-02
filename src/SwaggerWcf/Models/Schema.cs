@@ -24,40 +24,9 @@ namespace SwaggerWcf.Models
 
         public void Serialize(JsonWriter writer)
         {
-            if (TypeFormat.Type != ParameterType.Unknown)
-            {
-                writer.WritePropertyName("type");
-                writer.WriteValue(TypeFormat.Type.ToString().ToLower());
-                if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
-                {
-                    writer.WritePropertyName("format");
-                    writer.WriteValue(TypeFormat.Format);
-                }
-
-                if (TypeFormat.Type == ParameterType.Array)
-                {
-                    writer.WritePropertyName("items");
-
-                    writer.WriteStartObject();
-
-                    writer.WritePropertyName("$ref");
-                    writer.WriteValue(string.Format("#/definitions/{0}", Ref));
-
-                    writer.WriteEndObject();
-                }
-            }
-            else if (!string.IsNullOrWhiteSpace(Ref))
-            {
-                writer.WritePropertyName("$ref");
-                writer.WriteValue(string.Format("#/definitions/{0}", Ref));
-            }
-            else
+            if (TypeFormat.Type == ParameterType.Complex)
             {
                 // complex object
-
-                writer.WritePropertyName(Name);
-
-                writer.WriteStartObject();
 
                 if (!string.IsNullOrWhiteSpace(Description))
                 {
@@ -89,8 +58,33 @@ namespace SwaggerWcf.Models
 
                     writer.WriteEndArray();
                 }
+            }
+            if (TypeFormat.Type != ParameterType.Unknown)
+            {
+                writer.WritePropertyName("type");
+                writer.WriteValue(TypeFormat.Type.ToString().ToLower());
+                if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                {
+                    writer.WritePropertyName("format");
+                    writer.WriteValue(TypeFormat.Format);
+                }
 
-                writer.WriteEndObject();
+                if (TypeFormat.Type == ParameterType.Array)
+                {
+                    writer.WritePropertyName("items");
+
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("$ref");
+                    writer.WriteValue(string.Format("#/definitions/{0}", Ref));
+
+                    writer.WriteEndObject();
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(Ref))
+            {
+                writer.WritePropertyName("$ref");
+                writer.WriteValue(string.Format("#/definitions/{0}", Ref));
             }
         }
 

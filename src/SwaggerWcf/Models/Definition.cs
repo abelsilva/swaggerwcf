@@ -8,7 +8,14 @@ namespace SwaggerWcf.Models
 
         public void Serialize(JsonWriter writer)
         {
+            if (Schema == null)
+                return;
+            
+            writer.WritePropertyName(Schema.Name);
+
+            writer.WriteStartObject();
             Schema.Serialize(writer);
+            writer.WriteEndObject();
         }
     }
 }
