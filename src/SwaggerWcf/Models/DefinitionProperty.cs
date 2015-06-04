@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class ParameterPrimitive : ParameterBase
+    internal class DefinitionProperty
     {
-        public ParameterPrimitive()
+        public DefinitionProperty()
         {
             Maximum = decimal.MaxValue;
             Minimum = decimal.MinValue;
@@ -17,14 +17,16 @@ namespace SwaggerWcf.Models
             MultipleOf = decimal.MinValue;
         }
 
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public bool Required { get; set; }
+
         public TypeFormat TypeFormat { get; set; }
 
-        public bool AllowEmptyValue { get; set; }
-
         public ParameterItems Items { get; set; }
-
-        public CollectionFormat CollectionFormat { get; set; }
-
+        
         public string Default { get; set; }
 
         public decimal Maximum { get; set; }
@@ -44,38 +46,24 @@ namespace SwaggerWcf.Models
         public int MaxItems { get; set; }
 
         public int MinItems { get; set; }
-        
+
         public bool UniqueItems { get; set; }
 
         public List<string> Enum { get; set; }
 
         public decimal MultipleOf { get; set; }
 
-        public override void Serialize(JsonWriter writer)
+        public void Serialize(JsonWriter writer)
         {
+            writer.WritePropertyName(Title);
             writer.WriteStartObject();
 
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                writer.WritePropertyName("name");
-                writer.WriteValue(Name);
-            }
-            if (In != InType.Unknown)
-            {
-                writer.WritePropertyName("in");
-                writer.WriteValue(In.ToString().ToLower());
-            }
             if (!string.IsNullOrWhiteSpace(Description))
             {
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
             }
-            if (!Required || In == InType.Path)
-            {
-                writer.WritePropertyName("required");
-                writer.WriteValue(Required);
-            }
-            if (TypeFormat.Type != ParameterType.Unknown)
+            if (TypeFormat.Type != ParameterType.Unknown && TypeFormat.Type != ParameterType.Object)
             {
                 writer.WritePropertyName("type");
                 writer.WriteValue(TypeFormat.Type.ToString().ToLower());
@@ -85,20 +73,10 @@ namespace SwaggerWcf.Models
                     writer.WriteValue(TypeFormat.Format);
                 }
             }
-            if (AllowEmptyValue)
-            {
-                writer.WritePropertyName("allowEmptyValue");
-                writer.WriteValue(AllowEmptyValue);
-            }
             if (TypeFormat.Type == ParameterType.Array && Items != null)
             {
                 writer.WritePropertyName("items");
                 Items.Serialize(writer);
-            }
-            if (TypeFormat.Type == ParameterType.Array)
-            {
-                writer.WritePropertyName("collectionFormat");
-                writer.WriteValue(CollectionFormat);
             }
             if (!string.IsNullOrWhiteSpace(Default))
             {
@@ -144,11 +122,8 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("minItems");
                 writer.WriteValue(MinItems);
             }
-            if (UniqueItems)
-            {
-                writer.WritePropertyName("uniqueItems");
-                writer.WriteValue(UniqueItems);
-            }
+            writer.WritePropertyName("uniqueItems");
+            writer.WriteValue(UniqueItems);
             if (Enum != null && Enum.Any())
             {
                 writer.WritePropertyName("enum");
@@ -164,7 +139,7 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("multipleOf");
                 writer.WriteValue(MultipleOf);
             }
-            
+
             writer.WriteEndObject();
         }
     }

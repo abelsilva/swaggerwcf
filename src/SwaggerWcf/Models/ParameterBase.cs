@@ -8,7 +8,7 @@ namespace SwaggerWcf.Models
         public string Name { get; set; }
 
         // body, path, query, formData (query and formData can have CollectionFormat as multi)
-        public string In { get; set; }
+        public InType In { get; set; }
 
         public string Description { get; set; }
 

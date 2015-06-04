@@ -24,7 +24,10 @@ namespace SwaggerWcf.Models
                 }
             }
 
-            Items.Serialize(writer);
+            if (Items != null)
+            {
+                Items.Serialize(writer);
+            }
 
             writer.WriteEndObject();
         }

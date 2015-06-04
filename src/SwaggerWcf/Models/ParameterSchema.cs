@@ -16,10 +16,10 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("name");
                 writer.WriteValue(Name);
             }
-            if (!string.IsNullOrWhiteSpace(In))
+            if (In != InType.Unknown)
             {
                 writer.WritePropertyName("in");
-                writer.WriteValue(In);
+                writer.WriteValue(In.ToString().ToLower());
             }
             if (!string.IsNullOrWhiteSpace(Description))
             {

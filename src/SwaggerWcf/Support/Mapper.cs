@@ -78,9 +78,17 @@ namespace SwaggerWcf.Support
                 Path path = paths.FirstOrDefault(p => p.Id == pathAction.Item1);
                 if (path == null)
                 {
+                    string id = basePath;
+                    if (basePath.EndsWith("/") && pathAction.Item1.StartsWith("/"))
+                        id += pathAction.Item1.Substring(1);
+                    else if (!basePath.EndsWith("/") && !pathAction.Item1.StartsWith("/"))
+                        id += "/" + pathAction.Item1;
+                    else
+                        id += pathAction.Item1;
+
                     path = new Path
                     {
-                        Id = basePath + pathAction.Item1,
+                        Id = id,
                         Actions = new List<PathAction>()
                     };
                     paths.Add(path);
@@ -210,15 +218,25 @@ namespace SwaggerWcf.Support
                     if (methodTags.Any(HiddenTags.Contains))
                         continue;
 
-                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate));
+                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate, definitionsTypesList));
                 }
+                string uri = declaration.Name;
 
-                yield return new Tuple<string, PathAction>(declaration.Name, operation);
+                if (!string.IsNullOrWhiteSpace(uriTemplate))
+                {
+                    int indexOfQuestionMark = uriTemplate.IndexOf('?');
+                    if (indexOfQuestionMark < 0)
+                        uri = uriTemplate;
+                    else
+                        uri = uriTemplate.Substring(0, indexOfQuestionMark);
+                }
+                yield return new Tuple<string, PathAction>(uri, operation);
             }
         }
 
         private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter,
-                                           ParameterSettingsAttribute settings, string uriTemplate)
+                                           ParameterSettingsAttribute settings, string uriTemplate,
+                                           IList<Type> definitionsTypesList)
         {
             string description = settings != null ? settings.Description : null;
             bool required = settings != null && settings.IsRequired;
@@ -228,13 +246,36 @@ namespace SwaggerWcf.Support
             if (dataMemberAttribute != null && !string.IsNullOrEmpty(dataMemberAttribute.Name))
                 name = dataMemberAttribute.Name;
 
-            if (typeFormat.Type == ParameterType.Complex)
+            InType inType = GetInType(uriTemplate, parameter.Name);
+            if (inType == InType.Path)
+                required = true;
+
+            if (typeFormat.Type == ParameterType.Object)
             {
                 return new ParameterSchema
                 {
                     Name = name,
                     Description = description,
-                    In = GetInType(uriTemplate, parameter.Name),
+                    In = inType,
+                    Required = required,
+                    SchemaRef = typeFormat.Format
+                };
+            }
+
+            if (inType == InType.Body)
+            {
+                //it's a complex type, so we'll need to map it later
+                if (definitionsTypesList != null && !definitionsTypesList.Contains(parameter.ParameterType))
+                {
+                    definitionsTypesList.Add(parameter.ParameterType);
+                }
+                typeFormat = new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+
+                return new ParameterSchema
+                {
+                    Name = name,
+                    Description = description,
+                    In = inType,
                     Required = required,
                     SchemaRef = typeFormat.Format
                 };
@@ -244,7 +285,7 @@ namespace SwaggerWcf.Support
             {
                 Name = name,
                 Description = description,
-                In = GetInType(uriTemplate, parameter.Name),
+                In = inType,
                 Required = required,
                 TypeFormat = typeFormat
             };
@@ -256,7 +297,7 @@ namespace SwaggerWcf.Support
                 {
                     TypeFormat = new TypeFormat
                     {
-                        Type = ParameterType.Complex,
+                        Type = ParameterType.Object,
                         Format = t.FullName
                     },
                     Items = new ParameterSchema
@@ -270,19 +311,19 @@ namespace SwaggerWcf.Support
             return param;
         }
 
-        private string GetInType(string uriTemplate, string parameterName)
+        private InType GetInType(string uriTemplate, string parameterName)
         {
             if (!uriTemplate.Contains(parameterName))
-                return "body";
+                return InType.Body;
 
             int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
 
             if (questionMarkPosition == -1)
-                return "path";
+                return InType.Path;
 
             return (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                       ? "path"
-                       : "query";
+                       ? InType.Path
+                       : InType.Query;
         }
 
         private IEnumerable<string> GetContentTypes<T>(MethodInfo implementation, MethodInfo declaration)
@@ -315,7 +356,7 @@ namespace SwaggerWcf.Support
                 Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
             }).ToList();
 
-            if (!res.Any() && schema != null)
+            if (!res.Any())
             {
                 res.Add(new Response
                 {
@@ -336,7 +377,7 @@ namespace SwaggerWcf.Support
 
             switch (typeFormat.Type)
             {
-                case ParameterType.Complex:
+                case ParameterType.Object:
                     return new Schema
                     {
                         Ref = typeFormat.Format

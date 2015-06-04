@@ -106,7 +106,7 @@ namespace SwaggerWcf.Support
             {
                 definitions.Add(type);
             }
-            return new TypeFormat(ParameterType.Complex, HttpUtility.HtmlEncode(type.FullName));
+            return new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(type.FullName));
         }
 
         private static string BuildTypeString(string typeName, string defaultNote = null, string typeNote = null)

@@ -10,6 +10,6 @@
         Boolean = 5,
         Array = 6,
         File = 7,
-        Complex = 8
+        Object = 8
     }
 }

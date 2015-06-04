@@ -27,6 +27,11 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
             }
+            else
+            {
+                writer.WritePropertyName("description");
+                writer.WriteValue("not available");
+            }
 
             if (Schema != null)
             {

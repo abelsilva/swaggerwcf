@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class Schema
+    internal class DefinitionSchema
     {
         public TypeFormat TypeFormat { get; set; } // for primitives
 
@@ -20,7 +20,7 @@ namespace SwaggerWcf.Models
 
         public List<string> Required { get; set; }
 
-        public List<Property> Properties { get; set; }
+        public List<DefinitionProperty> Properties { get; set; }
 
         public void Serialize(JsonWriter writer)
         {
@@ -116,12 +116,12 @@ namespace SwaggerWcf.Models
             if (Properties != null && Properties.Any())
             {
                 writer.WritePropertyName("properties");
-                writer.WriteStartArray();
-                foreach (Property p in Properties)
+                writer.WriteStartObject();
+                foreach (DefinitionProperty p in Properties)
                 {
                     p.Serialize(writer);
                 }
-                writer.WriteEndArray();
+                writer.WriteEndObject();
             }
         }
     }

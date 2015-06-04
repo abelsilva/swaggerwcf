@@ -57,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\DefinitionAttribute.cs" />
+    <Compile Include="Models\DefinitionSchema.cs" />
+    <Compile Include="Models\DefinitionProperty.cs" />
+    <Compile Include="Models\InType.cs" />
     <Compile Include="Properties\AssemblyConfiguration.cs" />
     <Compile Include="Attributes\DeprecatedAttribute.cs" />
     <Compile Include="Attributes\AcceptsAttribute.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="Support\DefinitionsBuilder.cs" />
     <Compile Include="Support\ServiceBuilder.cs" />
     <Compile Include="Support\StaticContent.cs" />
+    <Compile Include="Support\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

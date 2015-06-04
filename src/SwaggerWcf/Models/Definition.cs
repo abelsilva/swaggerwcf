@@ -4,7 +4,7 @@ namespace SwaggerWcf.Models
 {
     internal class Definition
     {
-        public Schema Schema { get; set; }
+        public DefinitionSchema Schema { get; set; }
 
         public void Serialize(JsonWriter writer)
         {
