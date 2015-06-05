@@ -75,29 +75,34 @@ namespace SwaggerWcf.Support
 
             foreach (Tuple<string, PathAction> pathAction in pathActions)
             {
-                Path path = paths.FirstOrDefault(p => p.Id == pathAction.Item1);
-                if (path == null)
-                {
-                    string id = basePath;
-                    if (basePath.EndsWith("/") && pathAction.Item1.StartsWith("/"))
-                        id += pathAction.Item1.Substring(1);
-                    else if (!basePath.EndsWith("/") && !pathAction.Item1.StartsWith("/"))
-                        id += "/" + pathAction.Item1;
-                    else
-                        id += pathAction.Item1;
-
-                    path = new Path
-                    {
-                        Id = id,
-                        Actions = new List<PathAction>()
-                    };
-                    paths.Add(path);
-                }
-
-                path.Actions.Add(pathAction.Item2);
+                GetPath(basePath, pathAction.Item1, paths).Actions.Add(pathAction.Item2);
             }
 
             return paths;
+        }
+
+        private Path GetPath(string basePath, string pathUrl, List<Path> paths)
+        {
+            string id = basePath;
+            if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
+                id += pathUrl.Substring(1);
+            else if (!basePath.EndsWith("/") && !pathUrl.StartsWith("/"))
+                id += "/" + pathUrl;
+            else
+                id += pathUrl;
+
+            Path path = paths.FirstOrDefault(p => p.Id == id);
+            if (path == null)
+            {
+                path = new Path
+                {
+                    Id = id,
+                    Actions = new List<PathAction>()
+                };
+                paths.Add(path);
+            }
+
+            return path;
         }
 
         /// <summary>

@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\notes\spec-2.0.md = ..\notes\spec-2.0.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerWcf.Test.Service", "SwaggerWcf.Test.Service\SwaggerWcf.Test.Service.csproj", "{FD02752A-614D-4FAF-8994-519C754107B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{AB5D5EFD-BF0C-4287-8371-C5BFC7CB7FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB5D5EFD-BF0C-4287-8371-C5BFC7CB7FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB5D5EFD-BF0C-4287-8371-C5BFC7CB7FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD02752A-614D-4FAF-8994-519C754107B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD02752A-614D-4FAF-8994-519C754107B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD02752A-614D-4FAF-8994-519C754107B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD02752A-614D-4FAF-8994-519C754107B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

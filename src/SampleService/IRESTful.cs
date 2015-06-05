@@ -31,8 +31,9 @@ namespace SampleService
         [OperationContract]
         [WebGet(UriTemplate = "/Data/{value}")]
         string GetData(string value);
-
+        
         [Tag("InternalUse")]
+        [Tag("InternalUse1")]
         [Operation(summary: "Does stuff.", description: "I mean, it does some really interesting stuff. Stuff like you wouldn't believe.")]
         [Response(400, "Four hundred error")]
         [Response(200, "OK")]
@@ -68,9 +69,9 @@ namespace SampleService
         void Delete(string value);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/Data2/{value}")]
+        [WebInvokeAttribute(UriTemplate = "/Data2/{value}", Method = "POST")]
         [Operation(summary: "Example for hiding a parameter", description: "The second parameter, object 'bar' is hidden")]
-        int HideOneOfTwoParams(int value, [ParameterSettings(Hidden = true)]object bar);
+        string HideOneOfTwoParams(string value, [ParameterSettings(Hidden = true)]object bar);
 
 
         [WebGet(UriTemplate = "/Data2Asynch/{value}")]

@@ -25,8 +25,10 @@ namespace SwaggerWcf.Models
 
         public TypeFormat TypeFormat { get; set; }
 
+        public string Ref { get; set; }
+
         public ParameterItems Items { get; set; }
-        
+
         public string Default { get; set; }
 
         public decimal Maximum { get; set; }
@@ -63,81 +65,89 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
             }
-            if (TypeFormat.Type != ParameterType.Unknown && TypeFormat.Type != ParameterType.Object)
+            if (TypeFormat.Type == ParameterType.Object)
             {
-                writer.WritePropertyName("type");
-                writer.WriteValue(TypeFormat.Type.ToString().ToLower());
-                if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                writer.WritePropertyName("$ref");
+                writer.WriteValue(string.Format("#/definitions/{0}", Ref));
+            }
+            else
+            {
+                if (TypeFormat.Type != ParameterType.Unknown)
                 {
-                    writer.WritePropertyName("format");
-                    writer.WriteValue(TypeFormat.Format);
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(TypeFormat.Type.ToString().ToLower());
+                    if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                    {
+                        writer.WritePropertyName("format");
+                        writer.WriteValue(TypeFormat.Format);
+                    }
                 }
-            }
-            if (TypeFormat.Type == ParameterType.Array && Items != null)
-            {
-                writer.WritePropertyName("items");
-                Items.Serialize(writer);
-            }
-            if (!string.IsNullOrWhiteSpace(Default))
-            {
-                writer.WritePropertyName("default");
-                writer.WriteValue(Default);
-            }
-            if (Maximum != decimal.MaxValue)
-            {
-                writer.WritePropertyName("maximum");
-                writer.WriteValue(Maximum);
-                writer.WritePropertyName("exclusiveMaximum");
-                writer.WriteValue(ExclusiveMaximum);
-            }
-            if (Minimum != decimal.MinValue)
-            {
-                writer.WritePropertyName("minimum");
-                writer.WriteValue(Minimum);
-                writer.WritePropertyName("exclusiveMinimum");
-                writer.WriteValue(ExclusiveMinimum);
-            }
-            if (MaxLength != int.MaxValue)
-            {
-                writer.WritePropertyName("maxLength");
-                writer.WriteValue(MaxLength);
-            }
-            if (MinLength != int.MinValue)
-            {
-                writer.WritePropertyName("minLength");
-                writer.WriteValue(MinLength);
-            }
-            if (!string.IsNullOrWhiteSpace(Pattern))
-            {
-                writer.WritePropertyName("pattern");
-                writer.WriteValue(Pattern);
-            }
-            if (MaxItems != int.MaxValue)
-            {
-                writer.WritePropertyName("maxItems");
-                writer.WriteValue(MaxItems);
-            }
-            if (MinItems != int.MinValue)
-            {
-                writer.WritePropertyName("minItems");
-                writer.WriteValue(MinItems);
-            }
-            writer.WritePropertyName("uniqueItems");
-            writer.WriteValue(UniqueItems);
-            if (Enum != null && Enum.Any())
-            {
-                writer.WritePropertyName("enum");
-                writer.WriteStartArray();
-                foreach (string e in Enum)
+                if (TypeFormat.Type == ParameterType.Array && Items != null)
                 {
-                    writer.WriteValue(e);
+                    writer.WritePropertyName("items");
+                    Items.Serialize(writer);
                 }
-                writer.WriteEndArray();
-            }
-            if (MultipleOf != decimal.MinValue)
-            {
-                writer.WritePropertyName("multipleOf");
-                writer.WriteValue(MultipleOf);
+                if (!string.IsNullOrWhiteSpace(Default))
+                {
+                    writer.WritePropertyName("default");
+                    writer.WriteValue(Default);
+                }
+                if (Maximum != decimal.MaxValue)
+                {
+                    writer.WritePropertyName("maximum");
+                    writer.WriteValue(Maximum);
+                    writer.WritePropertyName("exclusiveMaximum");
+                    writer.WriteValue(ExclusiveMaximum);
+                }
+                if (Minimum != decimal.MinValue)
+                {
+                    writer.WritePropertyName("minimum");
+                    writer.WriteValue(Minimum);
+                    writer.WritePropertyName("exclusiveMinimum");
+                    writer.WriteValue(ExclusiveMinimum);
+                }
+                if (MaxLength != int.MaxValue)
+                {
+                    writer.WritePropertyName("maxLength");
+                    writer.WriteValue(MaxLength);
+                }
+                if (MinLength != int.MinValue)
+                {
+                    writer.WritePropertyName("minLength");
+                    writer.WriteValue(MinLength);
+                }
+                if (!string.IsNullOrWhiteSpace(Pattern))
+                {
+                    writer.WritePropertyName("pattern");
+                    writer.WriteValue(Pattern);
+                }
+                if (MaxItems != int.MaxValue)
+                {
+                    writer.WritePropertyName("maxItems");
+                    writer.WriteValue(MaxItems);
+                }
+                if (MinItems != int.MinValue)
+                {
+                    writer.WritePropertyName("minItems");
+                    writer.WriteValue(MinItems);
+                }
+                writer.WritePropertyName("uniqueItems");
+                writer.WriteValue(UniqueItems);
+                if (Enum != null && Enum.Any())
+                {
+                    writer.WritePropertyName("enum");
+                    writer.WriteStartArray();
+                    foreach (string e in Enum)
+                    {
+                        writer.WriteValue(e);
+                    }
+                    writer.WriteEndArray();
+                }
+                if (MultipleOf != decimal.MinValue)
+                {
+                    writer.WritePropertyName("multipleOf");
+                    writer.WriteValue(MultipleOf);
+                }
             }
 
             writer.WriteEndObject();

@@ -125,6 +125,8 @@ namespace SwaggerWcf.Support
                 || propertyInfo.GetCustomAttributes<TagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
                 return null;
 
+            TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
+
             var prop = new DefinitionProperty { Title = propertyInfo.Name };
 
             var dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
@@ -140,7 +142,16 @@ namespace SwaggerWcf.Support
             if (descriptionAttribute != null)
                 prop.Description = descriptionAttribute.Description;
 
-            prop.TypeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
+            prop.TypeFormat = typeFormat;
+
+            if (prop.TypeFormat.Type == ParameterType.Object)
+            {
+                typesStack.Push(propertyInfo.PropertyType);
+
+                prop.Ref = propertyInfo.PropertyType.FullName;
+
+                return prop;
+            }
 
             if (prop.TypeFormat.Type == ParameterType.Array)
             {
@@ -160,14 +171,7 @@ namespace SwaggerWcf.Support
             }
 
 
-            //TODO > arrays and enums
-            //if (Helpers.MapSwaggerType(pType, _definitions.Select(d => d.Type).ToList()) == "array")
-            //{
-            //    writer.WritePropertyName("items");
-            //    writer.WriteStartObject();
-            //    writer.WritePropertyName("$ref");
-            //    writer.WriteValue(Helpers.MapElementType(pType, _definitions.Select(d => d.Type).ToList()));
-            //}
+            //TODO > enums
 
             //if (pType.IsEnum)
             //{

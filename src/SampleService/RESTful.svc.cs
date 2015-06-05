@@ -80,7 +80,7 @@ namespace SampleService
 
 		 }
 
-		 public int HideOneOfTwoParams(int foo, object bar)
+		 public string HideOneOfTwoParams(string foo, object bar)
 		 {
 			 return foo;
 		 }
