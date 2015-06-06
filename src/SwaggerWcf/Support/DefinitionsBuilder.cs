@@ -124,7 +124,7 @@ namespace SwaggerWcf.Support
                 || propertyInfo.GetCustomAttribute<HiddenAttribute>() != null
                 || propertyInfo.GetCustomAttributes<TagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
                 return null;
-
+            
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
 
             var prop = new DefinitionProperty { Title = propertyInfo.Name };
@@ -170,21 +170,36 @@ namespace SwaggerWcf.Support
                 }
             }
 
+            if (prop.TypeFormat.Type == ParameterType.String && prop.TypeFormat.Format == "enum")
+            {
+                prop.Enum = new List<string>();
+                var listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
+                foreach (string enumName in listOfEnumNames)
+                {
+                    prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
+                }
 
-            //TODO > enums
-
-            //if (pType.IsEnum)
-            //{
-            //    writer.WritePropertyName("enum");
-            //    writer.WriteStartArray();
-            //    foreach (string value in pType.GetEnumNames())
-            //    {
-            //        writer.WriteValue(value);
-            //    }
-            //    writer.WriteEndArray();
-            //}
+                var defaultEnumName = Enum.GetName(propertyInfo.PropertyType, 0);
+                prop.Default = GetEnumMemberValue(propertyInfo.PropertyType, defaultEnumName);
+            }
 
             return prop;
+        }
+
+        private static string GetEnumMemberValue(Type enumType, string enumName)
+        {
+            if (string.IsNullOrWhiteSpace(enumName))
+                return null;
+
+            object value = Enum.Parse(enumType, enumName, true);
+
+            FieldInfo fieldInfo = value.GetType().GetField(value.ToString());
+
+            var enumMembeAttributes = fieldInfo.GetCustomAttributes(
+                typeof(EnumMemberAttribute), false) as EnumMemberAttribute[];
+
+            return (enumMembeAttributes != null && enumMembeAttributes.Any()) ?
+                enumMembeAttributes[0].Value : enumName;
         }
     }
 }

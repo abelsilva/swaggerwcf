@@ -2,13 +2,18 @@
 
 namespace SwaggerWcf.Test.Service.Data
 {
-    [DataContract]
-    public class Language
+    [DataContract(Name = "language")]
+    public enum Language
     {
-        [DataMember]
-        public string Id { get; set; }
-
-        [DataMember]
-        public string Name { get; set; }
+        [EnumMember(Value = "unknown")]
+        Unknown = 0,
+        [EnumMember(Value = "english")]
+        English = 1,
+        [EnumMember(Value = "spanish")]
+        Spanish = 2,
+        [EnumMember(Value = "french")]
+        French = 3,
+        [EnumMember(Value = "chinese")]
+        Chinese = 4,
     }
 }

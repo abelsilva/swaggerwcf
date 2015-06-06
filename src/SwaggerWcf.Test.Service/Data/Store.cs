@@ -8,34 +8,8 @@ namespace SwaggerWcf.Test.Service.Data
         static Store()
         {
             Books = new List<Book>();
-            Languages = new List<Language>();
             Authors = new List<Author>();
-
-            var langSpanish = new Language
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Name = "Spanish"
-            };
-            var langEnglish = new Language
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Name = "English"
-            };
-            var langFrench = new Language
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Name = "French"
-            };
-            var langChinese = new Language
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                Name = "Chinese"
-            };
-            Languages.Add(langSpanish);
-            Languages.Add(langEnglish);
-            Languages.Add(langFrench);
-            Languages.Add(langChinese);
-
+            
             var authorMiguelCervantes = new Author
             {
                 Id = Guid.NewGuid().ToString("N"),
@@ -91,7 +65,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "Don Quixote",
                 Author = authorMiguelCervantes,
                 FirstPublished = 1605,
-                Language = langSpanish
+                Language = Language.Spanish
             };
             var bookATaleOfTwoCities = new Book
             {
@@ -99,7 +73,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "A Tale Of Two Cities",
                 Author = authorCharlesDickens,
                 FirstPublished = 1859,
-                Language = langEnglish
+                Language = Language.English
             };
             var bookTheLordOfTheRings = new Book
             {
@@ -107,7 +81,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "The Lord of the Rings",
                 Author = authorJRRTolkien,
                 FirstPublished = 1954,
-                Language = langEnglish
+                Language = Language.English
             };
             var bookTheHobbit = new Book
             {
@@ -115,7 +89,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "The Hobbit",
                 Author = authorJRRTolkien,
                 FirstPublished = 1937,
-                Language = langEnglish
+                Language = Language.English
             };
             var bookLePetitPrince = new Book
             {
@@ -123,7 +97,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "Le Petit Prince",
                 Author = authorAntoineSaintExupery,
                 FirstPublished = 1943,
-                Language = langFrench
+                Language = Language.French
             };
             var bookHarryPotterAndThePhilosopherStone = new Book
             {
@@ -131,7 +105,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "Harry Potter and the Philosopher's Stone",
                 Author = authorJKRowling,
                 FirstPublished = 1997,
-                Language = langEnglish
+                Language = Language.English
             };
             var bookAndThenThereWereNone = new Book
             {
@@ -139,7 +113,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "And Then There Were None",
                 Author = authorAgathaChristie,
                 FirstPublished = 1939,
-                Language = langEnglish
+                Language = Language.English
             };
             var bookDreamOfTheRedChamber = new Book
             {
@@ -147,7 +121,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "紅樓夢/红楼梦 (Dream of the Red Chamber)",
                 Author = authorCaoXueqin,
                 FirstPublished = 1754,
-                Language = langChinese
+                Language = Language.Chinese
             };
             var bookSheAHistoryOfAdventure = new Book
             {
@@ -155,7 +129,7 @@ namespace SwaggerWcf.Test.Service.Data
                 Title = "She: A History of Adventure",
                 Author = authorHRiderHaggard,
                 FirstPublished = 1887,
-                Language = langEnglish
+                Language = Language.English
             };
             Books.Add(bookDonQuixote);
             Books.Add(bookATaleOfTwoCities);
@@ -169,7 +143,6 @@ namespace SwaggerWcf.Test.Service.Data
         }
 
         public static readonly List<Book> Books;
-        public static readonly List<Language> Languages;
         public static readonly List<Author> Authors;
     }
 }
