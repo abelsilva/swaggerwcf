@@ -48,10 +48,10 @@ namespace SwaggerWcf.Support
             if (hiddenTags.Contains(type.FullName))
                 return true;
 
-            if (type.GetCustomAttribute<HiddenAttribute>() != null)
+            if (type.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
                 return true;
 
-            if (type.GetCustomAttributes<TagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
+            if (type.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
                 return true;
 
             return false;
@@ -82,11 +82,9 @@ namespace SwaggerWcf.Support
             if (descAttr != null)
                 schema.Description = descAttr.Description;
 
-            var definitionAttr = definitionType.GetCustomAttribute<DefinitionAttribute>();
+            var definitionAttr = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
             if (definitionAttr != null)
             {
-                if (!string.IsNullOrWhiteSpace(definitionAttr.Description))
-                    schema.Description = definitionAttr.Description;
                 if (!string.IsNullOrWhiteSpace(definitionAttr.ExternalDocsDescription) ||
                     !string.IsNullOrWhiteSpace(definitionAttr.ExternalDocsUrl))
                 {
@@ -121,8 +119,8 @@ namespace SwaggerWcf.Support
         private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags, Stack<Type> typesStack)
         {
             if (propertyInfo.GetCustomAttribute<DataMemberAttribute>() == null
-                || propertyInfo.GetCustomAttribute<HiddenAttribute>() != null
-                || propertyInfo.GetCustomAttributes<TagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
+                || propertyInfo.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null
+                || propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
                 return null;
             
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
@@ -178,9 +176,6 @@ namespace SwaggerWcf.Support
                 {
                     prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
                 }
-
-                var defaultEnumName = Enum.GetName(propertyInfo.PropertyType, 0);
-                prop.Default = GetEnumMemberValue(propertyInfo.PropertyType, defaultEnumName);
             }
 
             return prop;

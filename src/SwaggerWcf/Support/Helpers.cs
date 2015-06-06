@@ -141,6 +141,24 @@ namespace SwaggerWcf.Support
 
             return prop.GetValue(attr) as T1;
         }
+        
+        public static bool GetCustomAttributeValue<T>(MethodInfo method, string propertyName, bool defaultVal = false)
+            where T : Attribute
+        {
+            var attr = method.GetCustomAttribute<T>();
+            if (attr == null)
+            {
+                return defaultVal;
+            }
+
+            PropertyInfo prop = typeof(T).GetProperty(propertyName);
+            if (prop == null || prop.PropertyType != typeof(bool))
+            {
+                return defaultVal;
+            }
+
+            return (bool) prop.GetValue(attr);
+        }
 
         internal static TypeFormat MapElementType(Type type, List<Type> definitions)
         {

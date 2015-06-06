@@ -32,15 +32,15 @@ namespace SampleService
         [WebGet(UriTemplate = "/Data/{value}")]
         string GetData(string value);
         
-        [Tag("InternalUse")]
-        [Tag("InternalUse1")]
-        [Operation(summary: "Does stuff.", description: "I mean, it does some really interesting stuff. Stuff like you wouldn't believe.")]
-        [Response(400, "Four hundred error")]
-        [Response(200, "OK")]
-        [Response(205, "Some error")]
-        [Response(404, "Not found")]
-        [Response(401, "Something weird happened")]
-        [Response(301, "Three O one Something weird happened")]
+        [SwaggerWcfTag("InternalUse")]
+        [SwaggerWcfTag("InternalUse1")]
+        [SwaggerWcfPath(summary: "Does stuff.", description: "I mean, it does some really interesting stuff. Stuff like you wouldn't believe.")]
+        [SwaggerWcfResponse(400, "Four hundred error")]
+        [SwaggerWcfResponse(200, "OK")]
+        [SwaggerWcfResponse(205, "Some error")]
+        [SwaggerWcfResponse(404, "Not found")]
+        [SwaggerWcfResponse(401, "Something weird happened")]
+        [SwaggerWcfResponse(301, "Three O one Something weird happened")]
         [OperationContract]
         [WebInvoke(UriTemplate = "/data", Method = "POST", RequestFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare)]
@@ -52,13 +52,11 @@ namespace SampleService
             Method = "PUT", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare)]
         string PutData(string value,
-            [ParameterSettings(IsRequired = true, Description = "Yes, you need to include this.")] string anothervalue,
+            [SwaggerWcfParameter(Required = true, Description = "Yes, you need to include this.")] string anothervalue,
             string optionalvalue,
             string valueWithLengthRequirement);
 
         [OperationContract]
-        [SwaggerWcf.Attributes.Produces(ContentType = "application/xml")]
-        [SwaggerWcf.Attributes.Produces(ContentType = "application/customformat")]
         [WebGet(UriTemplate = "/List")]
         CompositeType[] GetList();
 
@@ -70,15 +68,14 @@ namespace SampleService
 
         [OperationContract]
         [WebInvokeAttribute(UriTemplate = "/Data2/{value}", Method = "POST")]
-        [Operation(summary: "Example for hiding a parameter", description: "The second parameter, object 'bar' is hidden")]
-        string HideOneOfTwoParams(string value, [ParameterSettings(Hidden = true)]object bar);
+        [SwaggerWcfPath(summary: "Example for hiding a parameter", description: "The second parameter, object 'bar' is hidden")]
+        string HideOneOfTwoParams(string value, [SwaggerWcfHidden]object bar);
 
 
         [WebGet(UriTemplate = "/Data2Asynch/{value}")]
-        [Operation(summary: "Example for hiding parameters and overriding return type", description: "Two parameters, AsynchCallback callback and object asyncState are hidden")]
-        [OverrideReturnType(typeof(CompositeType))]
+        [SwaggerWcfPath(summary: "Example for hiding parameters and overriding return type", description: "Two parameters, AsynchCallback callback and object asyncState are hidden")]
         [OperationContract(AsyncPattern = true)]
-        IAsyncResult BeginServiceAsyncMethod(string value, [ParameterSettings(Hidden = true)]AsyncCallback callback, [ParameterSettings(Hidden = true)]object asyncState);
+        IAsyncResult BeginServiceAsyncMethod(string value, [SwaggerWcfHidden]AsyncCallback callback, [SwaggerWcfHidden]object asyncState);
 
         // Note: There is no OperationContractAttribute for the end method.
         CompositeType EndServiceAsyncMethod(IAsyncResult result);
@@ -89,7 +86,7 @@ namespace SampleService
         [WebInvoke(UriTemplate = "/DisplayContractNameForRespAndReq", Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare)]
         MyRespClass DisplayContractNameForRespAndReqTest(
-            [ParameterSettings(Description = "Request object")]MyReqClass req);
+            [SwaggerWcfParameter(Description = "Request object")]MyReqClass req);
 
         [WebInvoke(UriTemplate = "/DisplayBaseClassProperties", Method = "POST", RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,

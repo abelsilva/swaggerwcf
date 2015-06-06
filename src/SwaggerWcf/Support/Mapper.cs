@@ -14,37 +14,12 @@ namespace SwaggerWcf.Support
 {
     internal class Mapper
     {
-        internal Mapper(IReadOnlyDictionary<string, string> settings, IList<string> hiddenTags)
+        internal Mapper(IList<string> hiddenTags)
         {
             HiddenTags = hiddenTags ?? new List<string>();
-
-            if (settings.ContainsKey("ShowRequiredQueryParamsInHeader"))
-            {
-                bool showQueryParamSetting;
-                bool.TryParse(settings["ShowRequiredQueryParamsInHeader"], out showQueryParamSetting);
-                ShowRequiredQueryParamsInHeader = showQueryParamSetting;
-            }
-            if (settings.ContainsKey("MarkTaggedMethods"))
-            {
-                bool markTaggedMethods;
-                bool.TryParse(settings["MarkTaggedMethods"], out markTaggedMethods);
-                MarkTagged = markTaggedMethods;
-            }
-        }
-
-        /// <summary>
-        ///     Unit test use only
-        /// </summary>
-        internal Mapper(IList<string> hiddenTags, bool showRequiredQueryParams, bool markTagged)
-        {
-            HiddenTags = hiddenTags ?? new List<string>();
-            ShowRequiredQueryParamsInHeader = showRequiredQueryParams;
-            MarkTagged = markTagged;
         }
 
         internal readonly IEnumerable<string> HiddenTags;
-        internal readonly bool ShowRequiredQueryParamsInHeader;
-        internal readonly bool MarkTagged;
 
         /// <summary>
         ///     Find methods of the supplied type which have WebGet or WebInvoke attributes.
@@ -120,15 +95,16 @@ namespace SwaggerWcf.Support
                 MethodInfo declaration = map.InterfaceMethods[index];
 
                 //if the method is marked Hidden anywhere, skip it
-                if (implementation.GetCustomAttribute<HiddenAttribute>() != null ||
-                    declaration.GetCustomAttribute<HiddenAttribute>() != null)
+                if (implementation.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
+                    declaration.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
                     continue;
 
                 //if a tag from either implementation or declaration is marked as not visible, skip it
                 List<string> methodTags =
-                    implementation.GetCustomAttributes<TagAttribute>().Select(t => t.TagName).ToList();
+                    implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).ToList();
                 methodTags =
-                    methodTags.Concat(declaration.GetCustomAttributes<TagAttribute>().Select(t => t.TagName)).ToList();
+                    methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName))
+                              .ToList();
 
                 if (methodTags.Any(HiddenTags.Contains))
                     continue;
@@ -144,31 +120,32 @@ namespace SwaggerWcf.Support
 
                 //implementation description overrides interface description
                 string description =
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(implementation, "Description") ??
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(declaration, "Description") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "Description") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "Description") ??
                     Helpers.GetCustomAttributeValue<string, DescriptionAttribute>(implementation, "Description") ??
                     Helpers.GetCustomAttributeValue<string, DescriptionAttribute>(declaration, "Description") ??
                     "";
 
                 string summary =
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(implementation, "Summary") ??
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(declaration, "Summary") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "Summary") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "Summary") ??
                     "";
 
                 string operationId =
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(implementation, "OperationId") ??
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(declaration, "OperationId") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "OperationId") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "OperationId") ??
                     "";
 
                 string externalDocsDescription =
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(implementation,
-                                                                                "ExternalDocsDescription") ??
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(declaration, "ExternalDocsDescription") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation,
+                                                                                     "ExternalDocsDescription") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration,
+                                                                                     "ExternalDocsDescription") ??
                     "";
 
                 string externalDocsUrl =
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(implementation, "ExternalDocsUrl") ??
-                    Helpers.GetCustomAttributeValue<string, OperationAttribute>(declaration, "ExternalDocsUrl") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "ExternalDocsUrl") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "ExternalDocsUrl") ??
                     "";
 
                 ExternalDocumentation externalDocs = null;
@@ -181,9 +158,10 @@ namespace SwaggerWcf.Support
                     };
                 }
 
-                bool deprecated = (declaration.GetCustomAttribute<DeprecatedAttribute>() != null);
+                bool deprecated =
+                    Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(implementation, "Deprecated");
                 if (!deprecated)
-                    deprecated = (implementation.GetCustomAttribute<DeprecatedAttribute>() != null);
+                    deprecated = Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(declaration, "Deprecated");
 
                 var operation = new PathAction
                 {
@@ -191,8 +169,8 @@ namespace SwaggerWcf.Support
                     Summary = HttpUtility.HtmlEncode(summary),
                     Description = HttpUtility.HtmlEncode(description),
                     Tags = methodTags.Where(mt => !HiddenTags.Contains(mt)).Select(HttpUtility.HtmlEncode).ToList(),
-                    Consumes = new List<string>(GetContentTypes<ConsumesAttribute>(implementation, declaration)),
-                    Produces = new List<string>(GetContentTypes<ProducesAttribute>(implementation, declaration)),
+                    Consumes = new List<string>(GetConsumes(implementation, declaration)),
+                    Produces = new List<string>(GetProduces(implementation, declaration)),
                     Deprecated = deprecated,
                     OperationId = HttpUtility.HtmlEncode(operationId),
                     ExternalDocs = externalDocs,
@@ -208,22 +186,27 @@ namespace SwaggerWcf.Support
                 {
                     TypeFormat typeFormat = Helpers.MapSwaggerType(parameter.ParameterType, definitionsTypesList);
 
-                    ParameterSettingsAttribute settings =
+                    SwaggerWcfParameterAttribute settings =
                         implementation.GetParameters()
                                       .First(p => p.Position.Equals(parameter.Position))
-                                      .GetCustomAttribute<ParameterSettingsAttribute>() ??
-                        parameter.GetCustomAttribute<ParameterSettingsAttribute>();
+                                      .GetCustomAttribute<SwaggerWcfParameterAttribute>() ??
+                        parameter.GetCustomAttribute<SwaggerWcfParameterAttribute>();
 
-                    if (settings != null && settings.Hidden)
+                    if (implementation.GetParameters()
+                                      .First(p => p.Position.Equals(parameter.Position))
+                                      .GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
+                        parameter.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
                         continue;
 
                     methodTags =
-                        methodTags.Concat(parameter.GetCustomAttributes<TagAttribute>().Select(t => t.TagName)).ToList();
+                        methodTags.Concat(parameter.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName))
+                                  .ToList();
 
                     if (methodTags.Any(HiddenTags.Contains))
                         continue;
 
-                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate, definitionsTypesList));
+                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
+                                                          definitionsTypesList));
                 }
                 string uri = declaration.Name;
 
@@ -240,11 +223,11 @@ namespace SwaggerWcf.Support
         }
 
         private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter,
-                                           ParameterSettingsAttribute settings, string uriTemplate,
+                                           SwaggerWcfParameterAttribute settings, string uriTemplate,
                                            IList<Type> definitionsTypesList)
         {
             string description = settings != null ? settings.Description : null;
-            bool required = settings != null && settings.IsRequired;
+            bool required = settings != null && settings.Required;
             string name = parameter.Name;
             var dataMemberAttribute = parameter.GetCustomAttribute<DataMemberAttribute>();
 
@@ -253,6 +236,9 @@ namespace SwaggerWcf.Support
 
             InType inType = GetInType(uriTemplate, parameter.Name);
             if (inType == InType.Path)
+                required = true;
+
+            if (!required && !parameter.HasDefaultValue)
                 required = true;
 
             if (typeFormat.Type == ParameterType.Object)
@@ -274,7 +260,8 @@ namespace SwaggerWcf.Support
                 {
                     definitionsTypesList.Add(parameter.ParameterType);
                 }
-                typeFormat = new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+                typeFormat = new TypeFormat(ParameterType.Object,
+                                            HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
 
                 return new ParameterSchema
                 {
@@ -331,18 +318,58 @@ namespace SwaggerWcf.Support
                        : InType.Query;
         }
 
-        private IEnumerable<string> GetContentTypes<T>(MethodInfo implementation, MethodInfo declaration)
-            where T : ContentTypeAttribute
+        private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
         {
-            if (implementation.GetCustomAttributes<T>().Any())
+            var contentTypes = new List<string>();
+            if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
             {
-                return implementation.GetCustomAttributes<T>().Select(a => HttpUtility.HtmlEncode(a.ContentType));
+                contentTypes.AddRange(
+                    declaration.GetCustomAttributes<WebGetAttribute>()
+                               .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
-            if (declaration.GetCustomAttributes<T>().Any())
+            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any())
             {
-                return declaration.GetCustomAttributes<T>().Select(a => HttpUtility.HtmlEncode(a.ContentType));
+                contentTypes.AddRange(
+                    declaration.GetCustomAttributes<WebInvokeAttribute>()
+                               .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
-            return new[] { "application/json", "application/xml" };
+            if (!contentTypes.Any())
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+
+            return contentTypes;
+        }
+
+        private IEnumerable<string> GetProduces(MethodInfo implementation, MethodInfo declaration)
+        {
+            var contentTypes = new List<string>();
+            if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
+            {
+                contentTypes.AddRange(
+                    declaration.GetCustomAttributes<WebGetAttribute>()
+                               .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
+            }
+            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any())
+            {
+                contentTypes.AddRange(
+                    declaration.GetCustomAttributes<WebInvokeAttribute>()
+                               .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
+            }
+            if (!contentTypes.Any())
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+
+            return contentTypes;
+        }
+
+        private string ConvertWebMessageFormatToContentType(WebMessageFormat format)
+        {
+            switch (format)
+            {
+                case WebMessageFormat.Xml:
+                    return "application/xml";
+                case WebMessageFormat.Json:
+                default:
+                    return "application/json";
+            }
         }
 
         private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration,
@@ -350,10 +377,11 @@ namespace SwaggerWcf.Support
         {
             Schema schema = BuildSchema(declaration.ReturnType, definitionsTypesList);
 
-            List<ResponseAttribute> responses = implementation.GetCustomAttributes<ResponseAttribute>().ToList();
-            responses = responses.Concat(declaration.GetCustomAttributes<ResponseAttribute>()).ToList();
+            List<SwaggerWcfResponseAttribute> responses =
+                implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
+            responses = responses.Concat(declaration.GetCustomAttributes<SwaggerWcfResponseAttribute>()).ToList();
 
-            List<Response> res = responses.GroupBy(r => r.Code).Select(grp => grp.First()).Select(ra => new Response
+            List<Response> res = responses.Select(ra => new Response
             {
                 Code = ra.Code,
                 Description = ra.Description,

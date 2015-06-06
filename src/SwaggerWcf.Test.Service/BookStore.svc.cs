@@ -10,7 +10,9 @@ namespace SwaggerWcf.Test.Service
     [SwaggerWcf("/v1/rest")]
     public class BookStore : IBookStore
     {
-        [Tag("Books")]
+        [SwaggerWcfTag("Books")]
+        [SwaggerWcfResponse(201, "Book created, value in the response body with id updated")]
+        [SwaggerWcfResponse(500, "Internal error (can be forced using ERROR_500 as book title)")]
         public Book CreateBook(Book value)
         {
             WebOperationContext woc = WebOperationContext.Current;
@@ -31,8 +33,11 @@ namespace SwaggerWcf.Test.Service
 
             return value;
         }
-        
-        [Tag("Books")]
+
+        [SwaggerWcfTag("Books")]
+        [SwaggerWcfResponse(200, "Book found, value in the response body")]
+        [SwaggerWcfResponse(404, "Book not found")]
+        [SwaggerWcfResponse(500, "Internal error (can be forced using ERROR_500 as book id)")]
         public Book ReadBook(string id)
         {
             WebOperationContext woc = WebOperationContext.Current;
@@ -56,8 +61,10 @@ namespace SwaggerWcf.Test.Service
             woc.OutgoingResponse.StatusCode = HttpStatusCode.NotFound;
             return null;
         }
-        
-        [Tag("Books")]
+
+        [SwaggerWcfTag("Books")]
+        [SwaggerWcfResponse(200, "Book found, value in the response body")]
+        [SwaggerWcfResponse(204, "No books")]
         public Book[] ReadBooks()
         {
             WebOperationContext woc = WebOperationContext.Current;
@@ -74,8 +81,11 @@ namespace SwaggerWcf.Test.Service
             woc.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
             return null;
         }
-        
-        [Tag("Books")]
+
+        [SwaggerWcfTag("Books")]
+        [SwaggerWcfResponse(204, "Book updated")]
+        [SwaggerWcfResponse(404, "Book not found")]
+        [SwaggerWcfResponse(500, "Internal error (can be forced using ERROR_500 as book id)")]
         public void UpdateBook(string id, Book value)
         {
             WebOperationContext woc = WebOperationContext.Current;
@@ -99,8 +109,11 @@ namespace SwaggerWcf.Test.Service
                 woc.OutgoingResponse.StatusCode = HttpStatusCode.NotFound;
             }
         }
-        
-        [Tag("Books")]
+
+        [SwaggerWcfTag("Books")]
+        [SwaggerWcfResponse(204, "Book deleted")]
+        [SwaggerWcfResponse(404, "Book not found")]
+        [SwaggerWcfResponse(500, "Internal error (can be forced using ERROR_500 as book id)")]
         public void DeleteBook(string id)
         {
             WebOperationContext woc = WebOperationContext.Current;

@@ -56,26 +56,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\DefinitionAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfDefinitionAttribute.cs" />
     <Compile Include="Models\DefinitionSchema.cs" />
     <Compile Include="Models\DefinitionProperty.cs" />
     <Compile Include="Models\InType.cs" />
     <Compile Include="Properties\AssemblyConfiguration.cs" />
-    <Compile Include="Attributes\DeprecatedAttribute.cs" />
-    <Compile Include="Attributes\AcceptsAttribute.cs" />
-    <Compile Include="Attributes\ContentTypeAttribute.cs" />
-    <Compile Include="Attributes\ParameterAttribute.cs" />
-    <Compile Include="Attributes\HiddenAttribute.cs" />
-    <Compile Include="Attributes\OperationAttribute.cs" />
-    <Compile Include="Attributes\OverrideReturnTypeAttribute.cs" />
-    <Compile Include="Attributes\ParameterSettingsAttribute.cs" />
-    <Compile Include="Attributes\ProducesAttribute.cs" />
-    <Compile Include="Attributes\ResponseAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfHiddenAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfPathAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfParameterAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfResponseAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfAttribute.cs" />
-    <Compile Include="Attributes\TagAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfTagAttribute.cs" />
     <Compile Include="Configuration\SettingCollection.cs" />
     <Compile Include="Configuration\SettingElement.cs" />
-    <Compile Include="Configuration\SwaggerSection.cs" />
+    <Compile Include="Configuration\SwaggerWcfSection.cs" />
     <Compile Include="Configuration\TagCollection.cs" />
     <Compile Include="Configuration\TagElement.cs" />
     <Compile Include="Models\CollectionFormat.cs" />

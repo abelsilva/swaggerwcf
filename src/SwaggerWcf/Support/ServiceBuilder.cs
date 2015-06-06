@@ -21,8 +21,8 @@ namespace SwaggerWcf.Support
 
         private static Service BuildService()
         {
-            const string sectionName = "swagger";
-            var config = (SwaggerSection) (ConfigurationManager.GetSection(sectionName) ?? new SwaggerSection());
+            const string sectionName = "swaggerwcf";
+            var config = (SwaggerWcfSection) (ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
             var definitionsTypesList = new List<Type>();
             var service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
@@ -30,14 +30,14 @@ namespace SwaggerWcf.Support
 
             ProcessSettings(service, settings);
 
-            BuildPaths(service, settings, hiddenTags, definitionsTypesList);
+            BuildPaths(service, hiddenTags, definitionsTypesList);
 
             service.Definitions = DefinitionsBuilder.Process(hiddenTags, definitionsTypesList);
 
             return service;
         }
 
-        private static List<string> GetHiddenTags(SwaggerSection config)
+        private static List<string> GetHiddenTags(SwaggerWcfSection config)
         {
             return config.Tags == null
                        ? new List<string>()
@@ -47,11 +47,11 @@ namespace SwaggerWcf.Support
                                .ToList();
         }
 
-        private static IReadOnlyDictionary<string, string> GetSettings(SwaggerSection config)
+        private static IReadOnlyDictionary<string, string> GetSettings(SwaggerWcfSection config)
         {
             return config.Settings == null
                        ? new Dictionary<string, string>()
-                       : config.Settings.OfType<Configuration.SettingElement>().ToDictionary(se => se.Name, se => se.Value);
+                       : config.Settings.OfType<SettingElement>().ToDictionary(se => se.Name, se => se.Value);
         }
 
         private static void ProcessSettings(Service service, IReadOnlyDictionary<string, string> settings)
@@ -87,11 +87,10 @@ namespace SwaggerWcf.Support
                 service.Info.License.Url = settings["InfoLicenseUrl"];
             if (settings.ContainsKey("InfoLicenseName"))
                 service.Info.License.Name = settings["InfoLicenseName"];
+            
         }
 
-        private static void BuildPaths(Service service, IReadOnlyDictionary<string, string> settings,
-                                       IList<string> hiddenTags,
-                                       IList<Type> definitionsTypesList)
+        private static void BuildPaths(Service service, IList<string> hiddenTags, IList<Type> definitionsTypesList)
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             service.Paths = new List<Path>();
@@ -115,7 +114,7 @@ namespace SwaggerWcf.Support
                     if (da == null || hiddenTags.Any(ht => ht == ti.AsType().Name))
                         continue;
 
-                    var mapper = new Mapper(settings, hiddenTags);
+                    var mapper = new Mapper(hiddenTags);
 
                     IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, ti.AsType(), definitionsTypesList);
                     service.Paths.AddRange(paths);

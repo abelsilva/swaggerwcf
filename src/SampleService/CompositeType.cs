@@ -26,7 +26,7 @@ namespace SampleService
 {
     [DataContract]
     [Description("CompositeType Description")]
-    [Tag("InternalUse")]
+    [SwaggerWcfTag("InternalUse")]
     public class CompositeType
     {
         public CompositeType()
@@ -40,12 +40,12 @@ namespace SampleService
         public bool BoolValue
         { get; set; }
 
-        [Hidden]
+        [SwaggerWcfHidden]
         [DataMember]
         public string StringValue
         { get; set; }
 
-        [Tag("InternalUse")]
+        [SwaggerWcfTag("InternalUse")]
         [DataMember(EmitDefaultValue = false)]
         public SecretObject Secret
         { get; set; }
@@ -62,13 +62,13 @@ namespace SampleService
         public short ShortValue
         { get; set; }
 
-        [DataMember]
-        [Parameter(Description = "Description text", Required = true)]
+        [DataMember(IsRequired = true)]
+        [Description("Description text")]
         public string StringValueWithLengthRestriction
         { get; set; }
 
         [DataMember]
-        [Parameter(Description = "List description text")]
+        [Description("List description text")]
         public List<SubContractSample> SampleList
         { get; set; }
     }

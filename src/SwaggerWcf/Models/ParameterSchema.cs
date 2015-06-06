@@ -26,9 +26,11 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
             }
-            writer.WritePropertyName("required");
-            writer.WriteValue(Required);
-
+            if (Required)
+            {
+                writer.WritePropertyName("required");
+                writer.WriteValue(Required);
+            }
             if (!string.IsNullOrWhiteSpace(SchemaRef))
             {
                 writer.WritePropertyName("schema");

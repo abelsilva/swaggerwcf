@@ -70,7 +70,7 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
             }
-            if (!Required || In == InType.Path)
+            if (Required)
             {
                 writer.WritePropertyName("required");
                 writer.WriteValue(Required);
