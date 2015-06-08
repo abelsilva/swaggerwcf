@@ -22,6 +22,8 @@ namespace SwaggerWcf.Models
 
         public List<DefinitionProperty> Properties { get; set; }
 
+        public List<string> Enum { get; set; }
+
         public void Serialize(JsonWriter writer)
         {
             if (TypeFormat.Type == ParameterType.Object)
@@ -79,6 +81,16 @@ namespace SwaggerWcf.Models
                     writer.WriteValue(string.Format("#/definitions/{0}", Ref));
 
                     writer.WriteEndObject();
+                }
+                if (Enum != null && Enum.Any())
+                {
+                    writer.WritePropertyName("enum");
+                    writer.WriteStartArray();
+                    foreach (string e in Enum)
+                    {
+                        writer.WriteValue(e);
+                    }
+                    writer.WriteEndArray();
                 }
             }
             else if (!string.IsNullOrWhiteSpace(Ref))

@@ -15,14 +15,21 @@ namespace SwaggerWcf.Attributes
         ///     Injects a tag into an element
         /// </summary>
         /// <param name="name">Tag name</param>
-        public SwaggerWcfTagAttribute(string name)
+        /// <param name="hideFromSpec">Hide tag from spec</param>
+        public SwaggerWcfTagAttribute(string name, bool hideFromSpec = false)
         {
             TagName = name;
+            HideFromSpec = hideFromSpec;
         }
 
         /// <summary>
         ///     Tag name
         /// </summary>
         public string TagName { get; set; }
+        
+        /// <summary>
+        ///     Hide tag from spec
+        /// </summary>
+        public bool HideFromSpec { get; set; }
     }
 }

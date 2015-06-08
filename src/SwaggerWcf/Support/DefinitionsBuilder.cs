@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
-using Newtonsoft.Json;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Models;
 
@@ -17,14 +14,16 @@ namespace SwaggerWcf.Support
         public static List<Definition> Process(IList<string> hiddenTags, List<Type> definitionsTypes)
         {
             var definitions = new List<Definition>();
+            var processedTypes = new List<Type>();
             var typesStack = new Stack<Type>(definitionsTypes.GroupBy(t => t.FullName).Select(grp => grp.First()));
 
             while (typesStack.Any())
             {
                 Type t = typesStack.Pop();
-                if (IsHidden(t, hiddenTags))
+                if (IsHidden(t, hiddenTags) || processedTypes.Contains(t))
                     continue;
 
+                processedTypes.Add(t);
                 definitions.Add(ConvertTypeToDefinition(t, hiddenTags, typesStack));
             }
 
@@ -57,7 +56,8 @@ namespace SwaggerWcf.Support
             return false;
         }
 
-        private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags, Stack<Type> typesStack)
+        private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags,
+                                                          Stack<Type> typesStack)
         {
             var schema = new DefinitionSchema
             {
@@ -68,7 +68,19 @@ namespace SwaggerWcf.Support
 
             // process
             schema.TypeFormat = Helpers.MapSwaggerType(definitionType, null);
-            ProcessProperties(definitionType, schema, hiddenTags, typesStack);
+            if (schema.TypeFormat.Type == ParameterType.String && schema.TypeFormat.Format == "enum")
+            {
+                schema.Enum = new List<string>();
+                List<string> listOfEnumNames = definitionType.GetEnumNames().ToList();
+                foreach (string enumName in listOfEnumNames)
+                {
+                    schema.Enum.Add(GetEnumMemberValue(definitionType, enumName));
+                }
+            }
+            else
+            {
+                ProcessProperties(definitionType, schema, hiddenTags, typesStack);
+            }
 
             return new Definition
             {
@@ -97,7 +109,8 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private static void ProcessProperties(Type definitionType, DefinitionSchema schema, IList<string> hiddenTags, Stack<Type> typesStack)
+        private static void ProcessProperties(Type definitionType, DefinitionSchema schema, IList<string> hiddenTags,
+                                              Stack<Type> typesStack)
         {
             PropertyInfo[] properties = definitionType.GetProperties();
             schema.Properties = new List<DefinitionProperty>();
@@ -116,13 +129,17 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags, Stack<Type> typesStack)
+        private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags,
+                                                          Stack<Type> typesStack)
         {
             if (propertyInfo.GetCustomAttribute<DataMemberAttribute>() == null
                 || propertyInfo.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null
-                || propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
+                ||
+                propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>()
+                            .Select(t => t.TagName)
+                            .Any(hiddenTags.Contains))
                 return null;
-            
+
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
 
             var prop = new DefinitionProperty { Title = propertyInfo.Name };
@@ -171,7 +188,7 @@ namespace SwaggerWcf.Support
             if (prop.TypeFormat.Type == ParameterType.String && prop.TypeFormat.Format == "enum")
             {
                 prop.Enum = new List<string>();
-                var listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
+                List<string> listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
                     prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
@@ -193,8 +210,9 @@ namespace SwaggerWcf.Support
             var enumMembeAttributes = fieldInfo.GetCustomAttributes(
                 typeof(EnumMemberAttribute), false) as EnumMemberAttribute[];
 
-            return (enumMembeAttributes != null && enumMembeAttributes.Any()) ?
-                enumMembeAttributes[0].Value : enumName;
+            return (enumMembeAttributes != null && enumMembeAttributes.Any())
+                       ? enumMembeAttributes[0].Value
+                       : enumName;
         }
     }
 }

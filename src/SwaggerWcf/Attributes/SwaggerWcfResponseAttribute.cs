@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace SwaggerWcf.Attributes
 {
@@ -13,11 +14,14 @@ namespace SwaggerWcf.Attributes
         /// </summary>
         /// <param name="code">Result code</param>
         /// <param name="description">Result description</param>
+        /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
-        public SwaggerWcfResponseAttribute(string code, string description = null, string[] headers = null)
+        public SwaggerWcfResponseAttribute(string code, string description = null, bool emptyResponseOverride = false,
+                                           string[] headers = null)
         {
             Code = code;
             Description = description;
+            EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
         }
 
@@ -26,11 +30,31 @@ namespace SwaggerWcf.Attributes
         /// </summary>
         /// <param name="code">Result code</param>
         /// <param name="description">Result description</param>
+        /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
-        public SwaggerWcfResponseAttribute(int code, string description = null, string[] headers = null)
+        public SwaggerWcfResponseAttribute(HttpStatusCode code, string description = null,
+                                           bool emptyResponseOverride = false,
+                                           string[] headers = null)
+        {
+            Code = ((int) code).ToString();
+            Description = description;
+            EmptyResponseOverride = emptyResponseOverride;
+            Headers = headers;
+        }
+
+        /// <summary>
+        ///     Configures a response for a path
+        /// </summary>
+        /// <param name="code">Result code</param>
+        /// <param name="description">Result description</param>
+        /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
+        /// <param name="headers">Optional HTTP headers returned</param>
+        public SwaggerWcfResponseAttribute(int code, string description = null, bool emptyResponseOverride = false,
+                                           string[] headers = null)
         {
             Code = code.ToString();
             Description = description;
+            EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
         }
 
@@ -43,6 +67,11 @@ namespace SwaggerWcf.Attributes
         ///     Result description
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        ///     Result has empty response body (override default response type)
+        /// </summary>
+        public bool EmptyResponseOverride { get; set; }
 
         /// <summary>
         ///     Optional HTTP headers returned

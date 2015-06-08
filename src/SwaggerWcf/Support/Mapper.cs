@@ -100,13 +100,12 @@ namespace SwaggerWcf.Support
                     continue;
 
                 //if a tag from either implementation or declaration is marked as not visible, skip it
-                List<string> methodTags =
-                    implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).ToList();
+                List<SwaggerWcfTagAttribute> methodTags =
+                    implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().ToList();
                 methodTags =
-                    methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName))
-                              .ToList();
+                    methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
 
-                if (methodTags.Any(HiddenTags.Contains))
+                if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                     continue;
 
                 //find the WebGet/Invoke attributes, or skip if neither is present
@@ -168,7 +167,7 @@ namespace SwaggerWcf.Support
                     Id = httpMethod.ToLowerInvariant(),
                     Summary = HttpUtility.HtmlEncode(summary),
                     Description = HttpUtility.HtmlEncode(description),
-                    Tags = methodTags.Where(mt => !HiddenTags.Contains(mt)).Select(HttpUtility.HtmlEncode).ToList(),
+                    Tags = methodTags.Where(t => !t.HideFromSpec).Select(t => HttpUtility.HtmlEncode(t.TagName)).ToList(),
                     Consumes = new List<string>(GetConsumes(implementation, declaration)),
                     Produces = new List<string>(GetProduces(implementation, declaration)),
                     Deprecated = deprecated,
@@ -198,11 +197,11 @@ namespace SwaggerWcf.Support
                         parameter.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
                         continue;
 
-                    methodTags =
-                        methodTags.Concat(parameter.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName))
+                    List<SwaggerWcfTagAttribute> piTags =
+                        methodTags.Concat(parameter.GetCustomAttributes<SwaggerWcfTagAttribute>())
                                   .ToList();
 
-                    if (methodTags.Any(HiddenTags.Contains))
+                    if (piTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                         continue;
 
                     operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
@@ -385,7 +384,7 @@ namespace SwaggerWcf.Support
             {
                 Code = ra.Code,
                 Description = ra.Description,
-                Schema = schema,
+                Schema = ra.EmptyResponseOverride ? null : schema,
                 Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
             }).ToList();
 
@@ -417,12 +416,14 @@ namespace SwaggerWcf.Support
                     };
                 case ParameterType.Array:
                     Type t = type.GetElementType();
+                    definitionsTypesList.Add(t);
                     return new Schema
                     {
                         TypeFormat = typeFormat,
                         Ref = HttpUtility.HtmlEncode(t.FullName)
                     };
                 default:
+                    definitionsTypesList.Add(type);
                     return new Schema
                     {
                         TypeFormat = typeFormat

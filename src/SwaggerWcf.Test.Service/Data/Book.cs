@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Runtime.Serialization;
+using SwaggerWcf.Attributes;
 
 namespace SwaggerWcf.Test.Service.Data
 {
     [DataContract]
     [Description("Book with title, first publish date, author and language")]
+    [SwaggerWcfDefinition(ExternalDocsUrl = "http://en.wikipedia.org/wiki/Book", ExternalDocsDescription = "Description of a book")]
     public class Book
     {
         [DataMember]

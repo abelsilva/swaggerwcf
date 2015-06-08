@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="SwaggerWcf.Test.Service.BookStore" CodeBehind="Store.svc.cs" %>

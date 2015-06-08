@@ -62,7 +62,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BookStore.svc" />
+    <Content Include="Store.svc" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -71,13 +71,13 @@
     <Compile Include="Data\Book.cs" />
     <Compile Include="Data\Language.cs" />
     <Compile Include="Data\Store.cs" />
-    <Compile Include="BookStore.svc.cs">
-      <DependentUpon>BookStore.svc</DependentUpon>
+    <Compile Include="Store.svc.cs">
+      <DependentUpon>Store.svc</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IBookStore.cs" />
+    <Compile Include="IStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
