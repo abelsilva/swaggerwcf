@@ -43,7 +43,11 @@ namespace SwaggerWcf
         {
             WebOperationContext woc = WebOperationContext.Current;
             if (woc != null)
+            {
+                //TODO: create a parameter in settings to configure this
+                woc.OutgoingResponse.Headers.Add("Access-Control-Allow-Origin", "*");
                 woc.OutgoingResponse.ContentType = "application/json";
+            }
 
             return new MemoryStream(Encoding.UTF8.GetBytes(Serializer.Process(Service)));
         }

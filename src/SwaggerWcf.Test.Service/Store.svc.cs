@@ -45,7 +45,7 @@ namespace SwaggerWcf.Test.Service
         }
 
         [SwaggerWcfTag("Books")]
-        [SwaggerWcfResponse(HttpStatusCode.OK, "Book found, value in the response body")]
+        [SwaggerWcfResponse(HttpStatusCode.OK, "Books found, values in the response body")]
         [SwaggerWcfResponse(HttpStatusCode.NotFound, "Book not found", true)]
         [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
             "Internal error (can be forced using ERROR_500 as book id)", true)]
@@ -258,7 +258,7 @@ namespace SwaggerWcf.Test.Service
         }
 
         [SwaggerWcfTag("Authors")]
-        [SwaggerWcfResponse(200, "Author found, value in the response body")]
+        [SwaggerWcfResponse(200, "Authors found, values in the response body")]
         [SwaggerWcfResponse(204, "No authors", true)]
         public Author[] ReadAuthors()
         {
