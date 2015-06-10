@@ -32,6 +32,8 @@ protected void Application_Start(object sender, EventArgs e)
 
 ```
 
+Note: You might need to add a reference to `System.ServiceModel.Activation`
+
 ### Step 3: Optionaly configure WCF response auto types
 
 Add the following to you `Web.config`.
