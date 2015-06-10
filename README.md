@@ -1,9 +1,11 @@
 SwaggerWcf ![nuget status](http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat)
 ==========
 
-Generates [Swagger](http://swagger.io/) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
+Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
 
 With an API described in Swagger you can use multiple Swagger tools like client generators, see [swagger-codegen](https://github.com/swagger-api/swagger-codegen) for more details.
+
+This project has started as a fork from [superstator/Swaggeratr](https://github.com/superstator/Swaggeratr) to implement version 2.0 of Swagger.
 
 ## Getting Started
 
