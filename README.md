@@ -7,7 +7,7 @@ With an API described in Swagger you can use multiple Swagger tools like client 
 
 ## Getting Started
 
-# Install SwaggerWcf package
+### Step 1: Install SwaggerWcf package
 
 ```
 
@@ -15,7 +15,7 @@ Install-Package SwaggerWcf
 
 ```
 
-# Configure WCF routes in `Global.asax`
+### Step 2: Configure WCF routes in `Global.asax`
 
 Add the route in the `Application_Start` method
 
@@ -30,7 +30,7 @@ protected void Application_Start(object sender, EventArgs e)
 
 ```
 
-# Optionaly configure WCF response auto types
+### Step 3: Optionaly configure WCF response auto types
 
 Add the following to you `Web.config`.
 This will allow the WCF service to accept requests and send replies based on the `Content-Type` headers.
@@ -50,7 +50,7 @@ This will allow the WCF service to accept requests and send replies based on the
   
 ```
 
-# Configure WCF services general information
+### Step 4: Configure WCF services general information
 
 Add the following to you `Web.config` and change the values accordingly
 
@@ -83,7 +83,7 @@ Notes:
 * make sure the `configSections` block is the first child of `configuration`
 * `tags` will be described further down
 
-# Decorate WCF services interfaces
+### Step 5: Decorate WCF services interfaces
 
 For each method, configure the `WebInvoke` or `WebGet` attribute, and add a `SwaggerWcfPath` attribute.
 
@@ -106,7 +106,7 @@ public interface IStore
 
 ```
 
-# Decorate WCF services class
+### Step 6: Decorate WCF services class
 
 Add the `SwaggerWcf` attribute to the class providing the base path for the service (the same as used in step 2).
 Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
@@ -131,7 +131,7 @@ public class BookStore : IStore
 
 ```
 
-# Optionaly decorate data types used in WCF services
+### Step 7: Optionaly decorate data types used in WCF services
 
 ```csharp
 
@@ -149,7 +149,7 @@ public class Book
 
 ```
 
-### Attributes
+## Attributes
 
 | Attribute              | Used in                                    | Description                   | Options                                                                                             |
 | ---------------------- |------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -161,7 +161,7 @@ public class Book
 | `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
 | `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
 
-### Tags
+## Tags
 
 Tags are used to create categories in Swagger UI.
 
@@ -172,6 +172,6 @@ Using the configuration from step 4, any elements with the tag `LowPerformance` 
 When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
 This will prevent this tag to be displayed in the Swagger output.
 
-### How to Improve It
+## How to Improve It
 
 Fork this project [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) and submit pull requests.
