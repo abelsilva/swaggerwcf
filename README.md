@@ -34,7 +34,7 @@ protected void Application_Start(object sender, EventArgs e)
 
 Note: You might need to add a reference to `System.ServiceModel.Activation`
 
-Edit `Web.config` and add the following inside the `system.serviceModel` block (if it doesn't exist yet)
+Edit `Web.config` and add the following (if it doesn't exist yet) inside the `system.serviceModel` block
 
 ```xml
 
