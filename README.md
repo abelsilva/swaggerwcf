@@ -120,11 +120,12 @@ public interface IStore
 
 ### Step 6: Decorate WCF services class
 
-Add the `SwaggerWcf` attribute to the class providing the base path for the service (the same as used in step 2).
+Add the `SwaggerWcf` and `AspNetCompatibilityRequirements` attributes to the class providing the base path for the service (the same as used in step 2).
 Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
 
 ```csharp
 
+[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
 [SwaggerWcf("/v1/rest")]
 public class BookStore : IStore
 {
@@ -143,7 +144,7 @@ public class BookStore : IStore
 
 ```
 
-### Step 7: Optionaly decorate data types used in WCF services
+### Step 7: Decorate data types used in WCF services
 
 ```csharp
 
@@ -160,6 +161,8 @@ public class Book
 }
 
 ```
+
+Note: make sure you add at least the `DataContract` and `DataMember` attributes in classes and properties
 
 ## Attributes
 
