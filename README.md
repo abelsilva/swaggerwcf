@@ -17,9 +17,9 @@ Install-Package SwaggerWcf
 
 ```
 
-### Step 2: Configure WCF routes in `Global.asax`
+### Step 2: Configure WCF routes
 
-Add the route in the `Application_Start` method
+Add the route in the `Application_Start` method inside `Global.asax`
 
 ```csharp
 
@@ -33,6 +33,14 @@ protected void Application_Start(object sender, EventArgs e)
 ```
 
 Note: You might need to add a reference to `System.ServiceModel.Activation`
+
+Edit `Web.config` and add the following inside the `system.serviceModel` block (if it doesn't exist yet)
+
+```xml
+
+<serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
+
+```
 
 ### Step 3: Optionaly configure WCF response auto types
 
