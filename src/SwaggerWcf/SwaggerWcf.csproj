@@ -79,8 +79,8 @@
     <Compile Include="Models\InfoLicense.cs" />
     <Compile Include="Models\InfoContact.cs" />
     <Compile Include="Models\Info.cs" />
-    <Compile Include="Endpoint.cs" />
-    <Compile Include="IEndpoint.cs" />
+    <Compile Include="SwaggerWcfEndpoint.cs" />
+    <Compile Include="ISwaggerWcfEndpoint.cs" />
     <Compile Include="Models\PathAction.cs" />
     <Compile Include="Support\Mapper.cs" />
     <Compile Include="Models\ParameterSchema.cs" />

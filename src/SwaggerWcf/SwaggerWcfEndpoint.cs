@@ -14,13 +14,13 @@ using SwaggerWcf.Support;
 namespace SwaggerWcf
 {
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-    public class Endpoint : IEndpoint
+    public class SwaggerWcfEndpoint : ISwaggerWcfEndpoint
     {
         private static Service Service
         { get; set; }
         private static int _initialized;
 
-        public Endpoint()
+        public SwaggerWcfEndpoint()
         {
             Init();
         }

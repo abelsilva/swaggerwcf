@@ -5,7 +5,7 @@ using System.ServiceModel.Web;
 namespace SwaggerWcf
 {
     [ServiceContract]
-    internal interface IEndpoint
+    internal interface ISwaggerWcfEndpoint
     {
         [OperationContract]
         [WebGet(UriTemplate = "/swagger.json", BodyStyle = WebMessageBodyStyle.Bare, ResponseFormat = WebMessageFormat.Json)]

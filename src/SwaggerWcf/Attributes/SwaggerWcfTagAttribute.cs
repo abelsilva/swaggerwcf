@@ -7,7 +7,7 @@ namespace SwaggerWcf.Attributes
     ///     Tags can be used to categorize in Swagger UI and to hide elements using configuration
     /// </summary>
     [AttributeUsage(
-        AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Property,
+        AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Parameter,
         AllowMultiple = true)]
     public class SwaggerWcfTagAttribute : Attribute
     {

@@ -1,106 +1,174 @@
-SwaggerWcf
+SwaggerWcf ![nuget status](http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat)
 ==========
 
-Swagger implementation for WCF REST services.
+Generates [Swagger](http://swagger.io/) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
+
+With an API described in Swagger you can use multiple Swagger tools like client generators, see [swagger-codegen](https://github.com/swagger-api/swagger-codegen) for more details.
 
 ## Getting Started
 
-You'll need two things - a "discovery" service that lets Swagger know what services are present, and an implemented service you want to make discoverable.
-
-### Scanner
-To create the discovery service, just add ```[Swaggerator.Scanner]``` to your RouteTable in Global.asax, like so: 
-```
-RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(Swaggerator.Scanner)));
-```
-The standard for Swagger services is to live under /api-docs, but you can put it wherever you like.
-
-### Swaggerizing
-To make your service visible to the discovery service, add the ```[Swaggerated]``` tag to a WCF service.
-```
-[Swaggerator.Attributes.Swaggerated("/rest","A RESTful WCF Service")]
-public class RESTful : IRESTful
-```
-Note this is the service implementation, not the DataContract inferface. WCF allows for multiple implementations of a single contract, so you need to add the ```[Swaggerated]``` attribute to a specific implementation for Swaggerator to know exactly what it going on. Other attributes like ```[OperationSummary]``` or ```[ResponseCode]``` can be applied to either implementation or declaration.
-
-The first argument is required - it tells Swagger where your service is actually hosted within your project.
-
-The second argument is optional. If you leave it off, Swaggerator will look for a ```[Description]``` annotation. If it can't find a description, the text will just be left blank.
-
-### Being Selective
-If you have aspects of your service you'd rather not advertise, the ```[Hidden]``` attribute is your friend. For instance, if you have a method that's only available to internal users, and your Swagger docs will be exposed to external users, just add ```[Hidden]``` to the method declaration, either in the DataContract (to apply to any implementation), or in a specific implementation.
-
-You can add the ```[Hidden]``` attribute to classes to keep them out of the ```models``` declaration. Note, if public methods use that type as a parameter or return type, the type name will still be visible there. Users just won't be able to see the types format.
-
-Lastly, you can add the ```[Hidden]``` attribute to a specific property of a type. The rest of the type will still be returned in the ```models``` section.
-
-If you want more finegrained control of display things, you can use the ```[Tag()]``` attribute to identify something, and then specify in configuration whether those things are visible or not. For instance, you could tag some special methods as "InternalUse", and then add the following to your production web.config:
+# Install SwaggerWcf package
 
 ```
-  <configSections>
-    <section name="swagger" type="Swaggerator.Configuration.SwaggerSection, Swaggerator" />
-  </configSections>
 
-  <swagger>
-    <tags>
-      <tag name="InternalUse" visible="false" />
-    </tags>
-  </swagger>
-```
-
-Meanwhile on your dev server, you'd set the visible property of the "InternalUse" tag to true, or leave it out of the config entirely. Note this does not prevent users accessing those methods if they aren't properly secured - it only prevents documentation for them being generated.
-
-### Optional Settings
-If you want to the method headers to show required query params, set "ShowRequiredQueryParamsInHeader" to true. If you want to show which methods are tagged, set "MarkTaggedMethods" to true (SwaggerWcf will apend "***" at the end of summary text).
+Install-Package SwaggerWcf
 
 ```
-  <swagger>
-    <tags>
-      <tag name="InternalUse" visible="false" />
-    </tags>
-    <settings>
-      <setting name="ShowRequiredQueryParamsInHeader" value="true"/>
-      <setting name="MarkTaggedMethods" value="true"/>
-    </settings>
-  </swagger>
+
+# Configure WCF routes in `Global.asax`
+
+Add the route in the `Application_Start` method
+
+```csharp
+
+protected void Application_Start(object sender, EventArgs e)
+{
+    // [.......]
+    
+    RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
+}
+
 ```
 
-### Markup
+# Optionaly configure WCF response auto types
 
-There are some other attributes that may come in handy as well, to add details to your documentation or to override default assumptions Swaggerator makes.
+Add the following to you `Web.config`.
+This will allow the WCF service to accept requests and send replies based on the `Content-Type` headers.
 
-```[OperationSummary]``` lets you set a summary string for a service method. In swagger-ui, these are displayed alongside the method url, before the method details have been expanded.
+```xml
 
-```[OperationNotes]``` lets you set a longer string describing a service method. In swagger-ui these are displayed after clicking to expand a method.
+<system.serviceModel>
+  <behaviors>
+    <endpointBehaviors>
+      <behavior>
+        <webHttp automaticFormatSelectionEnabled="true" />
+      </behavior>
+    </endpointBehaviors>
+    <!-- [.......] -->
+  </behaviors>
+</system.serviceModel>
+  
+```
 
-```[ResponseCode]``` lets you enumerate the various codes your method may return. An optional string gives details, i.e. "409 - Username is already taken"
+# Configure WCF services general information
 
-```[ParameterSettings]``` let you specifiy exactly how a method parameter works. By default swagger assumes all path parameters are required strings, all body parameters are required and typed, and all query parameters are optional string. Using parameter settings you can specify that a given query param is required, or that a path parameter should be an integer, etc.
+Add the following to you `Web.config` and change the values accordingly
 
-```[OverrideReturnType]``` lets you override the return type of a method. It is useful for documenting asynchronous methods.
+```xml
 
-```[MemberProperties]``` let you specify data type size information and description for a DataMember. For example, if you specify DataTypeNote property with "10" for a member that retunrs a string, it will display as "string(10)."
+<configSections>
+  <section name="swaggerwcf" type="SwaggerWcf.Configuration.SwaggerWcfSection, SwaggerWcf" />
+</configSections>
 
-```[Accepts]``` and ```[Produces]``` let you define the content-types your method will work with. By default Swaggerator will assume xml & json for all methods, but this will let you narrow to one specific format, or call out a streamed format like "image/jpg".
+<swaggerwcf>
+  <tags>
+    <tag name="LowPerformance" visible="false" />
+  </tags>
+  <settings>
+    <setting name="InfoDescription" value="Sample Service to test SwaggerWCF" />
+    <setting name="InfoVersion" value="0.0.1" />
+    <setting name="InfoTermsOfService" value="Terms of Service" />
+    <setting name="InfoTitle" value="SampleService" />
+    <setting name="InfoContactName" value="Abel Silva" />
+    <setting name="InfoContactUrl" value="http://github.com/abelsilva" />
+    <setting name="InfoContactEmail" value="no@e.mail" />
+    <setting name="InfoLicenseUrl" value="https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE" />
+    <setting name="InfoLicenseName" value="Apache License" />
+  </settings>
+</swaggerwcf>
 
-Attributes applied to the method implementation will override attributes applied to the method declaration.
+```
 
-### That's it!
+Notes:
+* make sure the `configSections` block is the first child of `configuration`
+* `tags` will be described further down
 
-Now get a Swagger-compliant tool, like swagger-ui, and point it at your newly swaggerized WCF service. By default, you'll point it at \<yourserver\>/api-docs.json, but if you modified the route in the first step above, make the appropriate adjustments. Happy swaggerizing!
+# Decorate WCF services interfaces
 
-### License
+For each method, configure the `WebInvoke` or `WebGet` attribute, and add a `SwaggerWcfPath` attribute.
 
+```csharp
 
-Copyright (c) 2014 Digimarc Corporation
+[ServiceContract]
+public interface IStore
+{
+    [SwaggerWcfPath("Create book", "Create a book on the store")]
+    [WebInvoke(UriTemplate = "/books",
+        BodyStyle = WebMessageBodyStyle.Bare,
+        Method = "POST",
+        RequestFormat = WebMessageFormat.Json,
+        ResponseFormat = WebMessageFormat.Json)]
+    [OperationContract]
+    Book CreateBook(Book value);
+    
+    // [.......]
+}
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+```
 
-http://www.apache.org/licenses/LICENSE-2.0
+# Decorate WCF services class
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Add the `SwaggerWcf` attribute to the class providing the base path for the service (the same as used in step 2).
+Optinally, for each method, add the 'SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
+
+```csharp
+
+[SwaggerWcf("/v1/rest")]
+public class BookStore : IStore
+{
+    [SwaggerWcfTag("Books")]
+    [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
+    [SwaggerWcfResponse(HttpStatusCode.BadRequest, "Bad request", true)]
+    [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
+        "Internal error (can be forced using ERROR_500 as book title)", true)]
+    public Book CreateBook(Book value)
+    {
+        // [.......]
+    }
+    
+    // [.......]
+}
+
+# Optionaly decorate data types used in WCF services
+
+```csharp
+
+[DataContract(Name = "book")]
+[Description("Book with title, first publish date, author and language")]
+[SwaggerWcfDefinition(ExternalDocsUrl = "http://en.wikipedia.org/wiki/Book", ExternalDocsDescription = "Description of a book")]
+public class Book
+{
+    [DataMember(Name = "id")]
+    [Description("Book ID")]
+    public string Id { get; set; }
+
+    // [.......]
+}
+
+```
+
+### Attributes
+
+| Attribute              | Used in                                    | Description                   | Options                                                                                             |
+| ---------------------- |------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `SwaggerWcf`           | `Class`, `Interface`                       | Enable parsing WCF service    | `ServicePath`                                                                                       |
+| `SwaggerWcfHidden`     | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger     |                                                                                                     |
+| `SwaggerWcfTag`        | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element       | `TagName`, `HideFromSpec`                                                                           |
+| `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
+| `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
+| `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
+| `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
+
+### Tags
+
+Tags are used to create categories in Swagger UI.
+
+In SwaggerWcf they can also be used to hide elements from the Swagger output using the `Web.config`.
+Using the configuration from step 4, any elements with the tag `LowPerformance` will be hidden from Swagger.
+
+When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
+This will prevent this tag to be displayed in the Swagger output.
+
+### How to Improve It
+
+Fork this project [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) and submit pull requests.
