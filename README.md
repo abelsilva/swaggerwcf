@@ -109,7 +109,7 @@ public interface IStore
 # Decorate WCF services class
 
 Add the `SwaggerWcf` attribute to the class providing the base path for the service (the same as used in step 2).
-Optinally, for each method, add the 'SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
+Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
 
 ```csharp
 
@@ -128,6 +128,8 @@ public class BookStore : IStore
     
     // [.......]
 }
+
+```
 
 # Optionaly decorate data types used in WCF services
 
@@ -164,6 +166,7 @@ public class Book
 Tags are used to create categories in Swagger UI.
 
 In SwaggerWcf they can also be used to hide elements from the Swagger output using the `Web.config`.
+
 Using the configuration from step 4, any elements with the tag `LowPerformance` will be hidden from Swagger.
 
 When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
