@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>$title$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://raw.githubusercontent.com/abelsilva/swaggerwcf/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>First initial release.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>swagger wcf .net c#</tags>
+  </metadata>
+</package>

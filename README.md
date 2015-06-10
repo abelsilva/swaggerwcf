@@ -165,12 +165,17 @@ public class Book
 
 Tags are used to create categories in Swagger UI.
 
-In SwaggerWcf they can also be used to hide elements from the Swagger output using the `Web.config`.
+In SwaggerWcf they can also be used to hide elements from the Swagger output using the `Web.config`
 
 Using the configuration from step 4, any elements with the tag `LowPerformance` will be hidden from Swagger.
 
 When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
 This will prevent this tag to be displayed in the Swagger output.
+
+## TODO
+
+* Add some options to configuration in `Web.config`
+* Tests
 
 ## How to Improve It
 
