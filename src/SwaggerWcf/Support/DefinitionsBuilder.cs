@@ -142,7 +142,7 @@ namespace SwaggerWcf.Support
 
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
 
-            var prop = new DefinitionProperty { Title = propertyInfo.Name };
+            var prop = new DefinitionProperty {Title = propertyInfo.Name};
 
             var dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
             if (dataMemberAttribute != null)
@@ -200,19 +200,7 @@ namespace SwaggerWcf.Support
 
         private static string GetEnumMemberValue(Type enumType, string enumName)
         {
-            if (string.IsNullOrWhiteSpace(enumName))
-                return null;
-
-            object value = Enum.Parse(enumType, enumName, true);
-
-            FieldInfo fieldInfo = value.GetType().GetField(value.ToString());
-
-            var enumMembeAttributes = fieldInfo.GetCustomAttributes(
-                typeof(EnumMemberAttribute), false) as EnumMemberAttribute[];
-
-            return (enumMembeAttributes != null && enumMembeAttributes.Any())
-                       ? enumMembeAttributes[0].Value
-                       : enumName;
+            return string.IsNullOrWhiteSpace(enumName) ? null : ((int) Enum.Parse(enumType, enumName, true)).ToString();
         }
     }
 }
