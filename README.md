@@ -1,9 +1,11 @@
 SwaggerWcf ![nuget status](http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat)
 ==========
 
-Generates [Swagger](http://swagger.io/) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
+Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
 
 With an API described in Swagger you can use multiple Swagger tools like client generators, see [swagger-codegen](https://github.com/swagger-api/swagger-codegen) for more details.
+
+This project has started as a fork from [superstator/Swaggeratr](https://github.com/superstator/Swaggeratr) to implement version 2.0 of Swagger.
 
 ## Getting Started
 
@@ -15,9 +17,9 @@ Install-Package SwaggerWcf
 
 ```
 
-### Step 2: Configure WCF routes in `Global.asax`
+### Step 2: Configure WCF routes
 
-Add the route in the `Application_Start` method
+Add the route in the `Application_Start` method inside `Global.asax`
 
 ```csharp
 
@@ -27,6 +29,16 @@ protected void Application_Start(object sender, EventArgs e)
     
     RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
 }
+
+```
+
+Note: You might need to add a reference to `System.ServiceModel.Activation`
+
+Edit `Web.config` and add the following (if it doesn't exist yet) inside the `system.serviceModel` block
+
+```xml
+
+<serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
 
 ```
 
@@ -108,11 +120,12 @@ public interface IStore
 
 ### Step 6: Decorate WCF services class
 
-Add the `SwaggerWcf` attribute to the class providing the base path for the service (the same as used in step 2).
+Add the `SwaggerWcf` and `AspNetCompatibilityRequirements` attributes to the class providing the base path for the service (the same as used in step 2).
 Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
 
 ```csharp
 
+[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
 [SwaggerWcf("/v1/rest")]
 public class BookStore : IStore
 {
@@ -131,7 +144,7 @@ public class BookStore : IStore
 
 ```
 
-### Step 7: Optionaly decorate data types used in WCF services
+### Step 7: Decorate data types used in WCF services
 
 ```csharp
 
@@ -148,6 +161,8 @@ public class Book
 }
 
 ```
+
+Note: make sure you add at least the `DataContract` and `DataMember` attributes in classes and properties
 
 ## Attributes
 
