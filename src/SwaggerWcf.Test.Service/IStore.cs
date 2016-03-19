@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Collections.Generic;
+using System.ServiceModel;
 using System.ServiceModel.Web;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Test.Service.Data;
@@ -62,7 +63,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfPath("Get authors", "Retrieve all authors from the store")]
         [WebGet(UriTemplate = "/authors", BodyStyle = WebMessageBodyStyle.Bare)]
         [OperationContract]
-        Author[] ReadAuthors();
+        IList<Author> ReadAuthors();
 
         [SwaggerWcfPath("Get author", "Retrieve an author from the store using its id")]
         [WebGet(UriTemplate = "/authors/{id}", BodyStyle = WebMessageBodyStyle.Bare,

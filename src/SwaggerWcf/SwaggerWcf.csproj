@@ -60,7 +60,6 @@
     <Compile Include="Models\DefinitionSchema.cs" />
     <Compile Include="Models\DefinitionProperty.cs" />
     <Compile Include="Models\InType.cs" />
-    <Compile Include="Properties\AssemblyConfiguration.cs" />
     <Compile Include="Attributes\SwaggerWcfHiddenAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfPathAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfParameterAttribute.cs" />

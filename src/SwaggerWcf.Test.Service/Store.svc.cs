@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.ServiceModel.Web;
@@ -260,7 +261,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfTag("Authors")]
         [SwaggerWcfResponse(200, "Authors found, values in the response body")]
         [SwaggerWcfResponse(204, "No authors", true)]
-        public Author[] ReadAuthors()
+        public IList<Author> ReadAuthors()
         {
             WebOperationContext woc = WebOperationContext.Current;
 
@@ -270,7 +271,7 @@ namespace SwaggerWcf.Test.Service
             if (Store.Authors.Any())
             {
                 woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
-                return Store.Authors.ToArray();
+                return Store.Authors;
             }
 
             woc.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
