@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
 using System.Text;
 using System.Threading;
-using SwaggerWcf.Configuration;
 using SwaggerWcf.Models;
 using SwaggerWcf.Support;
 
@@ -16,8 +13,7 @@ namespace SwaggerWcf
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class SwaggerWcfEndpoint : ISwaggerWcfEndpoint
     {
-        private static Service Service
-        { get; set; }
+        private static Service Service { get; set; }
         private static int _initialized;
 
         public SwaggerWcfEndpoint()
@@ -62,24 +58,26 @@ namespace SwaggerWcf
             if (string.IsNullOrWhiteSpace(content))
             {
                 string swaggerUrl = woc.IncomingRequest.UriTemplateMatch.BaseUri + "/swagger.json";
-                woc.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.Redirect;
+                woc.OutgoingResponse.StatusCode = HttpStatusCode.Redirect;
                 woc.OutgoingResponse.Location = "index.html?url=" + swaggerUrl;
                 return null;
             }
 
-            string filename = content.Contains("?") ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal)) : content;
+            string filename = content.Contains("?")
+                                  ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
+                                  : content;
 
             string contentType;
             long contentLength;
-            var stream = Support.StaticContent.GetFile(filename, out contentType, out contentLength);
+            Stream stream = Support.StaticContent.GetFile(filename, out contentType, out contentLength);
 
             if (stream == Stream.Null)
             {
-                woc.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.NotFound;
+                woc.OutgoingResponse.StatusCode = HttpStatusCode.NotFound;
                 return null;
             }
 
-            woc.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.OK;
+            woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
             woc.OutgoingResponse.ContentLength = contentLength;
             woc.OutgoingResponse.ContentType = contentType;
 

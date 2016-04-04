@@ -12,7 +12,8 @@ namespace SwaggerWcf.Test.Service
         #region /books
 
         [SwaggerWcfPath("Create book", "Create a book on the store")]
-        [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Bare, Method = "POST",
+        // default Method for WebInvoke is POST
+        [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Bare, //Method = "POST",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [OperationContract]
         Book CreateBook([SwaggerWcfParameter(Description = "Book to be created, the id will be replaced")] Book value);
@@ -41,7 +42,7 @@ namespace SwaggerWcf.Test.Service
         [WebInvoke(UriTemplate = "/books/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]
         [OperationContract]
         void DeleteBook(string id);
-        
+
         [SwaggerWcfPath("Get book author", "Retrieve the author of a book using the book id")]
         [WebGet(UriTemplate = "/books/{id}/author", BodyStyle = WebMessageBodyStyle.Bare,
             RequestFormat = WebMessageFormat.Json,
@@ -86,7 +87,7 @@ namespace SwaggerWcf.Test.Service
         [WebInvoke(UriTemplate = "/authors/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]
         [OperationContract]
         void DeleteAuthor(string id);
-        
+
         [SwaggerWcfPath("Get author books", "Retrieve the author books using the author id")]
         [WebGet(UriTemplate = "/authors/{id}/books", BodyStyle = WebMessageBodyStyle.Bare,
             RequestFormat = WebMessageFormat.Json,
@@ -95,7 +96,7 @@ namespace SwaggerWcf.Test.Service
         Book[] ReadAuthorBooks(string id);
 
         #endregion
-        
+
         #region /languages
 
         [SwaggerWcfPath("Create language", "Create an language on the store")]
@@ -122,10 +123,10 @@ namespace SwaggerWcf.Test.Service
             RequestFormat = WebMessageFormat.Json)]
         [OperationContract]
         void UpdateLanguage(string id,
-                          [SwaggerWcfParameter(
-                              Description =
-                              "Language to be updated, make sure the id in the language matches the id in the path parameter"
-                              )] Language value);
+                            [SwaggerWcfParameter(
+                                Description =
+                                "Language to be updated, make sure the id in the language matches the id in the path parameter"
+                                )] Language value);
 
         [SwaggerWcfPath("Delete language", "Delete an language on the store")]
         [WebInvoke(UriTemplate = "/languages/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]

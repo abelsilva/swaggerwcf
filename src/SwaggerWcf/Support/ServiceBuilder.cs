@@ -22,9 +22,10 @@ namespace SwaggerWcf.Support
         private static Service BuildService()
         {
             const string sectionName = "swaggerwcf";
-            var config = (SwaggerWcfSection) (ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
-            var definitionsTypesList = new List<Type>();
-            var service = new Service();
+            SwaggerWcfSection config =
+                (SwaggerWcfSection) (ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
+            List<Type> definitionsTypesList = new List<Type>();
+            Service service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
 
@@ -87,7 +88,6 @@ namespace SwaggerWcf.Support
                 service.Info.License.Url = settings["InfoLicenseUrl"];
             if (settings.ContainsKey("InfoLicenseName"))
                 service.Info.License.Name = settings["InfoLicenseName"];
-            
         }
 
         private static void BuildPaths(Service service, IList<string> hiddenTags, IList<Type> definitionsTypesList)
@@ -110,11 +110,11 @@ namespace SwaggerWcf.Support
 
                 foreach (TypeInfo ti in types)
                 {
-                    var da = ti.GetCustomAttribute<SwaggerWcfAttribute>();
+                    SwaggerWcfAttribute da = ti.GetCustomAttribute<SwaggerWcfAttribute>();
                     if (da == null || hiddenTags.Any(ht => ht == ti.AsType().Name))
                         continue;
 
-                    var mapper = new Mapper(hiddenTags);
+                    Mapper mapper = new Mapper(hiddenTags);
 
                     IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, ti.AsType(), definitionsTypesList);
                     service.Paths.AddRange(paths);

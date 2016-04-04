@@ -21,12 +21,6 @@ namespace SwaggerWcf.Support
 
         internal readonly IEnumerable<string> HiddenTags;
 
-        /// <summary>
-        ///     Find methods of the supplied type which have WebGet or WebInvoke attributes.
-        /// </summary>
-        /// <param name="basePath">Base service basePath.</param>
-        /// <param name="serviceType">The implementation type to search.</param>
-        /// <param name="definitionsTypesList">Types to be documented in the models section.</param>
         internal IEnumerable<Path> FindMethods(string basePath, Type serviceType, IList<Type> definitionsTypesList)
         {
             List<Path> paths = new List<Path>();
@@ -36,16 +30,24 @@ namespace SwaggerWcf.Support
                 basePath = basePath + "/";
 
             //search all interfaces for this type for potential DataContracts, and build a set of items
-            Type[] interfaces = serviceType.GetInterfaces();
-            foreach (Type i in interfaces)
+            List<Type> types = serviceType.GetInterfaces().ToList();
+            types.Add(serviceType);
+            foreach (Type i in types)
             {
-                Attribute dc = i.GetCustomAttribute(typeof (ServiceContractAttribute));
+                Attribute dc = i.GetCustomAttribute(typeof(ServiceContractAttribute));
                 if (dc == null)
                     continue;
 
                 //found a DataContract, now get a service map and inspect the methods for WebGet/WebInvoke
-                InterfaceMapping map = serviceType.GetInterfaceMap(i);
-                pathActions.AddRange(GetActions(map, definitionsTypesList));
+                if (i.IsInterface)
+                {
+                    InterfaceMapping map = serviceType.GetInterfaceMap(i);
+                    pathActions.AddRange(GetActions(map.TargetMethods, map.InterfaceMethods, definitionsTypesList));
+                }
+                else
+                {
+                    pathActions.AddRange(GetActions(i.GetMethods(), i.GetMethods(), definitionsTypesList));
+                }
             }
 
             foreach (Tuple<string, PathAction> pathAction in pathActions)
@@ -80,19 +82,15 @@ namespace SwaggerWcf.Support
             return path;
         }
 
-        /// <summary>
-        ///     Constructs individual operation objects based on the service implementation.
-        /// </summary>
-        /// <param name="map">Mapping of the service interface & implementation.</param>
-        /// <param name="definitionsTypesList">Complex types that will need later processing.</param>
-        internal IEnumerable<Tuple<string, PathAction>> GetActions(InterfaceMapping map,
+        internal IEnumerable<Tuple<string, PathAction>> GetActions(MethodInfo[] targetMethods,
+                                                                   MethodInfo[] interfaceMethods,
                                                                    IList<Type> definitionsTypesList)
         {
-            int methodsCounts = map.InterfaceMethods.Count();
+            int methodsCounts = interfaceMethods.Count();
             for (int index = 0; index < methodsCounts; index++)
             {
-                MethodInfo implementation = map.TargetMethods[index];
-                MethodInfo declaration = map.InterfaceMethods[index];
+                MethodInfo implementation = targetMethods[index];
+                MethodInfo declaration = interfaceMethods[index];
 
                 //if the method is marked Hidden anywhere, skip it
                 if (implementation.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
@@ -104,6 +102,7 @@ namespace SwaggerWcf.Support
                     implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().ToList();
                 methodTags =
                     methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
+                methodTags = methodTags.Distinct().ToList();
 
                 if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                     continue;
@@ -114,7 +113,7 @@ namespace SwaggerWcf.Support
                 if (wg == null && wi == null)
                     continue;
 
-                string httpMethod = (wi == null) ? "GET" : wi.Method;
+                string httpMethod = (wi == null) ? "GET" : wi.Method ?? "POST";
                 string uriTemplate = (wi == null) ? (wg.UriTemplate ?? "") : (wi.UriTemplate ?? "");
 
                 //implementation description overrides interface description
@@ -137,9 +136,9 @@ namespace SwaggerWcf.Support
 
                 string externalDocsDescription =
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation,
-                        "ExternalDocsDescription") ??
+                                                                                     "ExternalDocsDescription") ??
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration,
-                        "ExternalDocsDescription") ??
+                                                                                     "ExternalDocsDescription") ??
                     "";
 
                 string externalDocsUrl =
@@ -206,7 +205,7 @@ namespace SwaggerWcf.Support
                         continue;
 
                     operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
-                        definitionsTypesList));
+                                                          definitionsTypesList));
                 }
                 string uri = declaration.Name;
 
@@ -261,7 +260,7 @@ namespace SwaggerWcf.Support
                     definitionsTypesList.Add(parameter.ParameterType);
                 }
                 typeFormat = new TypeFormat(ParameterType.Object,
-                    HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+                                            HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
 
                 return new ParameterSchema
                 {
@@ -314,8 +313,8 @@ namespace SwaggerWcf.Support
                 return InType.Path;
 
             return (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                ? InType.Path
-                : InType.Query;
+                       ? InType.Path
+                       : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
@@ -334,7 +333,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -355,7 +354,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -403,7 +402,7 @@ namespace SwaggerWcf.Support
 
         private Schema BuildSchema(Type type, IList<Type> definitionsTypesList)
         {
-            if (type == typeof (void))
+            if (type == typeof(void))
                 return null;
 
             TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
@@ -439,11 +438,11 @@ namespace SwaggerWcf.Support
             if (type == null)
                 return null;
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 return type.GetGenericArguments()[0];
 
             Type iface = (from i in type.GetInterfaces()
-                          where i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEnumerable<>)
+                          where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                           select i).FirstOrDefault();
 
             return iface == null ? null : GetEnumerableType(iface);
