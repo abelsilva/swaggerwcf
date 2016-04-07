@@ -13,7 +13,8 @@ namespace SwaggerWcf.Models
         public string Description { get; set; }
 
         public bool Required { get; set; }
-
+        
         public abstract void Serialize(JsonWriter writer);
+        public abstract void Serialize(JsonWriter writer, bool skipStartEndObject);
     }
 }

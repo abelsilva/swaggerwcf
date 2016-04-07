@@ -26,7 +26,7 @@ namespace SwaggerWcf.Models
 
             if (Items != null)
             {
-                Items.Serialize(writer);
+                Items.Serialize(writer, true);
             }
 
             writer.WriteEndObject();

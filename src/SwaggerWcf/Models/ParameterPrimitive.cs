@@ -44,7 +44,7 @@ namespace SwaggerWcf.Models
         public int MaxItems { get; set; }
 
         public int MinItems { get; set; }
-        
+
         public bool UniqueItems { get; set; }
 
         public List<string> Enum { get; set; }
@@ -53,7 +53,12 @@ namespace SwaggerWcf.Models
 
         public override void Serialize(JsonWriter writer)
         {
-            writer.WriteStartObject();
+            Serialize(writer, false);
+        }
+        public override void Serialize(JsonWriter writer, bool skipStartEndObject)
+        {
+            if (!skipStartEndObject)
+                writer.WriteStartObject();
 
             if (!string.IsNullOrWhiteSpace(Name))
             {
@@ -164,8 +169,9 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("multipleOf");
                 writer.WriteValue(MultipleOf);
             }
-            
-            writer.WriteEndObject();
+
+            if (!skipStartEndObject)
+                writer.WriteEndObject();
         }
     }
 }

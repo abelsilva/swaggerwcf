@@ -9,7 +9,12 @@ namespace SwaggerWcf.Models
 
         public override void Serialize(JsonWriter writer)
         {
-            writer.WriteStartObject();
+            Serialize(writer, false);
+        }
+        public override void Serialize(JsonWriter writer, bool skipStartEndObject)
+        {
+            if (!skipStartEndObject)
+                writer.WriteStartObject();
 
             if (!string.IsNullOrWhiteSpace(Name))
             {
@@ -41,8 +46,9 @@ namespace SwaggerWcf.Models
 
                 writer.WriteEndObject();
             }
-            
-            writer.WriteEndObject();
+
+            if (!skipStartEndObject)
+                writer.WriteEndObject();
         }
     }
 }

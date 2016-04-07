@@ -254,6 +254,35 @@ namespace SwaggerWcf.Support
 
             if (inType == InType.Body)
             {
+                if (typeFormat.Type == ParameterType.Array)
+                {
+                    Type t = parameter.ParameterType.GetElementType();
+                    ParameterPrimitive arrayParam = new ParameterPrimitive
+                    {
+                        Name = name,
+                        Description = description,
+                        In = inType,
+                        Required = required,
+                        TypeFormat = typeFormat,
+                        Items = new ParameterItems
+                        {
+                            Items = new ParameterSchema
+                            {
+                                SchemaRef = t.FullName
+                            }
+                        },
+                        CollectionFormat = CollectionFormat.Csv
+                    };
+
+                    //it's a complex type, so we'll need to map it later
+                    if (definitionsTypesList != null && !definitionsTypesList.Contains(t))
+                    {
+                        definitionsTypesList.Add(t);
+                    }
+
+                    return arrayParam;
+                }
+
                 //it's a complex type, so we'll need to map it later
                 if (definitionsTypesList != null && !definitionsTypesList.Contains(parameter.ParameterType))
                 {
@@ -280,24 +309,6 @@ namespace SwaggerWcf.Support
                 Required = required,
                 TypeFormat = typeFormat
             };
-
-            if (typeFormat.Type == ParameterType.Array)
-            {
-                Type t = parameter.ParameterType.GetElementType();
-                param.Items = new ParameterItems
-                {
-                    TypeFormat = new TypeFormat
-                    {
-                        Type = ParameterType.Object,
-                        Format = t.FullName
-                    },
-                    Items = new ParameterSchema
-                    {
-                        SchemaRef = t.FullName
-                    }
-                };
-                param.CollectionFormat = CollectionFormat.Csv;
-            }
 
             return param;
         }

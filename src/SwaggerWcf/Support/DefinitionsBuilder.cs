@@ -13,9 +13,10 @@ namespace SwaggerWcf.Support
     {
         public static List<Definition> Process(IList<string> hiddenTags, List<Type> definitionsTypes)
         {
-            var definitions = new List<Definition>();
-            var processedTypes = new List<Type>();
-            var typesStack = new Stack<Type>(definitionsTypes.GroupBy(t => t.FullName).Select(grp => grp.First()));
+            List<Definition> definitions = new List<Definition>();
+            List<Type> processedTypes = new List<Type>();
+            Stack<Type> typesStack =
+                new Stack<Type>(definitionsTypes.GroupBy(t => t.FullName).Select(grp => grp.First()));
 
             while (typesStack.Any())
             {
@@ -59,7 +60,7 @@ namespace SwaggerWcf.Support
         private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags,
                                                           Stack<Type> typesStack)
         {
-            var schema = new DefinitionSchema
+            DefinitionSchema schema = new DefinitionSchema
             {
                 Name = definitionType.FullName
             };
@@ -90,11 +91,12 @@ namespace SwaggerWcf.Support
 
         private static void ProcessTypeAttributes(Type definitionType, DefinitionSchema schema)
         {
-            var descAttr = definitionType.GetCustomAttribute<DescriptionAttribute>();
+            DescriptionAttribute descAttr = definitionType.GetCustomAttribute<DescriptionAttribute>();
             if (descAttr != null)
                 schema.Description = descAttr.Description;
 
-            var definitionAttr = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+            SwaggerWcfDefinitionAttribute definitionAttr =
+                definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
             if (definitionAttr != null)
             {
                 if (!string.IsNullOrWhiteSpace(definitionAttr.ExternalDocsDescription) ||
@@ -134,17 +136,16 @@ namespace SwaggerWcf.Support
         {
             if (propertyInfo.GetCustomAttribute<DataMemberAttribute>() == null
                 || propertyInfo.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null
-                ||
-                propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>()
-                            .Select(t => t.TagName)
-                            .Any(hiddenTags.Contains))
+                || propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>()
+                               .Select(t => t.TagName)
+                               .Any(hiddenTags.Contains))
                 return null;
 
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
 
-            var prop = new DefinitionProperty {Title = propertyInfo.Name};
+            DefinitionProperty prop = new DefinitionProperty {Title = propertyInfo.Name};
 
-            var dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+            DataMemberAttribute dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
             if (dataMemberAttribute != null)
             {
                 if (!string.IsNullOrEmpty(dataMemberAttribute.Name))
@@ -153,7 +154,7 @@ namespace SwaggerWcf.Support
                 prop.Required = dataMemberAttribute.IsRequired;
             }
 
-            var descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
+            DescriptionAttribute descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
             if (descriptionAttribute != null)
                 prop.Description = descriptionAttribute.Description;
 
