@@ -23,11 +23,15 @@ namespace SwaggerWcf.Support
 
         internal IEnumerable<Path> FindMethods(string basePath, Type serviceType, IList<Type> definitionsTypesList)
         {
+            bool addedSlash = false;
             List<Path> paths = new List<Path>();
             List<Tuple<string, PathAction>> pathActions = new List<Tuple<string, PathAction>>();
 
             if (!basePath.EndsWith("/"))
+            {
+                addedSlash = true;
                 basePath = basePath + "/";
+            }
 
             //search all interfaces for this type for potential DataContracts, and build a set of items
             List<Type> types = serviceType.GetInterfaces().ToList();
@@ -52,7 +56,11 @@ namespace SwaggerWcf.Support
 
             foreach (Tuple<string, PathAction> pathAction in pathActions)
             {
-                GetPath(basePath, pathAction.Item1, paths).Actions.Add(pathAction.Item2);
+                string path = basePath;
+                if (string.IsNullOrWhiteSpace(pathAction.Item1) && addedSlash)
+                    path = path.Substring(0, path.Length - 1);
+
+                GetPath(path, pathAction.Item1, paths).Actions.Add(pathAction.Item2);
             }
 
             return paths;
@@ -63,11 +71,11 @@ namespace SwaggerWcf.Support
             string id = basePath;
             if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
                 id += pathUrl.Substring(1);
-            else if (!basePath.EndsWith("/") && !pathUrl.StartsWith("/"))
+            else if (!basePath.EndsWith("/") && !string.IsNullOrWhiteSpace(pathUrl) && !pathUrl.StartsWith("/"))
                 id += "/" + pathUrl;
             else
                 id += pathUrl;
-
+            
             Path path = paths.FirstOrDefault(p => p.Id == id);
             if (path == null)
             {
@@ -136,9 +144,9 @@ namespace SwaggerWcf.Support
 
                 string externalDocsDescription =
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation,
-                                                                                     "ExternalDocsDescription") ??
+                        "ExternalDocsDescription") ??
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration,
-                                                                                     "ExternalDocsDescription") ??
+                        "ExternalDocsDescription") ??
                     "";
 
                 string externalDocsUrl =
@@ -205,19 +213,16 @@ namespace SwaggerWcf.Support
                         continue;
 
                     operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
-                                                          definitionsTypesList));
+                        definitionsTypesList));
                 }
-                string uri = declaration.Name;
 
                 if (!string.IsNullOrWhiteSpace(uriTemplate))
                 {
                     int indexOfQuestionMark = uriTemplate.IndexOf('?');
-                    if (indexOfQuestionMark < 0)
-                        uri = uriTemplate;
-                    else
-                        uri = uriTemplate.Substring(0, indexOfQuestionMark);
+                    if (indexOfQuestionMark >= 0)
+                        uriTemplate = uriTemplate.Substring(0, indexOfQuestionMark);
                 }
-                yield return new Tuple<string, PathAction>(uri, operation);
+                yield return new Tuple<string, PathAction>(uriTemplate, operation);
             }
         }
 
@@ -289,7 +294,7 @@ namespace SwaggerWcf.Support
                     definitionsTypesList.Add(parameter.ParameterType);
                 }
                 typeFormat = new TypeFormat(ParameterType.Object,
-                                            HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+                    HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
 
                 return new ParameterSchema
                 {
@@ -324,8 +329,8 @@ namespace SwaggerWcf.Support
                 return InType.Path;
 
             return (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                       ? InType.Path
-                       : InType.Query;
+                ? InType.Path
+                : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
