@@ -2,6 +2,7 @@
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Threading.Tasks;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Test.Service.Data;
 
@@ -12,7 +13,7 @@ namespace SwaggerWcf.Test.Service
     public class SecondStore
     {
         [SwaggerWcfPath("Get book", "Retrieve a book from the store using its id")]
-        [WebGet(UriTemplate = "", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json,
+        [WebGet(UriTemplate = "/{id}?year={year}", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         [OperationContract]
         [SwaggerWcfTag("Books")]
@@ -20,7 +21,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfResponse(HttpStatusCode.NotFound, "Book not found", true)]
         [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
             "Internal error (can be forced using ERROR_500 as book id)", true)]
-        public Book ReadBook(string id)
+        public Task<Book> ReadBook(string id, int year = 0)
         {
             WebOperationContext woc = WebOperationContext.Current;
 
@@ -31,7 +32,7 @@ namespace SwaggerWcf.Test.Service
             if (book != null)
             {
                 woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
-                return book;
+                return Task.FromResult(book);
             }
 
             if (id == "ERROR_500")
