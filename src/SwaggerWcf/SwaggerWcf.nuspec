@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fix for Task&lt;T&gt; return types</releaseNotes>
+    <releaseNotes>Fix for NullPointer exception in DefinitionsBuilder.ProcessProperties</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>

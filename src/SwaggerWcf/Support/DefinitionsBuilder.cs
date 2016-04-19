@@ -125,8 +125,12 @@ namespace SwaggerWcf.Support
                     continue;
 
                 if (prop.Required)
-                    schema.Required.Add(prop.Title);
+                {
+                    if (schema.Required == null)
+                        schema.Required = new List<string>();
 
+                    schema.Required.Add(prop.Title);
+                }
                 schema.Properties.Add(prop);
             }
         }
