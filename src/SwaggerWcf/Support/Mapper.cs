@@ -38,7 +38,7 @@ namespace SwaggerWcf.Support
             types.Add(serviceType);
             foreach (Type i in types)
             {
-                Attribute dc = i.GetCustomAttribute(typeof (ServiceContractAttribute));
+                Attribute dc = i.GetCustomAttribute(typeof(ServiceContractAttribute));
                 if (dc == null)
                     continue;
 
@@ -141,6 +141,12 @@ namespace SwaggerWcf.Support
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "OperationId") ??
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "OperationId") ??
                     "";
+                if (operationId == "")
+                {
+                    if (implementation.DeclaringType != null)
+                        operationId = implementation.DeclaringType.FullName + ".";
+                    operationId += implementation.Name;
+                }
 
                 string externalDocsDescription =
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation,
@@ -349,7 +355,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -370,7 +376,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -418,10 +424,10 @@ namespace SwaggerWcf.Support
 
         private Schema BuildSchema(Type type, IList<Type> definitionsTypesList)
         {
-            if (type == typeof (void))
+            if (type == typeof(void))
                 return null;
 
-            if (type.BaseType == typeof (System.Threading.Tasks.Task))
+            if (type.BaseType == typeof(System.Threading.Tasks.Task))
                 type = GetTaskInnerType(type);
 
             TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
@@ -457,7 +463,7 @@ namespace SwaggerWcf.Support
             if (type == null)
                 return null;
 
-            return type.BaseType == typeof (System.Threading.Tasks.Task) ? type.GetGenericArguments()[0] : type;
+            return type.BaseType == typeof(System.Threading.Tasks.Task) ? type.GetGenericArguments()[0] : type;
         }
 
         public static Type GetEnumerableType(Type type)
@@ -465,11 +471,11 @@ namespace SwaggerWcf.Support
             if (type == null)
                 return null;
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 return type.GetGenericArguments()[0];
 
             Type iface = (from i in type.GetInterfaces()
-                          where i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEnumerable<>)
+                          where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                           select i).FirstOrDefault();
 
             return iface == null ? null : GetEnumerableType(iface);

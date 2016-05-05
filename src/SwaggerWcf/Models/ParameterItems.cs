@@ -8,6 +8,8 @@ namespace SwaggerWcf.Models
         public TypeFormat TypeFormat { get; set; }
 
         public ParameterBase Items { get; set; }
+        
+        public string Ref { get; set; }
 
         public void Serialize(JsonWriter writer)
         {
@@ -22,6 +24,12 @@ namespace SwaggerWcf.Models
                     writer.WritePropertyName("format");
                     writer.WriteValue(TypeFormat.Format);
                 }
+            }
+            
+            if (!string.IsNullOrWhiteSpace(Ref))
+            {
+                writer.WritePropertyName("$ref");
+                writer.WriteValue(string.Format("#/definitions/{0}", Ref));
             }
 
             if (Items != null)

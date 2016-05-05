@@ -13,6 +13,9 @@ namespace SwaggerWcf.Support
     {
         public static List<Definition> Process(IList<string> hiddenTags, List<Type> definitionsTypes)
         {
+            if (definitionsTypes == null || !definitionsTypes.Any())
+                return new List<Definition>(0);
+
             List<Definition> definitions = new List<Definition>();
             List<Type> processedTypes = new List<Type>();
             Stack<Type> typesStack =
@@ -29,18 +32,6 @@ namespace SwaggerWcf.Support
             }
 
             return definitions;
-            //TODO: think about inheritance
-            //only pass immediate class properties at a time to write properties in the order of inheritance from base. (i.e. base first, derived next.) 
-            //get a stack of class types within the passed type so that the base class comes at the top.
-            //var classStack = new Stack<Type>();
-            //foreach (
-            //    PropertyInfo propertyInfo in
-            //        properties.Where(propertyInfo => !classStack.Contains(propertyInfo.DeclaringType)))
-            //{
-            //    classStack.Push(propertyInfo.DeclaringType);
-            //}
-            // to get properties only from current class:
-            //IEnumerable<PropertyInfo> propertiesToWrite = classType.properties.Where(p => p.DeclaringType == classType)
         }
 
         private static bool IsHidden(Type type, IList<string> hiddenTags)
@@ -76,6 +67,16 @@ namespace SwaggerWcf.Support
                 foreach (string enumName in listOfEnumNames)
                 {
                     schema.Enum.Add(GetEnumMemberValue(definitionType, enumName));
+                }
+            }
+            else if (schema.TypeFormat.Type == ParameterType.Array)
+            {
+                Type t = GetEnumerableType(definitionType);
+
+                if (t != null)
+                {
+                    schema.Ref = t.FullName;
+                    typesStack.Push(t);
                 }
             }
             else
@@ -124,6 +125,22 @@ namespace SwaggerWcf.Support
                 if (prop == null)
                     continue;
 
+                if (prop.TypeFormat.Type == ParameterType.Array)
+                {
+                    Type propType = propertyInfo.PropertyType;
+
+                    Type t = propType.GetElementType() ?? GetEnumerableType(propType);
+
+                    if (t != null)
+                    {
+                        //prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, HttpUtility.HtmlEncode(t.FullName));
+                        prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, null);
+
+                        prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
+                        prop.Items.Ref = t.FullName;
+                    }
+                }
+
                 if (prop.Required)
                 {
                     if (schema.Required == null)
@@ -133,6 +150,21 @@ namespace SwaggerWcf.Support
                 }
                 schema.Properties.Add(prop);
             }
+        }
+
+        public static Type GetEnumerableType(Type type)
+        {
+            if (type == null)
+                return null;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return type.GetGenericArguments()[0];
+
+            Type iface = (from i in type.GetInterfaces()
+                          where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                          select i).FirstOrDefault();
+
+            return iface == null ? null : GetEnumerableType(iface);
         }
 
         private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags,

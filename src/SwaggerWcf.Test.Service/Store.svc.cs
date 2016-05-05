@@ -380,7 +380,7 @@ namespace SwaggerWcf.Test.Service
         #endregion
 
         #region /languages
-        
+
         [SwaggerWcfHidden]
         [SwaggerWcfTag("Languages")]
         [SwaggerWcfResponse(201, "Language created, value in the response body with id updated")]
@@ -390,7 +390,7 @@ namespace SwaggerWcf.Test.Service
         {
             throw new NotImplementedException();
         }
-        
+
         [SwaggerWcfHidden]
         [SwaggerWcfTag("Languages")]
         [SwaggerWcfResponse(200, "Language found, value in the response body")]
@@ -410,11 +410,11 @@ namespace SwaggerWcf.Test.Service
 
             if (woc == null)
                 return null;
-            
-                woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
-                return Enum.GetValues(typeof(Language)).Cast<Language>().ToArray();
+
+            woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
+            return Enum.GetValues(typeof(Language)).Cast<Language>().ToArray();
         }
-        
+
         [SwaggerWcfHidden]
         [SwaggerWcfTag("Languages")]
         [SwaggerWcfResponse(204, "Language updated")]
@@ -425,7 +425,7 @@ namespace SwaggerWcf.Test.Service
         {
             throw new NotImplementedException();
         }
-        
+
         [SwaggerWcfHidden]
         [SwaggerWcfTag("Languages")]
         [SwaggerWcfResponse(204, "Language deleted")]

@@ -63,7 +63,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SecondStore.svc" />
     <Content Include="Store.svc" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
@@ -73,9 +72,6 @@
     <Compile Include="Data\Book.cs" />
     <Compile Include="Data\Language.cs" />
     <Compile Include="Data\Store.cs" />
-    <Compile Include="SecondStore.svc.cs">
-      <DependentUpon>SecondStore.svc</DependentUpon>
-    </Compile>
     <Compile Include="Store.svc.cs">
       <DependentUpon>Store.svc</DependentUpon>
     </Compile>
