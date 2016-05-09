@@ -94,9 +94,15 @@ namespace SwaggerWcf.Support
             {
                 return new TypeFormat(ParameterType.String, "enum");
             }
-
+            
             //it's a collection/array, so it will use the swagger "container" syntax
             if (type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            {
+                return new TypeFormat(ParameterType.Array, null);
+            }
+
+            //it's a collection/array, so it will use the swagger "container" syntax
+            if (type.GetInterfaces().Any(i => i == typeof(System.Collections.IEnumerable)))
             {
                 return new TypeFormat(ParameterType.Array, null);
             }
