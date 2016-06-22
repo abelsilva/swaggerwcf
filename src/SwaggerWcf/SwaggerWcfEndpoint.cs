@@ -10,6 +10,8 @@ using SwaggerWcf.Support;
 
 namespace SwaggerWcf
 {
+    public delegate Stream GetFileCustomDelegate(string filename, out string contentType, out long contentLength);
+
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class SwaggerWcfEndpoint : ISwaggerWcfEndpoint
     {
@@ -27,6 +29,17 @@ namespace SwaggerWcf
                 return;
 
             Service = ServiceBuilder.Build();
+        }
+
+        public static void SetCustomZip(Stream customSwaggerUiZipStream)
+        {
+            if (customSwaggerUiZipStream != null)
+                Support.StaticContent.SetArchiveCustom(customSwaggerUiZipStream);
+        }
+
+        public static void SetCustomGetFile(GetFileCustomDelegate getFileCustom)
+        {
+            Support.StaticContent.GetFileCustom = getFileCustom;
         }
 
         public static void Configure(Info info)
@@ -64,8 +77,8 @@ namespace SwaggerWcf
             }
 
             string filename = content.Contains("?")
-                                  ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
-                                  : content;
+                ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
+                : content;
 
             string contentType;
             long contentLength;

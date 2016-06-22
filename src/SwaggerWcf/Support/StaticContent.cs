@@ -9,6 +9,9 @@ namespace SwaggerWcf.Support
     {
         private const string ZipFileName = "SwaggerWcf.www.swagger-ui.zip";
         private static readonly ZipArchive Archive;
+        private static ZipArchive _archiveCustom;
+
+        internal static GetFileCustomDelegate GetFileCustom;
 
         static StaticContent()
         {
@@ -22,23 +25,50 @@ namespace SwaggerWcf.Support
 
                 Archive = new ZipArchive(zipStream);
             }
-            catch
+            catch { }
+        }
+
+        internal static void SetArchiveCustom(Stream zipCustomStream)
+        {
+            try
             {
+                if (zipCustomStream == null)
+                    return;
+
+                _archiveCustom = new ZipArchive(zipCustomStream);
             }
+            catch { }
         }
 
         public static Stream GetFile(string filename, out string contentType, out long contentLength)
         {
-            if (Archive == null)
-                return ReturnError(out contentType, out contentLength);
+            if (GetFileCustom != null)
+            {
+                Stream output = GetFileCustom(filename, out contentType, out contentLength);
+                if (output != null)
+                    return output;
+            }
 
             contentType = GetContentType(filename);
 
-            ZipArchiveEntry file = Archive.Entries.FirstOrDefault(entry => entry.FullName == filename);
-            if (file != null && contentType != null)
+            if (_archiveCustom != null)
             {
-                contentLength = file.Length;
-                return file.Open();
+                ZipArchiveEntry file = _archiveCustom.Entries.FirstOrDefault(entry => entry.FullName == filename);
+                if (file != null && contentType != null)
+                {
+                    contentLength = file.Length;
+                    return file.Open();
+                }
+            }
+
+            if (Archive != null)
+            {
+                ZipArchiveEntry file = Archive.Entries.FirstOrDefault(entry => entry.FullName == filename);
+                if (file != null && contentType != null)
+                {
+                    contentLength = file.Length;
+                    return file.Open();
+                }
             }
 
             return ReturnError(out contentType, out contentLength);
@@ -71,10 +101,10 @@ namespace SwaggerWcf.Support
 
                 case "svg":
                     return "image/svg+xml";
-                    
+
                 case "ttf":
                     return "application/x-font-ttf";
-                    
+
                 case "eot":
                     return "application/vnd.ms-fontobject";
 
@@ -83,16 +113,16 @@ namespace SwaggerWcf.Support
 
                 case "woff2":
                     return "application/font-woff2";
-                    
+
                 case "gif":
                     return "image/gif";
-                    
+
                 case "ico":
                     return "image/x-icon";
 
                 case "png":
                     return "image/png";
-                    
+
                 default:
                     return null;
             }
