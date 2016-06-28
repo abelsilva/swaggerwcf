@@ -267,7 +267,7 @@ namespace SwaggerWcf.Support
             {
                 if (typeFormat.Type == ParameterType.Array)
                 {
-                    Type t = parameter.ParameterType.GetElementType();
+                    Type t = parameter.ParameterType.GetElementType() ?? GetEnumerableType(parameter.ParameterType);
                     ParameterPrimitive arrayParam = new ParameterPrimitive
                     {
                         Name = name,
@@ -355,7 +355,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] { "application/json", "application/xml" });
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
 
             return contentTypes;
         }
@@ -376,7 +376,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] { "application/json", "application/xml" });
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
 
             return contentTypes;
         }

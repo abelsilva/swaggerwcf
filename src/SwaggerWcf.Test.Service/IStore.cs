@@ -9,6 +9,13 @@ namespace SwaggerWcf.Test.Service
     [ServiceContract]
     public interface IStore
     {
+        
+        [SwaggerWcfPath("Delete book", "Test books on the store")]
+        [WebInvoke(UriTemplate = "/books_test", BodyStyle = WebMessageBodyStyle.Bare, Method = "POST")]
+        [OperationContract]
+        void TestBook(int intg, double dobl, decimal decm, float flot);
+
+
         #region /books
 
         [SwaggerWcfPath("Create book", "Create a book on the store")]
