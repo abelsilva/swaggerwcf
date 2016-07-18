@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fix issue with Lists in function parameters</releaseNotes>
+    <releaseNotes>Update Swagger UI</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>
