@@ -70,7 +70,7 @@ namespace SwaggerWcf
 
             if (string.IsNullOrWhiteSpace(content))
             {
-                string swaggerUrl = woc.IncomingRequest.UriTemplateMatch.BaseUri + "/swagger.json";
+                string swaggerUrl = woc.IncomingRequest.UriTemplateMatch.BaseUri.LocalPath + "/swagger.json";
                 woc.OutgoingResponse.StatusCode = HttpStatusCode.Redirect;
                 woc.OutgoingResponse.Location = "index.html?url=" + swaggerUrl;
                 return null;
