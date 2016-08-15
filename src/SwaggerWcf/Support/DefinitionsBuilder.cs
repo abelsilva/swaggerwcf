@@ -237,7 +237,7 @@ namespace SwaggerWcf.Support
 
         private static string GetEnumMemberValue(Type enumType, string enumName)
         {
-            return string.IsNullOrWhiteSpace(enumName) ? null : ((int) Enum.Parse(enumType, enumName, true)).ToString();
+            return string.IsNullOrWhiteSpace(enumName) ? null : (Enum.Parse(enumType, enumName, true)).ToString();
         }
     }
 }
