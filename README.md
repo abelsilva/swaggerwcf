@@ -17,8 +17,8 @@ Install-Package SwaggerWcf
 
 ```
 
-### Step 2: Configure WCF routes
-
+### Step 2: Configure WCF
+#### ASP.NET
 Add the route in the `Application_Start` method inside `Global.asax`
 
 ```csharp
@@ -41,10 +41,24 @@ Edit `Web.config` and add the following (if it doesn't exist yet) inside the `sy
 <serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
 
 ```
+#### Self Hosted
+Add an endpoint to your App.config file.
+```xml
+<services>
+  <service name="SwaggerWcf.SwaggerWcfEndpoint">
+    <endpoint address="http://localhost/docs" binding="webHttpBinding" contract="SwaggerWcf.ISwaggerWcfEndpoint" />
+  </service>
+</services>
+```
+Create a WebServiceHost
+```csharp
+var swaggerHost = new WebServiceHost(typeof(SwaggerWcfEndpoint));
+swaggerHost.Open();
+```
 
 ### Step 3: Optionaly configure WCF response auto types
 
-Add the following to you `Web.config`.
+Add the following to your config file.
 This will allow the WCF service to accept requests and send replies based on the `Content-Type` headers.
 
 ```xml
@@ -63,11 +77,10 @@ This will allow the WCF service to accept requests and send replies based on the
 ```
 
 ### Step 4: Configure WCF services general information
-
-Add the following to you `Web.config` and change the values accordingly
+#### Configure via config file
+Add the following to your config file and change the values accordingly
 
 ```xml
-
 <configSections>
   <section name="swaggerwcf" type="SwaggerWcf.Configuration.SwaggerWcfSection, SwaggerWcf" />
 </configSections>
@@ -88,12 +101,21 @@ Add the following to you `Web.config` and change the values accordingly
     <setting name="InfoLicenseName" value="Apache License" />
   </settings>
 </swaggerwcf>
-
 ```
 
 Notes:
 * make sure the `configSections` block is the first child of `configuration`
 * `tags` will be described further down
+
+#### Configure via code
+```csharp
+SwaggerWcfEndpoint.Configure(new SwaggerWcf.Models.Info
+{
+    Description = "Sample Service to test SwaggerWCF",
+    Version = "0.0.1"
+    // etc
+});
+```
 
 ### Step 5: Decorate WCF services interfaces
 
@@ -180,12 +202,19 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 
 Tags are used to create categories in Swagger UI.
 
-In SwaggerWcf they can also be used to hide elements from the Swagger output using the `Web.config`
+In SwaggerWcf they can also be used to hide elements from the Swagger output using the configuration file.
 
 Using the configuration from step 4, any elements with the tag `LowPerformance` will be hidden from Swagger.
 
 When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
 This will prevent this tag to be displayed in the Swagger output.
+
+## Optional Parameters
+
+To specify a paramter as optional for swagger-ui provide a default value for the parameter on the interface.
+```csharp
+public string Foo(string bar = null);
+```
 
 ## TODO
 
