@@ -207,7 +207,7 @@ namespace SwaggerWcf.Support
 
             if (prop.TypeFormat.Type == ParameterType.Array)
             {
-                Type subType = propertyInfo.PropertyType.GetEnumerableType();
+                Type subType = GetEnumerableType(propertyInfo.PropertyType);
                 if (subType != null)
                 {
                     TypeFormat subTypeFormat = Helpers.MapSwaggerType(subType, null);
