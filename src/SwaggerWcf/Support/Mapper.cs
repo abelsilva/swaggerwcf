@@ -419,7 +419,7 @@ namespace SwaggerWcf.Support
             Type returnType = implementation.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>()
                                 .Concat(declaration.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>())
                                 .Select(attr => attr.ReturnType)
-                                .LastOrDefault()
+                                .FirstOrDefault()
                                 ?? declaration.ReturnType;
 
             Schema schema = BuildSchema(returnType, definitionsTypesList);
