@@ -341,6 +341,16 @@ namespace SwaggerWcf.Support
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
         {
+            string[] overrides = implementation.GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
+                                 .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
+                                 .Select(attr => attr.ConsumeTypes)
+                                 .Where(types => types != null && types.Length > 0)
+                                 .FirstOrDefault();
+            if (overrides != null)
+            {
+                return overrides;
+            }
+
             List<string> contentTypes = new List<string>();
             if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
             {
@@ -362,6 +372,16 @@ namespace SwaggerWcf.Support
 
         private IEnumerable<string> GetProduces(MethodInfo implementation, MethodInfo declaration)
         {
+            string[] overrides = implementation.GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
+                                 .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
+                                 .Select(attr => attr.ProduceTypes)
+                                 .Where(types => types != null && types.Length > 0)
+                                 .FirstOrDefault();
+            if (overrides != null)
+            {
+                return overrides;
+            }
+
             List<string> contentTypes = new List<string>();
             if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
             {
@@ -396,7 +416,13 @@ namespace SwaggerWcf.Support
         private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration,
                                                 IList<Type> definitionsTypesList)
         {
-            Schema schema = BuildSchema(declaration.ReturnType, definitionsTypesList);
+            Type returnType = implementation.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>()
+                                .Concat(declaration.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>())
+                                .Select(attr => attr.ReturnType)
+                                .LastOrDefault()
+                                ?? declaration.ReturnType;
+
+            Schema schema = BuildSchema(returnType, definitionsTypesList);
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
