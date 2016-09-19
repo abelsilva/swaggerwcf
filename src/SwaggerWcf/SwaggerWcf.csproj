@@ -56,7 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SwaggerWcfContentTypes.cs" />
     <Compile Include="Attributes\SwaggerWcfDefinitionAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
     <Compile Include="Models\DefinitionSchema.cs" />
     <Compile Include="Models\DefinitionProperty.cs" />
     <Compile Include="Models\InType.cs" />
