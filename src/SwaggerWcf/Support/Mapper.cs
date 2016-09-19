@@ -342,13 +342,13 @@ namespace SwaggerWcf.Support
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
         {
             List<string> contentTypes = new List<string>();
-            if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
+            if (declaration.GetCustomAttributes<WebGetAttribute>().Any(a => a.IsRequestFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebGetAttribute>()
                                .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
-            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any())
+            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any(a => a.IsRequestFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebInvokeAttribute>()
@@ -363,13 +363,13 @@ namespace SwaggerWcf.Support
         private IEnumerable<string> GetProduces(MethodInfo implementation, MethodInfo declaration)
         {
             List<string> contentTypes = new List<string>();
-            if (declaration.GetCustomAttributes<WebGetAttribute>().Any())
+            if (declaration.GetCustomAttributes<WebGetAttribute>().Any(a => a.IsResponseFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebGetAttribute>()
                                .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
-            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any())
+            else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any(a => a.IsResponseFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebInvokeAttribute>()
