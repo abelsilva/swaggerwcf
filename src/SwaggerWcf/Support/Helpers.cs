@@ -107,6 +107,12 @@ namespace SwaggerWcf.Support
                 return new TypeFormat(ParameterType.Array, null);
             }
 
+            //it's a Nullable<T> so treat it as T - we'll handle making it not-required later
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return MapSwaggerType(type.GenericTypeArguments[0], definitions);
+            }
+
             //it's a complex type, so we'll need to map it later
             if (definitions != null && !definitions.Contains(type))
             {
