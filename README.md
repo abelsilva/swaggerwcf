@@ -197,6 +197,9 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 | `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
 | `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
 | `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
+| `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
+| `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types   | `ConsumeTypes`, `ProduceTypes` |
+
 
 ## Tags
 
@@ -215,6 +218,11 @@ To specify a paramter as optional for swagger-ui provide a default value for the
 ```csharp
 public string Foo(string bar = null);
 ```
+
+## Optional Properties
+
+To mark a property as optional or required, use the `IsRequired` parameter on the `DataMember` attribute.
+
 
 ## TODO
 
