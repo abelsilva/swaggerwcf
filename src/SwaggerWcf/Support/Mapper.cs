@@ -326,7 +326,7 @@ namespace SwaggerWcf.Support
 
         private InType GetInType(string uriTemplate, string parameterName)
         {
-            if (!uriTemplate.Contains(parameterName))
+            if (!uriTemplate.Contains("{" + parameterName + "}"))
                 return InType.Body;
 
             int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
@@ -341,11 +341,12 @@ namespace SwaggerWcf.Support
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
         {
-            string[] overrides = implementation.GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
+            string[] overrides = implementation
+                                 .GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
                                  .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
                                  .Select(attr => attr.ConsumeTypes)
-                                 .Where(types => types != null && types.Length > 0)
-                                 .FirstOrDefault();
+                                 .FirstOrDefault(types => types != null && types.Length > 0);
+
             if (overrides != null)
             {
                 return overrides;
@@ -365,7 +366,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -375,8 +376,8 @@ namespace SwaggerWcf.Support
             string[] overrides = implementation.GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
                                  .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
                                  .Select(attr => attr.ProduceTypes)
-                                 .Where(types => types != null && types.Length > 0)
-                                 .FirstOrDefault();
+                                 .FirstOrDefault(types => types != null && types.Length > 0);
+
             if (overrides != null)
             {
                 return overrides;
@@ -396,7 +397,7 @@ namespace SwaggerWcf.Support
                                .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
