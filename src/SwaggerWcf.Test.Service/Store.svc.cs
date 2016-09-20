@@ -11,17 +11,6 @@ namespace SwaggerWcf.Test.Service
     [SwaggerWcf("/v1/rest")]
     public class BookStore : IStore
     {
-        
-        [SwaggerWcfTag("Books")]
-        [SwaggerWcfResponse(HttpStatusCode.NoContent, "Book tested")]
-        [SwaggerWcfResponse(HttpStatusCode.NotFound, "Book not found")]
-        [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
-            "Internal error (can be forced using ERROR_500 as book id)")]
-        public void TestBook(int intg, double dobl, decimal decm, float flot)
-        {
-            Console.WriteLine("OK");
-        }
-
         #region /books
         [SwaggerWcfTag("Books")]
         [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
