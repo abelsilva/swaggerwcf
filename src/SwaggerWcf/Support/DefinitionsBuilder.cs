@@ -242,7 +242,59 @@ namespace SwaggerWcf.Support
                 }
             }
 
+            // Apply any options set in a [SwaggerWcfProperty]
+            ApplyAttributeOptions(propertyInfo, prop);
+
             return prop;
+        }
+
+        private static T LastValidValue<T>(IEnumerable<SwaggerWcfPropertyAttribute> attrs,
+                                           Func<SwaggerWcfPropertyAttribute, T> getter)
+        {
+            return attrs.Select(getter).LastOrDefault(x => x != null);
+        }
+
+        private static void ApplyIfValid<T>(T opt, Action<T> setter)
+        {
+            if (opt != null)
+            {
+                setter(opt);
+            }
+        }
+
+        private static void ApplyAttributeOptions(PropertyInfo propertyInfo, DefinitionProperty prop)
+        {
+            // Use the DataContract [DefaultValue] as the default, by default
+            var defAttr = propertyInfo.GetCustomAttributes<DefaultValueAttribute>().LastOrDefault();
+            if (defAttr != null)
+            {
+                prop.Default = defAttr.Value.ToString();
+            }
+
+            // Apply any [SwaggerWcfProperty]s in order.
+            var attrs = propertyInfo.GetCustomAttributes<SwaggerWcfPropertyAttribute>().ToList();
+            if (!attrs.Any())
+            {
+                return;
+            }
+
+            ApplyIfValid(LastValidValue(attrs, a => a.Title),             x => prop.Title            = x);
+            ApplyIfValid(LastValidValue(attrs, a => a.Description),       x => prop.Description      = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._Required),         x => prop.Required         = x.Value);
+          //ApplyIfValid(LastValidValue(attrs, a => a._AllowEmptyValue),  x => prop.AllowEmptyValue  = x.Value);
+          //ApplyIfValid(LastValidValue(attrs, a => a._CollectionFormat), x => prop.CollectionFormat = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a.Default),           x => prop.Default          = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._Maximum),          x => prop.Maximum          = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._ExclusiveMaximum), x => prop.ExclusiveMaximum = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._Minimum),          x => prop.Minimum          = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._ExclusiveMinimum), x => prop.ExclusiveMinimum = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MaxLength),        x => prop.MaxLength        = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MinLength),        x => prop.MinLength        = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a.Pattern),           x => prop.Pattern          = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._MaxItems),         x => prop.MaxItems         = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MinItems),         x => prop.MinItems         = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._UniqueItems),      x => prop.UniqueItems      = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf),       x => prop.MultipleOf       = x.Value);
         }
 
         private static string GetEnumMemberValue(Type enumType, string enumName)
