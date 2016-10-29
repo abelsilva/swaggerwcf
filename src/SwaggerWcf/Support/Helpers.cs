@@ -12,7 +12,7 @@ namespace SwaggerWcf.Support
 {
     internal static class Helpers
     {
-        public static TypeFormat MapSwaggerType(Type type, IList<Type> definitions)
+        public static TypeFormat MapSwaggerType(Type type, IList<Type> definitions = null)
         {
             //built-in types
             if (type == typeof(bool))

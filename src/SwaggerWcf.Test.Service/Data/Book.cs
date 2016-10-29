@@ -28,5 +28,9 @@ namespace SwaggerWcf.Test.Service.Data
         [DataMember]
         [Description("Book Language")]
         public Language Language { get; set; }
+
+        [DataMember]
+        [Description("Book Tags")]
+        public string[] Tags { get; set; }
     }
 }

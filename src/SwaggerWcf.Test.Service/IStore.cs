@@ -13,7 +13,7 @@ namespace SwaggerWcf.Test.Service
 
         [SwaggerWcfPath("Create book", "Create a book on the store")]
         // default Method for WebInvoke is POST
-        [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Bare, //Method = "POST",
+        [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Wrapped, //Method = "POST",
             RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [OperationContract]
         Book CreateBook([SwaggerWcfParameter(Description = "Book to be created, the id will be replaced")] Book value);

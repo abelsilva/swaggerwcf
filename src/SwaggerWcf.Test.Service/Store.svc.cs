@@ -13,6 +13,7 @@ namespace SwaggerWcf.Test.Service
     {
         #region /books
         [SwaggerWcfTag("Books")]
+        [SwaggerWcfHeader("clientId", false, "Client ID", "000")]
         [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
         [SwaggerWcfResponse(HttpStatusCode.BadRequest, "Bad request", true)]
         [SwaggerWcfResponse(HttpStatusCode.InternalServerError,

@@ -23,17 +23,18 @@ namespace SwaggerWcf.Support
         {
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
-                (SwaggerWcfSection) (ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
+                (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
             List<Type> definitionsTypesList = new List<Type>();
             Service service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
+            List<string> visibleTags = GetVisibleTags(config);
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
 
             ProcessSettings(service, settings);
 
             BuildPaths(service, hiddenTags, definitionsTypesList);
 
-            service.Definitions = DefinitionsBuilder.Process(hiddenTags, definitionsTypesList);
+            service.Definitions = DefinitionsBuilder.Process(hiddenTags, visibleTags, definitionsTypesList);
 
             return service;
         }
@@ -44,6 +45,16 @@ namespace SwaggerWcf.Support
                        ? new List<string>()
                        : config.Tags.OfType<TagElement>()
                                .Where(t => t.Visibile.Equals(false))
+                               .Select(t => t.Name)
+                               .ToList();
+        }
+
+        private static List<string> GetVisibleTags(SwaggerWcfSection config)
+        {
+            return config.Tags == null
+                       ? new List<string>()
+                       : config.Tags.OfType<TagElement>()
+                               .Where(t => t.Visibile.Equals(true))
                                .Select(t => t.Name)
                                .ToList();
         }

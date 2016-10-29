@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Attributes\SwaggerWcfContentTypesAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfDefinitionAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfHeaderAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
     <Compile Include="Models\DefinitionSchema.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Models\InfoLicense.cs" />
     <Compile Include="Models\InfoContact.cs" />
     <Compile Include="Models\Info.cs" />
+    <Compile Include="Support\TypeBuilder.cs" />
     <Compile Include="SwaggerWcfEndpoint.cs" />
     <Compile Include="ISwaggerWcfEndpoint.cs" />
     <Compile Include="Models\PathAction.cs" />

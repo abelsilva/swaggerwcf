@@ -6,6 +6,7 @@
         Body = 1,
         Path = 2,
         Query = 3,
-        FormData = 4
+        FormData = 4,
+        Header = 5
     }
 }

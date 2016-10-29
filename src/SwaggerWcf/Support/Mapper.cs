@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Threading.Tasks;
 using System.Web;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Models;
@@ -124,6 +126,9 @@ namespace SwaggerWcf.Support
                 string httpMethod = (wi == null) ? "GET" : wi.Method ?? "POST";
                 string uriTemplate = (wi == null) ? (wg.UriTemplate ?? "") : (wi.UriTemplate ?? "");
 
+                bool wrappedRequest = IsRequestWrapped(wg, wi);
+                bool wrappedResponse = IsResponseWrapped(wg, wi);
+
                 //implementation description overrides interface description
                 string description =
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "Description") ??
@@ -187,7 +192,7 @@ namespace SwaggerWcf.Support
                     Deprecated = deprecated,
                     OperationId = HttpUtility.HtmlEncode(operationId),
                     ExternalDocs = externalDocs,
-                    Responses = GetResponseCodes(implementation, declaration, definitionsTypesList)
+                    Responses = GetResponseCodes(implementation, declaration, wrappedResponse, definitionsTypesList)
                     // Schemes = TODO: how to get available schemes for this WCF service? (schemes: http/https)
                 };
 
@@ -195,31 +200,80 @@ namespace SwaggerWcf.Support
                 ParameterInfo[] parameters = declaration.GetParameters();
                 if (parameters.Any())
                     operation.Parameters = new List<ParameterBase>();
+
+                List<SwaggerWcfHeaderAttribute> headers =
+                    implementation.GetCustomAttributes<SwaggerWcfHeaderAttribute>().ToList();
+                headers = headers.Concat(declaration.GetCustomAttributes<SwaggerWcfHeaderAttribute>()).ToList();
+
+                foreach (SwaggerWcfHeaderAttribute attr in headers)
+                {
+                    operation.Parameters.Add(new ParameterPrimitive
+                    {
+                        Name = attr.Name,
+                        Description = attr.Description,
+                        Default = attr.DefaultValue,
+                        In = InType.Header,
+                        Required = attr.Required,
+                        TypeFormat = new TypeFormat(ParameterType.String, null)
+                    });
+                }
+
+                TypeBuilder typeBuilder = null;
+                if (wrappedRequest)
+                {
+                    typeBuilder = new TypeBuilder(implementation.Name + "Request");
+                }
                 foreach (ParameterInfo parameter in parameters)
                 {
-                    TypeFormat typeFormat = Helpers.MapSwaggerType(parameter.ParameterType, definitionsTypesList);
-
                     SwaggerWcfParameterAttribute settings =
                         implementation.GetParameters()
-                                      .First(p => p.Position.Equals(parameter.Position))
-                                      .GetCustomAttribute<SwaggerWcfParameterAttribute>() ??
+                            .First(p => p.Position.Equals(parameter.Position))
+                            .GetCustomAttribute<SwaggerWcfParameterAttribute>() ??
                         parameter.GetCustomAttribute<SwaggerWcfParameterAttribute>();
 
                     if (implementation.GetParameters()
-                                      .First(p => p.Position.Equals(parameter.Position))
-                                      .GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
+                            .First(p => p.Position.Equals(parameter.Position))
+                            .GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
                         parameter.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
                         continue;
 
                     List<SwaggerWcfTagAttribute> piTags =
                         methodTags.Concat(parameter.GetCustomAttributes<SwaggerWcfTagAttribute>())
-                                  .ToList();
+                            .ToList();
+
+                    InType inType = GetInType(uriTemplate, parameter.Name);
+
+                    if (inType == InType.Body && wrappedRequest)
+                    {
+                        bool required = settings != null && settings.Required;
+
+                        if (!required && !parameter.HasDefaultValue)
+                            required = true;
+
+                        typeBuilder.AddField(parameter.Name, parameter.ParameterType, required);
+
+                        continue;
+                    }
 
                     if (piTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                         continue;
 
+                    TypeFormat typeFormat = Helpers.MapSwaggerType(parameter.ParameterType, definitionsTypesList);
+
                     operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
-                        definitionsTypesList));
+                                                          definitionsTypesList));
+                }
+                if (wrappedRequest)
+                {
+                    TypeFormat typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);
+
+                    operation.Parameters.Add(new ParameterSchema
+                    {
+                        Name = implementation.Name + "RequestWrapper",
+                        In = InType.Body,
+                        Required = true,
+                        SchemaRef = typeFormat.Format
+                    });
                 }
 
                 if (!string.IsNullOrWhiteSpace(uriTemplate))
@@ -230,6 +284,24 @@ namespace SwaggerWcf.Support
                 }
                 yield return new Tuple<string, PathAction>(uriTemplate, operation);
             }
+        }
+
+        private static bool IsRequestWrapped(WebGetAttribute wg, WebInvokeAttribute wi)
+        {
+            return (wg != null) &&
+                   (wg.BodyStyle == WebMessageBodyStyle.Wrapped || wg.BodyStyle == WebMessageBodyStyle.WrappedRequest)
+                   ||
+                   (wi != null) &&
+                   (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedRequest);
+        }
+
+        private static bool IsResponseWrapped(WebGetAttribute wg, WebInvokeAttribute wi)
+        {
+            return (wg != null) &&
+                   (wg.BodyStyle == WebMessageBodyStyle.Wrapped || wg.BodyStyle == WebMessageBodyStyle.WrappedResponse)
+                   ||
+                   (wi != null) &&
+                   (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
         private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter,
@@ -300,7 +372,7 @@ namespace SwaggerWcf.Support
                     definitionsTypesList.Add(parameter.ParameterType);
                 }
                 typeFormat = new TypeFormat(ParameterType.Object,
-                    HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+                                            HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
 
                 return new ParameterSchema
                 {
@@ -335,17 +407,17 @@ namespace SwaggerWcf.Support
                 return InType.Path;
 
             return (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                ? InType.Path
-                : InType.Query;
+                       ? InType.Path
+                       : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
         {
             string[] overrides = implementation
-                                 .GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
-                                 .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
-                                 .Select(attr => attr.ConsumeTypes)
-                                 .FirstOrDefault(types => types != null && types.Length > 0);
+                .GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
+                .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
+                .Select(attr => attr.ConsumeTypes)
+                .FirstOrDefault(types => types != null && types.Length > 0);
 
             if (overrides != null)
             {
@@ -357,13 +429,13 @@ namespace SwaggerWcf.Support
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebGetAttribute>()
-                               .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
+                        .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any(a => a.IsRequestFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebInvokeAttribute>()
-                               .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
+                        .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
                 contentTypes.AddRange(new[] { "application/json", "application/xml" });
@@ -374,9 +446,9 @@ namespace SwaggerWcf.Support
         private IEnumerable<string> GetProduces(MethodInfo implementation, MethodInfo declaration)
         {
             string[] overrides = implementation.GetCustomAttributes<SwaggerWcfContentTypesAttribute>()
-                                 .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
-                                 .Select(attr => attr.ProduceTypes)
-                                 .FirstOrDefault(types => types != null && types.Length > 0);
+                .Concat(declaration.GetCustomAttributes<SwaggerWcfContentTypesAttribute>())
+                .Select(attr => attr.ProduceTypes)
+                .FirstOrDefault(types => types != null && types.Length > 0);
 
             if (overrides != null)
             {
@@ -388,13 +460,13 @@ namespace SwaggerWcf.Support
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebGetAttribute>()
-                               .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
+                        .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             else if (declaration.GetCustomAttributes<WebInvokeAttribute>().Any(a => a.IsResponseFormatSetExplicitly))
             {
                 contentTypes.AddRange(
                     declaration.GetCustomAttributes<WebInvokeAttribute>()
-                               .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
+                        .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
                 contentTypes.AddRange(new[] { "application/json", "application/xml" });
@@ -414,16 +486,15 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration,
-                                                IList<Type> definitionsTypesList)
+        private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
             Type returnType = implementation.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>()
-                                .Concat(declaration.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>())
-                                .Select(attr => attr.ReturnType)
-                                .FirstOrDefault()
-                                ?? declaration.ReturnType;
+                                  .Concat(declaration.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>())
+                                  .Select(attr => attr.ReturnType)
+                                  .FirstOrDefault()
+                              ?? declaration.ReturnType;
 
-            Schema schema = BuildSchema(returnType, definitionsTypesList);
+            Schema schema = BuildSchema(returnType, implementation.Name, wrappedResponse, definitionsTypesList);
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
@@ -449,15 +520,30 @@ namespace SwaggerWcf.Support
             return res;
         }
 
-        private Schema BuildSchema(Type type, IList<Type> definitionsTypesList)
+        private Schema BuildSchema(Type type, string funcName, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
             if (type == typeof(void))
                 return null;
 
-            if (type.BaseType == typeof(System.Threading.Tasks.Task))
+            if (type.BaseType == typeof(Task))
                 type = GetTaskInnerType(type);
 
-            TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
+            TypeFormat typeFormat;
+            if (wrappedResponse)
+            {
+                //TODO: try to use [return: MessageParameter(Name = "MyResult")]
+                string typeName = funcName + "Result";
+
+                TypeBuilder typeBuilder = new TypeBuilder(typeName + "Wrapper");
+
+                typeBuilder.AddField(typeName, type, true);
+
+                typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);
+            }
+            else
+            {
+                typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
+            }
 
             switch (typeFormat.Type)
             {
@@ -485,12 +571,24 @@ namespace SwaggerWcf.Support
             }
         }
 
+        private static object GetDefaultValue(Type type)
+        {
+            try
+            {
+                return Activator.CreateInstance(type);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         private static Type GetTaskInnerType(Type type)
         {
             if (type == null)
                 return null;
 
-            return type.BaseType == typeof(System.Threading.Tasks.Task) ? type.GetGenericArguments()[0] : type;
+            return type.BaseType == typeof(Task) ? type.GetGenericArguments()[0] : type;
         }
 
         public static Type GetEnumerableType(Type type)

@@ -11,7 +11,7 @@ namespace SwaggerWcf.Support
 {
     internal sealed class DefinitionsBuilder
     {
-        public static List<Definition> Process(IList<string> hiddenTags, List<Type> definitionsTypes)
+        public static List<Definition> Process(IList<string> hiddenTags, IList<string> visibleTags, List<Type> definitionsTypes)
         {
             if (definitionsTypes == null || !definitionsTypes.Any())
                 return new List<Definition>(0);
@@ -24,7 +24,7 @@ namespace SwaggerWcf.Support
             while (typesStack.Any())
             {
                 Type t = typesStack.Pop();
-                if (IsHidden(t, hiddenTags) || processedTypes.Contains(t))
+                if (IsHidden(t, hiddenTags, visibleTags) || processedTypes.Contains(t))
                     continue;
 
                 processedTypes.Add(t);
@@ -34,18 +34,17 @@ namespace SwaggerWcf.Support
             return definitions;
         }
 
-        private static bool IsHidden(Type type, IList<string> hiddenTags)
+        private static bool IsHidden(Type type, ICollection<string> hiddenTags, ICollection<string> visibleTags)
         {
             if (hiddenTags.Contains(type.FullName))
                 return true;
 
             if (type.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
-                return true;
+            {
+                return !type.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(visibleTags.Contains);
+            }
 
-            if (type.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains))
-                return true;
-
-            return false;
+            return type.GetCustomAttributes<SwaggerWcfTagAttribute>().Select(t => t.TagName).Any(hiddenTags.Contains);
         }
 
         private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags,
@@ -136,8 +135,16 @@ namespace SwaggerWcf.Support
                         //prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, HttpUtility.HtmlEncode(t.FullName));
                         prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, null);
 
-                        prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
-                        prop.Items.Ref = t.FullName;
+                        TypeFormat st = Helpers.MapSwaggerType(t);
+                        if (st.Type == ParameterType.Array || st.Type == ParameterType.Object)
+                        {
+                            prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
+                            prop.Items.Ref = t.FullName;
+                        }
+                        else
+                        {
+                            prop.Items.TypeFormat = st;
+                        }
                     }
                 }
 
