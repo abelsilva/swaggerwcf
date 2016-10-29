@@ -1,4 +1,8 @@
-SwaggerWcf ![nuget status](http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat)
+<h1 align="left">
+SwaggerWcf&nbsp;<a href="https://www.nuget.org/packages/SwaggerWcf">
+        <img src="http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat" alt="nuget status">
+    </a>
+</h1>
 ==========
 
 Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
@@ -193,6 +197,7 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 | `SwaggerWcf`           | `Class`, `Interface`                       | Enable parsing WCF service    | `ServicePath`                                                                                       |
 | `SwaggerWcfHidden`     | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger     |                                                                                                     |
 | `SwaggerWcfTag`        | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element       | `TagName`, `HideFromSpec`                                                                           |
+| `SwaggerWcfHeader`     | `Method` | Configure method HTTP headers     | `Name`, `Required`, `Description`, `DefaultValue` |
 | `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
 | `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
 | `SwaggerWcfProperty`  | `Property`                                | Configure property parameters   | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                                                           |
@@ -206,12 +211,14 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 
 Tags are used to create categories in Swagger UI.
 
-In SwaggerWcf they can also be used to hide elements from the Swagger output using the configuration file.
+In SwaggerWcf they can also be used to hide or show elements from the Swagger output using the configuration file.
 
 Using the configuration from step 4, any elements with the tag `LowPerformance` will be hidden from Swagger.
 
 When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFromSpec`.
 This will prevent this tag to be displayed in the Swagger output.
+
+When combined with `SwaggerWcfHidden`, if the tag has the value `visible` as `true` in `web.config` file, the element will be visible
 
 ## Optional Parameters
 
