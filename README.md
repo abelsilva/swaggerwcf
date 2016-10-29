@@ -3,7 +3,6 @@ SwaggerWcf&nbsp;<a href="https://www.nuget.org/packages/SwaggerWcf">
         <img src="http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat" alt="nuget status">
     </a>
 </h1>
-==========
 
 Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
 
