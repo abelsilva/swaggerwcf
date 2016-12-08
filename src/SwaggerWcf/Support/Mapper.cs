@@ -526,24 +526,40 @@ namespace SwaggerWcf.Support
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
             responses = responses.Concat(declaration.GetCustomAttributes<SwaggerWcfResponseAttribute>()).ToList();
 
-            List<Response> res = responses.Select(ra => new Response
-            {
-                Code = ra.Code,
-                Description = ra.Description,
-                Schema = ra.EmptyResponseOverride ? null : schema,
-                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
-            }).ToList();
+            List<Response> res =
+                responses.Select(ra => ConvertResponse(ra, schema, implementation, wrappedResponse, definitionsTypesList))
+                    .ToList();
 
             if (!res.Any())
             {
                 res.Add(new Response
-                {
-                    Code = "default",
-                    Schema = schema
-                });
+                        {
+                            Code = "default",
+                            Schema = schema
+                        });
             }
 
             return res;
+        }
+
+        private Response ConvertResponse(SwaggerWcfResponseAttribute ra, Schema schema, MethodInfo implementation,
+                                         bool wrappedResponse, IList<Type> definitionsTypesList)
+        {
+            Schema s = schema;
+
+            if (ra.ResponseTypeOverride != null)
+                s = BuildSchema(ra.ResponseTypeOverride, implementation.Name, wrappedResponse, definitionsTypesList);
+
+            if (ra.EmptyResponseOverride)
+                s = null;
+
+            return new Response
+            {
+                Code = ra.Code,
+                Description = ra.Description,
+                Schema = s,
+                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
+            };
         }
 
         private Schema BuildSchema(Type type, string funcName, bool wrappedResponse, IList<Type> definitionsTypesList)

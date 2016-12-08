@@ -17,12 +17,13 @@ namespace SwaggerWcf.Attributes
         /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
         public SwaggerWcfResponseAttribute(string code, string description = null, bool emptyResponseOverride = false,
-                                           string[] headers = null)
+                                           string[] headers = null, Type responseTypeOverride = null)
         {
             Code = code;
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
+            ResponseTypeOverride = responseTypeOverride;
         }
 
         /// <summary>
@@ -34,12 +35,14 @@ namespace SwaggerWcf.Attributes
         /// <param name="headers">Optional HTTP headers returned</param>
         public SwaggerWcfResponseAttribute(HttpStatusCode code, string description = null,
                                            bool emptyResponseOverride = false,
-                                           string[] headers = null)
+                                           string[] headers = null,
+                                           Type responseTypeOverride = null)
         {
             Code = ((int) code).ToString();
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
+            ResponseTypeOverride = responseTypeOverride;
         }
 
         /// <summary>
@@ -50,12 +53,13 @@ namespace SwaggerWcf.Attributes
         /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
         public SwaggerWcfResponseAttribute(int code, string description = null, bool emptyResponseOverride = false,
-                                           string[] headers = null)
+                                           string[] headers = null, Type responseTypeOverride = null)
         {
             Code = code.ToString();
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
+            ResponseTypeOverride = responseTypeOverride;
         }
 
         /// <summary>
@@ -72,10 +76,15 @@ namespace SwaggerWcf.Attributes
         ///     Result has empty response body (override default response type)
         /// </summary>
         public bool EmptyResponseOverride { get; set; }
-
+        
         /// <summary>
         ///     Optional HTTP headers returned
         /// </summary>
         public string[] Headers { get; set; }
+
+        /// <summary>
+        ///     Override response type
+        /// </summary>
+        public Type ResponseTypeOverride { get; set; }
     }
 }
