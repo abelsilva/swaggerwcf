@@ -346,6 +346,13 @@ namespace SwaggerWcf.Support
             if (!required && !parameter.HasDefaultValue)
                 required = true;
 
+            Type paramType = parameter.ParameterType;
+            if (paramType.IsGenericType && paramType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                required = false;
+                paramType = paramType.GenericTypeArguments[0];
+            }
+
             if (typeFormat.Type == ParameterType.Object)
             {
                 return new ParameterSchema
@@ -362,7 +369,7 @@ namespace SwaggerWcf.Support
             {
                 if (typeFormat.Type == ParameterType.Array)
                 {
-                    Type t = parameter.ParameterType.GetElementType() ?? GetEnumerableType(parameter.ParameterType);
+                    Type t = paramType.GetElementType() ?? GetEnumerableType(paramType);
                     ParameterPrimitive arrayParam = new ParameterPrimitive
                     {
                         Name = name,
@@ -390,12 +397,12 @@ namespace SwaggerWcf.Support
                 }
 
                 //it's a complex type, so we'll need to map it later
-                if (definitionsTypesList != null && !definitionsTypesList.Contains(parameter.ParameterType))
+                if (definitionsTypesList != null && !definitionsTypesList.Contains(paramType))
                 {
-                    definitionsTypesList.Add(parameter.ParameterType);
+                    definitionsTypesList.Add(paramType);
                 }
                 typeFormat = new TypeFormat(ParameterType.Object,
-                                            HttpUtility.HtmlEncode(parameter.ParameterType.FullName));
+                                            HttpUtility.HtmlEncode(paramType.FullName));
 
                 return new ParameterSchema
                 {
@@ -520,7 +527,12 @@ namespace SwaggerWcf.Support
                                   .FirstOrDefault()
                               ?? declaration.ReturnType;
 
-            Schema schema = BuildSchema(returnType, implementation.Name, wrappedResponse, definitionsTypesList);
+            if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                returnType = returnType.GenericTypeArguments[0];
+
+            Schema schema = returnType.IsEnum
+                                ? BuildSchemaForEnum(returnType, definitionsTypesList)
+                                : BuildSchema(returnType, implementation.Name, wrappedResponse, definitionsTypesList);
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
@@ -559,6 +571,22 @@ namespace SwaggerWcf.Support
                 Description = ra.Description,
                 Schema = s,
                 Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
+            };
+        }
+
+        private Schema BuildSchemaForEnum(Type returnType, IList<Type> definitionsTypesList)
+        {
+            //it's a complex type, so we'll need to map it later
+            if (definitionsTypesList != null && !definitionsTypesList.Contains(returnType))
+            {
+                definitionsTypesList.Add(returnType);
+            }
+            TypeFormat typeFormat = new TypeFormat(ParameterType.Unknown, null);
+
+            return new Schema
+            {
+                TypeFormat = typeFormat,
+                Ref = HttpUtility.HtmlEncode(returnType.FullName)
             };
         }
 

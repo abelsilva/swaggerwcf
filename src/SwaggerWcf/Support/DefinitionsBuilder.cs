@@ -62,10 +62,16 @@ namespace SwaggerWcf.Support
             if (schema.TypeFormat.Type == ParameterType.String && schema.TypeFormat.Format == "enum")
             {
                 schema.Enum = new List<string>();
-                List<string> listOfEnumNames = definitionType.GetEnumNames().ToList();
+                
+                Type propType = definitionType;
+
+                if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    propType = propType.GetEnumerableType();
+
+                List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    schema.Enum.Add(GetEnumMemberValue(definitionType, enumName));
+                    schema.Enum.Add(GetEnumMemberValue(propType, enumName));
                 }
             }
             else if (schema.TypeFormat.Type == ParameterType.Array)
@@ -241,14 +247,17 @@ namespace SwaggerWcf.Support
 
             if (prop.TypeFormat.Type == ParameterType.String && prop.TypeFormat.Format == "enum")
             {
-                if (propertyInfo.PropertyType.IsSubclassOf(typeof(Enum)))
+                prop.Enum = new List<string>();
+
+                Type propType = propertyInfo.PropertyType;
+
+                if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    propType = propType.GetEnumerableType();
+
+                List<string> listOfEnumNames = propType.GetEnumNames().ToList();
+                foreach (string enumName in listOfEnumNames)
                 {
-                    prop.Enum = new List<string>();
-                    List<string> listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
-                    foreach (string enumName in listOfEnumNames)
-                    {
-                        prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
-                    }
+                    prop.Enum.Add(GetEnumMemberValue(propType, enumName));
                 }
             }
 
