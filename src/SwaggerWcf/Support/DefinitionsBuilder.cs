@@ -186,7 +186,7 @@ namespace SwaggerWcf.Support
 
             TypeFormat typeFormat = Helpers.MapSwaggerType(propertyInfo.PropertyType, null);
 
-            DefinitionProperty prop = new DefinitionProperty {Title = propertyInfo.Name};
+            DefinitionProperty prop = new DefinitionProperty { Title = propertyInfo.Name };
 
             DataMemberAttribute dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
             if (dataMemberAttribute != null)
@@ -241,11 +241,14 @@ namespace SwaggerWcf.Support
 
             if (prop.TypeFormat.Type == ParameterType.String && prop.TypeFormat.Format == "enum")
             {
-                prop.Enum = new List<string>();
-                List<string> listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
-                foreach (string enumName in listOfEnumNames)
+                if (propertyInfo.PropertyType.IsSubclassOf(typeof(Enum)))
                 {
-                    prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
+                    prop.Enum = new List<string>();
+                    List<string> listOfEnumNames = propertyInfo.PropertyType.GetEnumNames().ToList();
+                    foreach (string enumName in listOfEnumNames)
+                    {
+                        prop.Enum.Add(GetEnumMemberValue(propertyInfo.PropertyType, enumName));
+                    }
                 }
             }
 
@@ -285,23 +288,23 @@ namespace SwaggerWcf.Support
                 return;
             }
 
-            ApplyIfValid(LastValidValue(attrs, a => a.Title),             x => prop.Title            = x);
-            ApplyIfValid(LastValidValue(attrs, a => a.Description),       x => prop.Description      = x);
-            ApplyIfValid(LastValidValue(attrs, a => a._Required),         x => prop.Required         = x.Value);
-          //ApplyIfValid(LastValidValue(attrs, a => a._AllowEmptyValue),  x => prop.AllowEmptyValue  = x.Value);
-          //ApplyIfValid(LastValidValue(attrs, a => a._CollectionFormat), x => prop.CollectionFormat = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a.Default),           x => prop.Default          = x);
-            ApplyIfValid(LastValidValue(attrs, a => a._Maximum),          x => prop.Maximum          = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a.Title), x => prop.Title = x);
+            ApplyIfValid(LastValidValue(attrs, a => a.Description), x => prop.Description = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._Required), x => prop.Required = x.Value);
+            //ApplyIfValid(LastValidValue(attrs, a => a._AllowEmptyValue),  x => prop.AllowEmptyValue  = x.Value);
+            //ApplyIfValid(LastValidValue(attrs, a => a._CollectionFormat), x => prop.CollectionFormat = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a.Default), x => prop.Default = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._Maximum), x => prop.Maximum = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._ExclusiveMaximum), x => prop.ExclusiveMaximum = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._Minimum),          x => prop.Minimum          = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._Minimum), x => prop.Minimum = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._ExclusiveMinimum), x => prop.ExclusiveMinimum = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._MaxLength),        x => prop.MaxLength        = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._MinLength),        x => prop.MinLength        = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a.Pattern),           x => prop.Pattern          = x);
-            ApplyIfValid(LastValidValue(attrs, a => a._MaxItems),         x => prop.MaxItems         = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._MinItems),         x => prop.MinItems         = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._UniqueItems),      x => prop.UniqueItems      = x.Value);
-            ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf),       x => prop.MultipleOf       = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MaxLength), x => prop.MaxLength = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MinLength), x => prop.MinLength = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a.Pattern), x => prop.Pattern = x);
+            ApplyIfValid(LastValidValue(attrs, a => a._MaxItems), x => prop.MaxItems = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MinItems), x => prop.MinItems = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._UniqueItems), x => prop.UniqueItems = x.Value);
+            ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf), x => prop.MultipleOf = x.Value);
         }
 
         private static string GetEnumMemberValue(Type enumType, string enumName)
