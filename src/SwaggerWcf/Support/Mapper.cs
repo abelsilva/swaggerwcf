@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using SwaggerWcf.Attributes;
@@ -284,9 +285,28 @@ namespace SwaggerWcf.Support
                     int indexOfQuestionMark = uriTemplate.IndexOf('?');
                     if (indexOfQuestionMark >= 0)
                         uriTemplate = uriTemplate.Substring(0, indexOfQuestionMark);
+
+                    uriTemplate = RemoveParametersDefaultValuesFromUri(uriTemplate);
                 }
                 yield return new Tuple<string, PathAction>(uriTemplate, operation);
             }
+        }
+
+        private string RemoveParametersDefaultValuesFromUri(string uriTemplate)
+        {
+            Regex regWithDefaultValue = new Regex(@"\{[a-zA-Z0-9_]+(=[a-zA-Z0-9_]+)\}");
+            if (!regWithDefaultValue.Match(uriTemplate).Success)
+                return uriTemplate;
+
+            string res = uriTemplate;
+            int currIndex = 0;
+            Match match;
+            while ((match = regWithDefaultValue.Match(res)).Success)
+            {
+                res = res.Substring(currIndex, match.Groups[1].Index) + res.Substring(match.Groups[1].Index + match.Groups[1].Length);
+            }
+
+            return res;
         }
 
         private static bool IsRequestWrapped(WebGetAttribute wg, WebInvokeAttribute wi)
@@ -401,7 +421,9 @@ namespace SwaggerWcf.Support
 
         private InType GetInType(string uriTemplate, string parameterName)
         {
-            if (!uriTemplate.Contains("{" + parameterName + "}"))
+            Regex reg = new Regex(@"\{" + parameterName + @"\}");
+            Regex regWithDefaultValue = new Regex(@"\{" + parameterName + @"=[a-zA-Z0-9]+\}");
+            if (!reg.Match(uriTemplate).Success && !regWithDefaultValue.Match(uriTemplate).Success)
                 return InType.Body;
 
             int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
@@ -409,9 +431,10 @@ namespace SwaggerWcf.Support
             if (questionMarkPosition == -1)
                 return InType.Path;
 
-            return (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                       ? InType.Path
-                       : InType.Query;
+            if (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
+                return InType.Path;
+
+            return regWithDefaultValue.Match(uriTemplate).Success ? InType.Body : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
