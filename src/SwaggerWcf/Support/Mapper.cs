@@ -205,6 +205,9 @@ namespace SwaggerWcf.Support
                     implementation.GetCustomAttributes<SwaggerWcfHeaderAttribute>().ToList();
                 headers = headers.Concat(declaration.GetCustomAttributes<SwaggerWcfHeaderAttribute>()).ToList();
 
+                // remove duplicates
+                headers = headers.GroupBy(h => h.Name).Select(g => g.First()).ToList();
+
                 foreach (SwaggerWcfHeaderAttribute attr in headers)
                 {
                     operation.Parameters.Add(new ParameterPrimitive
