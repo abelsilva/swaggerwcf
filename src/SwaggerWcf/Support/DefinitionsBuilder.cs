@@ -28,7 +28,9 @@ namespace SwaggerWcf.Support
                     continue;
 
                 processedTypes.Add(t);
-                definitions.Add(ConvertTypeToDefinition(t, hiddenTags, typesStack));
+                Definition definition = ConvertTypeToDefinition(t, hiddenTags, typesStack);
+                if (definition != null)
+                    definitions.Add(definition);
             }
 
             return definitions;
@@ -59,10 +61,14 @@ namespace SwaggerWcf.Support
 
             // process
             schema.TypeFormat = Helpers.MapSwaggerType(definitionType, null);
+
+            if (schema.TypeFormat.IsPrimitiveType)
+                return null;
+
             if (schema.TypeFormat.Type == ParameterType.String && schema.TypeFormat.Format == "enum")
             {
                 schema.Enum = new List<string>();
-                
+
                 Type propType = definitionType;
 
                 if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
