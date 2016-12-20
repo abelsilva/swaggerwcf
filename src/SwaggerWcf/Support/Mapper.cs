@@ -184,7 +184,7 @@ namespace SwaggerWcf.Support
                 PathAction operation = new PathAction
                 {
                     Id = httpMethod.ToLowerInvariant(),
-                    Summary = HttpUtility.HtmlEncode(summary),
+                    Summary = summary,
                     Description = HttpUtility.HtmlEncode(description),
                     Tags =
                         methodTags.Where(t => !t.HideFromSpec).Select(t => HttpUtility.HtmlEncode(t.TagName)).ToList(),
