@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Activation;
@@ -42,10 +43,11 @@ namespace SwaggerWcf
             Support.StaticContent.GetFileCustom = getFileCustom;
         }
 
-        public static void Configure(Info info)
+        public static void Configure(Info info, SecurityDefinitions securityDefinitions = null)
         {
             Init();
             Service.Info = info;
+            Service.SecurityDefinitions = securityDefinitions;
         }
 
         public Stream GetSwaggerFile()

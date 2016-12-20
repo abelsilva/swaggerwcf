@@ -193,7 +193,8 @@ namespace SwaggerWcf.Support
                     Deprecated = deprecated,
                     OperationId = HttpUtility.HtmlEncode(operationId),
                     ExternalDocs = externalDocs,
-                    Responses = GetResponseCodes(implementation, declaration, wrappedResponse, definitionsTypesList)
+                    Responses = GetResponseCodes(implementation, declaration, wrappedResponse, definitionsTypesList),
+                    Security = GetMethodSecurity(implementation, declaration)
                     // Schemes = TODO: how to get available schemes for this WCF service? (schemes: http/https)
                 };
 
@@ -659,6 +660,27 @@ namespace SwaggerWcf.Support
                 return null;
 
             return type.BaseType == typeof(Task) ? type.GetGenericArguments()[0] : type;
+        }
+
+        private static List<KeyValuePair<string, string[]>> GetMethodSecurity(MethodInfo implementation, MethodInfo declaration)
+        {
+            var securityMethodAttributes = implementation.GetCustomAttributes<SwaggerWcfSecurityAttribute>().ToList();
+            var securityInterfaceAttributes = declaration.GetCustomAttributes<SwaggerWcfSecurityAttribute>().ToList();
+
+            var securityAttributes = securityMethodAttributes.Concat(securityInterfaceAttributes).ToList();
+
+            if (securityAttributes.Any() == false)
+                return null;
+
+            var security = new List<KeyValuePair<string, string[]>>();
+
+            foreach (var securityAttribute in securityAttributes)
+            {
+                security.Add(new KeyValuePair<string, string[]>(securityAttribute.SecurityDefinitionName, securityAttribute.SecurityDefinitionScopes));
+            }
+
+
+            return security;
         }
 
         public static Type GetEnumerableType(Type type)

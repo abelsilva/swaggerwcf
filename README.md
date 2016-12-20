@@ -111,100 +111,125 @@ Notes:
 * `tags` will be described further down
 
 #### Configure via code
-```csharp
-SwaggerWcfEndpoint.Configure(new SwaggerWcf.Models.Info
-{
-    Description = "Sample Service to test SwaggerWCF",
-    Version = "0.0.1"
-    // etc
-});
-```
-
-### Step 5: Decorate WCF services interfaces
-
-For each method, configure the `WebInvoke` or `WebGet` attribute, and add a `SwaggerWcfPath` attribute.
+Configure the base properties via code. New: You can add security settings to your api (see also the new Security-Methodattribute)
 
 ```csharp
-
-[ServiceContract]
-public interface IStore
+var info = new Info
 {
-    [SwaggerWcfPath("Create book", "Create a book on the store")]
-    [WebInvoke(UriTemplate = "/books",
-        BodyStyle = WebMessageBodyStyle.Bare,
-        Method = "POST",
-        RequestFormat = WebMessageFormat.Json,
-        ResponseFormat = WebMessageFormat.Json)]
-    [OperationContract]
-    Book CreateBook(Book value);
-    
-    // [.......]
-}
+Description = "Sample Service to test SwaggerWCF",
+Version = "0.0.1"
+// etc
+};
 
-```
-
-### Step 6: Decorate WCF services class
-
-Add the `SwaggerWcf` and `AspNetCompatibilityRequirements` attributes to the class providing the base path for the service (the same as used in step 2).
-Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
-
-```csharp
-
-[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-[SwaggerWcf("/v1/rest")]
-public class BookStore : IStore
+var security = new SecurityDefinitions
 {
-    [SwaggerWcfTag("Books")]
-    [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
-    [SwaggerWcfResponse(HttpStatusCode.BadRequest, "Bad request", true)]
-    [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
-        "Internal error (can be forced using ERROR_500 as book title)", true)]
-    public Book CreateBook(Book value)
+  {
+    "api-gateway", new SecurityAuthorization
     {
-        // [.......]
+      Type = "oauth2",
+      Name = "api-gateway",
+      Description = "Forces authentication with credentials via an api gateway",
+      Flow = "password",
+      Scopes = new Dictionary<string, string="">
+      {
+          { "author", "use author scope"},
+          { "admin", "use admin scope"},
+      },
+      AuthorizationUrl = "http://yourapi.net/oauth/token"
     }
-    
-    // [.......]
-}
+  }
+};
 
-```
+SwaggerWcfEndpoint.Configure(info, security);
+  ```
 
-### Step 7: Decorate data types used in WCF services
 
-```csharp
 
-[DataContract(Name = "book")]
-[Description("Book with title, first publish date, author and language")]
-[SwaggerWcfDefinition(ExternalDocsUrl = "http://en.wikipedia.org/wiki/Book", ExternalDocsDescription = "Description of a book")]
-public class Book
-{
-    [DataMember(Name = "id")]
-    [Description("Book ID")]
-    public string Id { get; set; }
+  ### Step 5: Decorate WCF services interfaces
 
-    // [.......]
-}
+  For each method, configure the `WebInvoke` or `WebGet` attribute, and add a `SwaggerWcfPath` attribute.
 
-```
+  ```csharp
 
-Note: make sure you add at least the `DataContract` and `DataMember` attributes in classes and properties
+  [ServiceContract]
+  public interface IStore
+  {
+  [SwaggerWcfPath("Create book", "Create a book on the store")]
+  [WebInvoke(UriTemplate = "/books",
+  BodyStyle = WebMessageBodyStyle.Bare,
+  Method = "POST",
+  RequestFormat = WebMessageFormat.Json,
+  ResponseFormat = WebMessageFormat.Json)]
+  [OperationContract]
+  Book CreateBook(Book value);
 
-## Attributes
+  // [.......]
+  }
 
-| Attribute              | Used in                                    | Description                   | Options                                                                                             |
-| ---------------------- |------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
-| `SwaggerWcf`           | `Class`, `Interface`                       | Enable parsing WCF service    | `ServicePath`                                                                                       |
-| `SwaggerWcfHidden`     | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger     |                                                                                                     |
-| `SwaggerWcfTag`        | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element       | `TagName`, `HideFromSpec`                                                                           |
-| `SwaggerWcfHeader`     | `Method` | Configure method HTTP headers     | `Name`, `Required`, `Description`, `DefaultValue` |
-| `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
-| `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
-| `SwaggerWcfProperty`  | `Property`                                | Configure property parameters   | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                                                           |
-| `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
-| `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
-| `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
-| `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types   | `ConsumeTypes`, `ProduceTypes` |
+  ```
 
+  ### Step 6: Decorate WCF services class
+
+  Add the `SwaggerWcf` and `AspNetCompatibilityRequirements` attributes to the class providing the base path for the service (the same as used in step 2).
+  Optinally, for each method, add the `SwaggerWcfTag` to categorize the method and the `SwaggerWcfResponse` for each possible response from the service.
+
+  ```csharp
+
+  [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+  [SwaggerWcf("/v1/rest")]
+  public class BookStore : IStore
+  {
+  [SwaggerWcfTag("Books")]
+  [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
+  [SwaggerWcfResponse(HttpStatusCode.BadRequest, "Bad request", true)]
+  [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
+  "Internal error (can be forced using ERROR_500 as book title)", true)]
+  public Book CreateBook(Book value)
+  {
+  // [.......]
+  }
+
+  // [.......]
+  }
+
+  ```
+
+  ### Step 7: Decorate data types used in WCF services
+
+  ```csharp
+
+  [DataContract(Name = "book")]
+  [Description("Book with title, first publish date, author and language")]
+  [SwaggerWcfDefinition(ExternalDocsUrl = "http://en.wikipedia.org/wiki/Book", ExternalDocsDescription = "Description of a book")]
+  public class Book
+  {
+  [DataMember(Name = "id")]
+  [Description("Book ID")]
+  public string Id { get; set; }
+
+  // [.......]
+  }
+
+  ```
+
+  Note: make sure you add at least the `DataContract` and `DataMember` attributes in classes and properties
+
+  ## Attributes
+
+  | Attribute              | Used in                                    | Description                   | Options                                                                                             |
+  | ---------------------- |------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
+  | `SwaggerWcf`           | `Class`, `Interface`                       | Enable parsing WCF service    | `ServicePath`                                                                                       |
+  | `SwaggerWcfHidden`     | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger     |                                                                                                     |
+  | `SwaggerWcfTag`        | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element       | `TagName`, `HideFromSpec`                                                                           |
+  | `SwaggerWcfHeader`     | `Method` | Configure method HTTP headers     | `Name`, `Required`, `Description`, `DefaultValue` |
+  | `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
+  | `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
+  | `SwaggerWcfProperty`  | `Property`                                | Configure property parameters   | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                                                           |
+  | `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
+  | `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
+  | `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
+  | `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types   | `ConsumeTypes`, `ProduceTypes` |
+  | `SwaggerWcfSecurity` | `Method`                                       | Add security background to this method | `SecurityDefinitionName`, `params Scopes`|
 
 ## Tags
 
