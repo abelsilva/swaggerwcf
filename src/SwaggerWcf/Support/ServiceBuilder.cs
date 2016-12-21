@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Configuration;
 using SwaggerWcf.Models;
@@ -24,6 +25,7 @@ namespace SwaggerWcf.Support
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
                 (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
+            
             List<Type> definitionsTypesList = new List<Type>();
             Service service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
@@ -32,7 +34,7 @@ namespace SwaggerWcf.Support
 
             ProcessSettings(service, settings);
 
-            BuildPaths(service, hiddenTags, definitionsTypesList);
+            BuildPaths(service, hiddenTags, visibleTags, definitionsTypesList);
 
             service.Definitions = DefinitionsBuilder.Process(hiddenTags, visibleTags, definitionsTypesList);
 
@@ -101,7 +103,7 @@ namespace SwaggerWcf.Support
                 service.Info.License.Name = settings["InfoLicenseName"];
         }
 
-        private static void BuildPaths(Service service, IList<string> hiddenTags, IList<Type> definitionsTypesList)
+        private static void BuildPaths(Service service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             service.Paths = new List<Path>();
@@ -125,7 +127,7 @@ namespace SwaggerWcf.Support
                     if (da == null || hiddenTags.Any(ht => ht == ti.AsType().Name))
                         continue;
 
-                    Mapper mapper = new Mapper(hiddenTags);
+                    Mapper mapper = new Mapper(hiddenTags, visibleTags);
 
                     IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, ti.AsType(), definitionsTypesList);
                     service.Paths.AddRange(paths);

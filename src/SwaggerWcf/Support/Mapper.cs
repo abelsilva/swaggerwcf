@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -17,12 +16,14 @@ namespace SwaggerWcf.Support
 {
     internal class Mapper
     {
-        internal Mapper(IList<string> hiddenTags)
+        internal Mapper(IList<string> hiddenTags, List<string> visibleTags)
         {
             HiddenTags = hiddenTags ?? new List<string>();
+            VisibleTags = visibleTags ?? new List<string>();
         }
 
         internal readonly IEnumerable<string> HiddenTags;
+        internal readonly IEnumerable<string> VisibleTags;
 
         internal IEnumerable<Path> FindMethods(string basePath, Type serviceType, IList<Type> definitionsTypesList)
         {
@@ -103,11 +104,6 @@ namespace SwaggerWcf.Support
                 MethodInfo implementation = targetMethods[index];
                 MethodInfo declaration = interfaceMethods[index];
 
-                //if the method is marked Hidden anywhere, skip it
-                if (implementation.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
-                    declaration.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null)
-                    continue;
-
                 //if a tag from either implementation or declaration is marked as not visible, skip it
                 List<SwaggerWcfTagAttribute> methodTags =
                     implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().ToList();
@@ -116,6 +112,12 @@ namespace SwaggerWcf.Support
                 methodTags = methodTags.Distinct().ToList();
 
                 if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
+                    continue;
+
+                //if the method is marked Hidden anywhere, skip it
+                if ((implementation.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null ||
+                     declaration.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null) &&
+                    !methodTags.Select(t => t.TagName).Any(VisibleTags.Contains))
                     continue;
 
                 //find the WebGet/Invoke attributes, or skip if neither is present
@@ -156,9 +158,9 @@ namespace SwaggerWcf.Support
 
                 string externalDocsDescription =
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation,
-                        "ExternalDocsDescription") ??
+                                                                                     "ExternalDocsDescription") ??
                     Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration,
-                        "ExternalDocsDescription") ??
+                                                                                     "ExternalDocsDescription") ??
                     "";
 
                 string externalDocsUrl =
@@ -212,14 +214,14 @@ namespace SwaggerWcf.Support
                 foreach (SwaggerWcfHeaderAttribute attr in headers)
                 {
                     operation.Parameters.Add(new ParameterPrimitive
-                    {
-                        Name = attr.Name,
-                        Description = attr.Description,
-                        Default = attr.DefaultValue,
-                        In = InType.Header,
-                        Required = attr.Required,
-                        TypeFormat = new TypeFormat(ParameterType.String, null)
-                    });
+                                             {
+                                                 Name = attr.Name,
+                                                 Description = attr.Description,
+                                                 Default = attr.DefaultValue,
+                                                 In = InType.Header,
+                                                 Required = attr.Required,
+                                                 TypeFormat = new TypeFormat(ParameterType.String, null)
+                                             });
                 }
 
                 TypeBuilder typeBuilder = null;
@@ -272,12 +274,12 @@ namespace SwaggerWcf.Support
                     TypeFormat typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);
 
                     operation.Parameters.Add(new ParameterSchema
-                    {
-                        Name = implementation.Name + "RequestWrapper",
-                        In = InType.Body,
-                        Required = true,
-                        SchemaRef = typeFormat.Format
-                    });
+                                             {
+                                                 Name = implementation.Name + "RequestWrapper",
+                                                 In = InType.Body,
+                                                 Required = true,
+                                                 SchemaRef = typeFormat.Format
+                                             });
                 }
 
                 if (!string.IsNullOrWhiteSpace(uriTemplate))
@@ -303,7 +305,8 @@ namespace SwaggerWcf.Support
             Match match;
             while ((match = regWithDefaultValue.Match(res)).Success)
             {
-                res = res.Substring(currIndex, match.Groups[1].Index) + res.Substring(match.Groups[1].Index + match.Groups[1].Length);
+                res = res.Substring(currIndex, match.Groups[1].Index) +
+                      res.Substring(match.Groups[1].Index + match.Groups[1].Length);
             }
 
             return res;
@@ -471,7 +474,7 @@ namespace SwaggerWcf.Support
                         .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] { "application/json", "application/xml" });
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
 
             return contentTypes;
         }
@@ -502,7 +505,7 @@ namespace SwaggerWcf.Support
                         .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] { "application/json", "application/xml" });
+                contentTypes.AddRange(new[] {"application/json", "application/xml"});
 
             return contentTypes;
         }
@@ -519,7 +522,8 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration, bool wrappedResponse, IList<Type> definitionsTypesList)
+        private List<Response> GetResponseCodes(MethodInfo implementation, MethodInfo declaration, bool wrappedResponse,
+                                                IList<Type> definitionsTypesList)
         {
             Type returnType = implementation.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>()
                                   .Concat(declaration.GetCustomAttributes<SwaggerWcfReturnTypeAttribute>())
