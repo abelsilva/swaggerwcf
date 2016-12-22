@@ -111,13 +111,36 @@ Notes:
 * `tags` will be described further down
 
 #### Configure via code
+Configure the base properties via code. New: You can add security settings to your api (see also the new Security-Methodattribute)
+
 ```csharp
-SwaggerWcfEndpoint.Configure(new SwaggerWcf.Models.Info
+var info = new Info
 {
-    Description = "Sample Service to test SwaggerWCF",
-    Version = "0.0.1"
-    // etc
-});
+Description = "Sample Service to test SwaggerWCF",
+Version = "0.0.1"
+// etc
+};
+
+var security = new SecurityDefinitions
+{
+  {
+    "api-gateway", new SecurityAuthorization
+    {
+      Type = "oauth2",
+      Name = "api-gateway",
+      Description = "Forces authentication with credentials via an api gateway",
+      Flow = "password",
+      Scopes = new Dictionary<string, string="">
+      {
+          { "author", "use author scope"},
+          { "admin", "use admin scope"},
+      },
+      AuthorizationUrl = "http://yourapi.net/oauth/token"
+    }
+  }
+};
+
+SwaggerWcfEndpoint.Configure(info, security);
 ```
 
 ### Step 5: Decorate WCF services interfaces
@@ -204,6 +227,7 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 | `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
 | `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
 | `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types   | `ConsumeTypes`, `ProduceTypes` |
+| `SwaggerWcfSecurity`    | `Method`                                  | Add security background to this method | `SecurityDefinitionName`, `params Scopes`                                                |
 
 
 ## Tags

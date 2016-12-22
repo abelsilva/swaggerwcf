@@ -25,6 +25,8 @@ namespace SwaggerWcf.Models
 
         public List<Definition> Definitions { get; set; }
 
+        public SecurityDefinitions SecurityDefinitions { get; set; }
+
         public void Serialize(JsonWriter writer)
         {
             writer.WriteStartObject();
@@ -58,6 +60,13 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("definitions");
                 WriteDefinitions(writer);
             }
+
+            if (SecurityDefinitions != null && SecurityDefinitions.Any())
+            {
+                writer.WritePropertyName("securityDefinitions");
+                WriteSecurityDefinitions(writer);
+            }
+
             writer.WriteEndObject();
         }
 
@@ -77,6 +86,17 @@ namespace SwaggerWcf.Models
             foreach (Definition d in Definitions.OrderBy(d => d.Schema.Name))
             {
                 d.Serialize(writer);
+            }
+            writer.WriteEndObject();
+        }
+
+        private void WriteSecurityDefinitions(JsonWriter writer)
+        {
+            writer.WriteStartObject();
+            foreach (var d in SecurityDefinitions)
+            {
+                writer.WritePropertyName(d.Key);
+                d.Value.Serialize(writer);
             }
             writer.WriteEndObject();
         }
