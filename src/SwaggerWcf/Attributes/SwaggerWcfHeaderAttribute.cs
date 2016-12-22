@@ -5,7 +5,7 @@ namespace SwaggerWcf.Attributes
     /// <summary>
     ///     Describe a parameter
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class SwaggerWcfHeaderAttribute : Attribute
     {
         /// <summary>

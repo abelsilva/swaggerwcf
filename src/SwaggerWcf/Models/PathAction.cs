@@ -40,7 +40,7 @@ namespace SwaggerWcf.Models
 
         public bool Deprecated { get; set; }
         
-        //public List<Security> security { get; set; }
+        public List<KeyValuePair<string, string[]>> Security { get; set; }
 
         public void Serialize(JsonWriter writer)
         {
@@ -137,10 +137,36 @@ namespace SwaggerWcf.Models
                 }
                 writer.WriteEndArray();
             }
+
             if (Deprecated)
             {
                 writer.WritePropertyName("deprecated");
                 writer.WriteValue(Deprecated);
+            }
+
+            if (Security != null && Security.Any())
+            {
+                writer.WritePropertyName("security");
+                writer.WriteStartArray();
+
+                foreach (var security in Security)
+                {
+                    writer.WriteStartObject();
+                    writer.WritePropertyName(security.Key);
+                    writer.WriteStartArray();
+
+                    if (security.Value != null && security.Value.Any())
+                    {
+                        foreach (var scopename in security.Value)
+                        {
+                            writer.WriteValue(scopename);
+                        }
+                    }
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
             }
 
             writer.WriteEndObject();
