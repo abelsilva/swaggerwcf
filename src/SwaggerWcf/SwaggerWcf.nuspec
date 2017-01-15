@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>swagger-ui updated to 2.2.10 - fixes #55</releaseNotes>
+    <releaseNotes>allow data classes to be used without DataContract/DataMember attributes - fixes #64</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>

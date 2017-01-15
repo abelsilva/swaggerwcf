@@ -189,8 +189,7 @@ namespace SwaggerWcf.Support
         private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags,
                                                           Stack<Type> typesStack)
         {
-            if (propertyInfo.GetCustomAttribute<DataMemberAttribute>() == null
-                || propertyInfo.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null
+            if (propertyInfo.GetCustomAttribute<SwaggerWcfHiddenAttribute>() != null
                 || propertyInfo.GetCustomAttributes<SwaggerWcfTagAttribute>()
                                .Select(t => t.TagName)
                                .Any(hiddenTags.Contains))
