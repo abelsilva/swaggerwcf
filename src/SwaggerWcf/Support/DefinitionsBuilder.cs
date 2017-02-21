@@ -308,6 +308,7 @@ namespace SwaggerWcf.Support
             //ApplyIfValid(LastValidValue(attrs, a => a._AllowEmptyValue),  x => prop.AllowEmptyValue  = x.Value);
             //ApplyIfValid(LastValidValue(attrs, a => a._CollectionFormat), x => prop.CollectionFormat = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a.Default), x => prop.Default = x);
+            ApplyIfValid(LastValidValue(attrs, a => a.Example), x => prop.Example = x);
             ApplyIfValid(LastValidValue(attrs, a => a._Maximum), x => prop.Maximum = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._ExclusiveMaximum), x => prop.ExclusiveMaximum = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._Minimum), x => prop.Minimum = x.Value);

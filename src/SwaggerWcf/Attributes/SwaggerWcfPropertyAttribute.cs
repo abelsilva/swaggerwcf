@@ -48,6 +48,11 @@ namespace SwaggerWcf.Attributes
         public string Default { get; set; }
 
         /// <summary>
+        ///     Illustrate what the value is supposed to be like.
+        /// </summary>
+        public object Example { get; set; }
+
+        /// <summary>
         ///     Maximum allowed value, as modified by ExclusiveMaximum.
         ///     Must be a valid JSON number, and storable as a decimal.
         /// </summary>

@@ -31,6 +31,8 @@ namespace SwaggerWcf.Models
 
         public string Default { get; set; }
 
+        public object Example { get; set; }
+
         public decimal Maximum { get; set; }
 
         public bool ExclusiveMaximum { get; set; }
@@ -91,6 +93,21 @@ namespace SwaggerWcf.Models
                 {
                     writer.WritePropertyName("default");
                     writer.WriteValue(Default);
+                }
+                if (Example!=null)
+                {
+                    writer.WritePropertyName("example");
+                    if (Example.GetType().IsArray)
+                    {
+                        writer.WriteStartArray();
+                        foreach (var value in (object[])Example)
+                        {
+                            writer.WriteValue(value);
+                        }
+                        writer.WriteEndArray();
+                    }
+                    else
+                        writer.WriteValue(Example);
                 }
                 if (Maximum != decimal.MaxValue)
                 {
