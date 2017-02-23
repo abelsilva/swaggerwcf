@@ -14,7 +14,7 @@ namespace SwaggerWcf
     public delegate Stream GetFileCustomDelegate(string filename, out string contentType, out long contentLength);
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-    public class SwaggerWcfEndpoint : ISwaggerWcfEndpoint
+    public class SwaggerWcfEndpoint : SwaggerWcfEndpointBase
     {
         private static Service Service { get; set; }
         private static int _initialized;
@@ -32,17 +32,6 @@ namespace SwaggerWcf
             Service = ServiceBuilder.Build();
         }
 
-        public static void SetCustomZip(Stream customSwaggerUiZipStream)
-        {
-            if (customSwaggerUiZipStream != null)
-                Support.StaticContent.SetArchiveCustom(customSwaggerUiZipStream);
-        }
-
-        public static void SetCustomGetFile(GetFileCustomDelegate getFileCustom)
-        {
-            Support.StaticContent.GetFileCustom = getFileCustom;
-        }
-
         public static void Configure(Info info, SecurityDefinitions securityDefinitions = null)
         {
             Init();
@@ -50,7 +39,7 @@ namespace SwaggerWcf
             Service.SecurityDefinitions = securityDefinitions;
         }
 
-        public Stream GetSwaggerFile()
+        public override Stream GetSwaggerFile()
         {
             WebOperationContext woc = WebOperationContext.Current;
             if (woc != null)
@@ -61,42 +50,6 @@ namespace SwaggerWcf
             }
 
             return new MemoryStream(Encoding.UTF8.GetBytes(Serializer.Process(Service)));
-        }
-
-        public Stream StaticContent(string content)
-        {
-            WebOperationContext woc = WebOperationContext.Current;
-
-            if (woc == null)
-                return Stream.Null;
-
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                string swaggerUrl = woc.IncomingRequest.UriTemplateMatch.BaseUri.LocalPath + "/swagger.json";
-                woc.OutgoingResponse.StatusCode = HttpStatusCode.Redirect;
-                woc.OutgoingResponse.Location = "index.html?url=" + swaggerUrl;
-                return null;
-            }
-
-            string filename = content.Contains("?")
-                ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
-                : content;
-
-            string contentType;
-            long contentLength;
-            Stream stream = Support.StaticContent.GetFile(filename, out contentType, out contentLength);
-
-            if (stream == Stream.Null)
-            {
-                woc.OutgoingResponse.StatusCode = HttpStatusCode.NotFound;
-                return null;
-            }
-
-            woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
-            woc.OutgoingResponse.ContentLength = contentLength;
-            woc.OutgoingResponse.ContentType = contentType;
-
-            return stream;
         }
     }
 }
