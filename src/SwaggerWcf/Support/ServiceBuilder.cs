@@ -20,6 +20,13 @@ namespace SwaggerWcf.Support
             return service;
         }
 
+        public static Service Build<TBusiness>()
+        {
+            Service service = BuildService<TBusiness>();
+
+            return service;
+        }
+
         private static Service BuildService()
         {
             const string sectionName = "swaggerwcf";
@@ -40,6 +47,28 @@ namespace SwaggerWcf.Support
 
             return service;
         }
+
+        private static Service BuildService<TBusiness>()
+        {
+            const string sectionName = "swaggerwcf";
+            SwaggerWcfSection config =
+                (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
+
+            List<Type> definitionsTypesList = new List<Type>();
+            Service service = new Service();
+            List<string> hiddenTags = GetHiddenTags(config);
+            List<string> visibleTags = GetVisibleTags(config);
+            IReadOnlyDictionary<string, string> settings = GetSettings(config);
+
+            ProcessSettings(service, settings);
+
+            BuildPaths<TBusiness>(service, hiddenTags, visibleTags, definitionsTypesList);
+
+            service.Definitions = DefinitionsBuilder.Process(hiddenTags, visibleTags, definitionsTypesList);
+
+            return service;
+        }
+
 
         private static List<string> GetHiddenTags(SwaggerWcfSection config)
         {
@@ -133,6 +162,21 @@ namespace SwaggerWcf.Support
                     service.Paths.AddRange(paths);
                 }
             }
+        }
+
+        private static void BuildPaths<TBusiness>(Service service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
+        {
+            Type type = typeof(TBusiness);
+            service.Paths = new List<Path>();
+
+            SwaggerWcfAttribute da = type.GetCustomAttribute<SwaggerWcfAttribute>();
+            if (da == null || hiddenTags.Any(ht => ht == type.Name))
+                return;
+
+            Mapper mapper = new Mapper(hiddenTags, visibleTags);
+
+            IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, type, definitionsTypesList);
+            service.Paths.AddRange(paths);
         }
     }
 }
