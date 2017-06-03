@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Generic SwaggerWcfEndpoint (#68 / #67)</releaseNotes>
+    <releaseNotes>fix #76 (remove duplicate responses) and added PR #77 (schemes)</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>
