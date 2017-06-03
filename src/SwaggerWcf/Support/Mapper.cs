@@ -541,7 +541,7 @@ namespace SwaggerWcf.Support
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
-            responses = responses.Concat(declaration.GetCustomAttributes<SwaggerWcfResponseAttribute>()).ToList();
+            responses = responses.Concat(declaration.GetCustomAttributes<SwaggerWcfResponseAttribute>()).FilterUnique().ToList();
 
             List<Response> res =
                 responses.Select(ra => ConvertResponse(ra, schema, implementation, wrappedResponse, definitionsTypesList))
