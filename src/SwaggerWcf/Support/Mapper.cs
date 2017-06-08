@@ -224,7 +224,23 @@ namespace SwaggerWcf.Support
                                                  TypeFormat = new TypeFormat(ParameterType.String, null)
                                              });
                 }
+				
+				List<SwaggerWcfQueryAttribute> queries = 
+                    implementation.GetCustomAttributes<SwaggerWcfQueryAttribute>().ToList();
 
+                foreach (SwaggerWcfQueryAttribute attr in queries)
+                {
+                    operation.Parameters.Add(new ParameterPrimitive
+                    {
+                        Name = attr.Name,
+                        Description = attr.Description,
+                        Default = attr.DefaultValue,
+                        In = InType.Query,
+                        Required = attr.Required,
+                        TypeFormat = new TypeFormat(attr.Type, null)
+                    });
+                }
+				
                 TypeBuilder typeBuilder = null;
                 if (wrappedRequest)
                 {
