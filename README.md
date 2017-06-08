@@ -223,6 +223,7 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 | `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
 | `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
 | `SwaggerWcfProperty`  | `Property`                                | Configure property parameters   | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                                                           |
+| `SwaggerWcfQuery`     | `Method` | Configure method HTTP headers     | `Name`, `Required`, `Description`, `DefaultValue`, `Type` |
 | `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
 | `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
 | `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
