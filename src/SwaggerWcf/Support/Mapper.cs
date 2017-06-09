@@ -225,7 +225,7 @@ namespace SwaggerWcf.Support
                                              });
                 }
 				
-				List<SwaggerWcfQueryAttribute> queries = 
+		List<SwaggerWcfQueryAttribute> queries = 
                     implementation.GetCustomAttributes<SwaggerWcfQueryAttribute>().ToList();
 
                 foreach (SwaggerWcfQueryAttribute attr in queries)
