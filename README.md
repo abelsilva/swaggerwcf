@@ -214,20 +214,20 @@ Note: make sure you add at least the `DataContract` and `DataMember` attributes 
 
 ## Attributes
 
-| Attribute              | Used in                                    | Description                   | Options                                                                                             |
-| ---------------------- |------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
-| `SwaggerWcf`           | `Class`, `Interface`                       | Enable parsing WCF service    | `ServicePath`                                                                                       |
-| `SwaggerWcfHidden`     | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger     |                                                                                                     |
-| `SwaggerWcfTag`        | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element       | `TagName`, `HideFromSpec`                                                                           |
-| `SwaggerWcfHeader`     | `Method` | Configure method HTTP headers     | `Name`, `Required`, `Description`, `DefaultValue` |
-| `SwaggerWcfPath`       | `Method`                                   | Configure a method in Swagger | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
-| `SwaggerWcfParameter`  | `Parameter`                                | Configure method parameters   | `Required`, `Description`                                                                           |
-| `SwaggerWcfProperty`  | `Property`                                | Configure property parameters   | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                                                           |
-| `SwaggerWcfResponse`   | `Method`                                   | Configure method return value | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
-| `SwaggerWcfDefinition` | `Class`                                    | Configure a data type         | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
-| `SwaggerWcfReturnType` | `Method`                                   | Override method return type   | `ReturnType` |
-| `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types   | `ConsumeTypes`, `ProduceTypes` |
-| `SwaggerWcfSecurity`    | `Method`                                  | Add security background to this method | `SecurityDefinitionName`, `params Scopes`                                                |
+| Attribute                | Used in                                    | Description                            | Options                                                                                             |
+| ------------------------ |------------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `SwaggerWcf`             | `Class`, `Interface`                       | Enable parsing WCF service             | `ServicePath`                                                                                       |
+| `SwaggerWcfHidden`       | `Class`, `Method`, `Property`, `Parameter` | Hide element from Swagger              |                                                                                                     |
+| `SwaggerWcfTag`          | `Class`, `Method`, `Property`, `Parameter` | Add a tag to an element                | `TagName`, `HideFromSpec`                                                                           |
+| `SwaggerWcfHeader`       | `Method`                                   | Configure method HTTP headers          | `Name`, `Required`, `Description`, `DefaultValue`                                                   |
+| `SwaggerWcfPath`         | `Method`                                   | Configure a method in Swagger          | `Summary`, `Description`, `OperationId`, `ExternalDocsDescription`, `ExternalDocsUrl`, `Deprecated` |
+| `SwaggerWcfParameter`    | `Parameter`                                | Configure method parameters            | `Required`, `Description`, `ParameterType`                                                          |
+| `SwaggerWcfProperty`     | `Property`                                 | Configure property parameters          | `Required`, `Description`, `Minimum`, `Maximum`, `Default`, ...                                     |
+| `SwaggerWcfResponse`     | `Method`                                   | Configure method return value          | `Code`, `Description`, `EmptyResponseOverride`, `Headers`                                           |
+| `SwaggerWcfDefinition`   | `Class`                                    | Configure a data type                  | `ExternalDocsDescription`, `ExternalDocsUrl`                                                        |
+| `SwaggerWcfReturnType`   | `Method`                                   | Override method return type            | `ReturnType`                                                                                        |
+| `SwaggerWcfContentTypes` | `Method`                                   | Override consume/produce content-types | `ConsumeTypes`, `ProduceTypes`                                                                      |
+| `SwaggerWcfSecurity`     | `Method`                                   | Add security background to this method | `SecurityDefinitionName`, `params Scopes`                                                           |
 
 
 ## Tags
@@ -242,6 +242,15 @@ When a `SwaggerWcfTag` is added to an element, it may be configured with `HideFr
 This will prevent this tag to be displayed in the Swagger output.
 
 When combined with `SwaggerWcfHidden`, if the tag has the value `visible` as `true` in `web.config` file, the element will be visible
+
+## Query Parameter
+
+To specify query parameters to a function you may use the following syntax
+
+```csharp
+[WebGet(UriTemplate = "/books?filter={filter}", BodyStyle = WebMessageBodyStyle.Bare)]
+Book[] ReadBooks(string filter = null);
+```
 
 ## Optional Parameters
 
