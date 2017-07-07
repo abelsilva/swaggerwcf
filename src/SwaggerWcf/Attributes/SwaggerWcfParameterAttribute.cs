@@ -13,11 +13,13 @@ namespace SwaggerWcf.Attributes
         /// </summary>
         /// <param name="required">Set parameter as required. Defaults is false.</param>
         /// <param name="description">Parameter description.</param>
-        public SwaggerWcfParameterAttribute(bool required = false, string description = null)
+        public SwaggerWcfParameterAttribute(bool required = false, string description = null, Type parameterType = null)
         {
             Required = required;
             Description = description;
+            ParameterType = parameterType;
         }
+
 
         /// <summary>
         ///     Defines if this parameter is required in operations
@@ -28,5 +30,10 @@ namespace SwaggerWcf.Attributes
         ///     Description of this parameter
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        ///     Override parameter type
+        /// </summary>
+        public Type ParameterType { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace SwaggerWcf.Support
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
                 (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
-            
+
             List<Type> definitionsTypesList = new List<Type>();
             Service service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
@@ -103,8 +103,8 @@ namespace SwaggerWcf.Support
                 service.BasePath = settings["BasePath"];
             if (settings.ContainsKey("Host"))
                 service.Host = settings["Host"];
-	    if (settings.ContainsKey("Schemes"))
-	    	service.Schemes = settings["Schemes"].Split(';').ToList();
+            if (settings.ContainsKey("Schemes"))
+                service.Schemes = settings["Schemes"].Split(';').ToList();
 
             if (settings.Keys.Any(k => k.StartsWith("Info")))
                 service.Info = new Info();

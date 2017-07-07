@@ -215,14 +215,14 @@ namespace SwaggerWcf.Support
                 foreach (SwaggerWcfHeaderAttribute attr in headers)
                 {
                     operation.Parameters.Add(new ParameterPrimitive
-                                             {
-                                                 Name = attr.Name,
-                                                 Description = attr.Description,
-                                                 Default = attr.DefaultValue,
-                                                 In = InType.Header,
-                                                 Required = attr.Required,
-                                                 TypeFormat = new TypeFormat(ParameterType.String, null)
-                                             });
+                    {
+                        Name = attr.Name,
+                        Description = attr.Description,
+                        Default = attr.DefaultValue,
+                        In = InType.Header,
+                        Required = attr.Required,
+                        TypeFormat = new TypeFormat(ParameterType.String, null)
+                    });
                 }
 
                 TypeBuilder typeBuilder = null;
@@ -265,7 +265,11 @@ namespace SwaggerWcf.Support
                     if (piTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                         continue;
 
-                    TypeFormat typeFormat = Helpers.MapSwaggerType(parameter.ParameterType, definitionsTypesList);
+                    Type type = settings == null || settings.ParameterType == null
+                        ? parameter.ParameterType
+                        : settings.ParameterType;
+
+                    TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
                     operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
                                                           definitionsTypesList));
@@ -275,12 +279,12 @@ namespace SwaggerWcf.Support
                     TypeFormat typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);
 
                     operation.Parameters.Add(new ParameterSchema
-                                             {
-                                                 Name = implementation.Name + "RequestWrapper",
-                                                 In = InType.Body,
-                                                 Required = true,
-                                                 SchemaRef = typeFormat.Format
-                                             });
+                    {
+                        Name = implementation.Name + "RequestWrapper",
+                        In = InType.Body,
+                        Required = true,
+                        SchemaRef = typeFormat.Format
+                    });
                 }
 
                 if (!string.IsNullOrWhiteSpace(uriTemplate))
@@ -350,7 +354,9 @@ namespace SwaggerWcf.Support
             if (!required && !parameter.HasDefaultValue)
                 required = true;
 
-            Type paramType = parameter.ParameterType;
+            Type paramType = settings == null || settings.ParameterType == null
+                ? parameter.ParameterType
+                : settings.ParameterType;
             if (paramType.IsGenericType && paramType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 required = false;
@@ -398,6 +404,18 @@ namespace SwaggerWcf.Support
                     }
 
                     return arrayParam;
+                }
+                if (typeFormat.IsPrimitiveType)
+                {
+                    ParameterPrimitive paramPrimitive = new ParameterPrimitive
+                    {
+                        Name = name,
+                        Description = description,
+                        In = inType,
+                        Required = required,
+                        TypeFormat = typeFormat
+                    };
+                    return paramPrimitive;
                 }
 
                 //it's a complex type, so we'll need to map it later
@@ -475,7 +493,7 @@ namespace SwaggerWcf.Support
                         .Select(a => ConvertWebMessageFormatToContentType(a.RequestFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -506,7 +524,7 @@ namespace SwaggerWcf.Support
                         .Select(a => ConvertWebMessageFormatToContentType(a.ResponseFormat)));
             }
             if (!contentTypes.Any())
-                contentTypes.AddRange(new[] {"application/json", "application/xml"});
+                contentTypes.AddRange(new[] { "application/json", "application/xml" });
 
             return contentTypes;
         }
@@ -550,10 +568,10 @@ namespace SwaggerWcf.Support
             if (!res.Any())
             {
                 res.Add(new Response
-                        {
-                            Code = "default",
-                            Schema = schema
-                        });
+                {
+                    Code = "default",
+                    Schema = schema
+                });
             }
 
             return res;
