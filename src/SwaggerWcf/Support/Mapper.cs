@@ -25,7 +25,7 @@ namespace SwaggerWcf.Support
         internal readonly IEnumerable<string> HiddenTags;
         internal readonly IEnumerable<string> VisibleTags;
 
-        internal IEnumerable<Path> FindMethods(string basePath, Type serviceType, IList<Type> definitionsTypesList)
+        internal IEnumerable<Path> FindMethods(string basePath, Type markedType, IList<Type> definitionsTypesList)
         {
             bool addedSlash = false;
             List<Path> paths = new List<Path>();
@@ -37,9 +37,30 @@ namespace SwaggerWcf.Support
                 basePath = basePath + "/";
             }
 
-            //search all interfaces for this type for potential DataContracts, and build a set of items
-            List<Type> types = serviceType.GetInterfaces().ToList();
-            types.Add(serviceType);
+            List<Type> types;
+            Type serviceType;
+            if (markedType.IsInterface)
+            {
+                //search for service impl type
+                var allTypes = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(s => s.GetTypes())
+                    .Where(type => markedType.IsAssignableFrom(type) && !type.IsInterface)
+                    .ToList();
+
+                serviceType = allTypes.Except(allTypes.Select(type => type.BaseType)).Single();
+
+                types = new List<Type> {markedType};
+            }
+            else
+            {
+                serviceType = markedType;
+
+                //search all interfaces for this type for potential DataContracts, and build a set of items
+                types = serviceType.GetInterfaces().ToList();
+                types.Add(serviceType);
+            }
+
             foreach (Type i in types)
             {
                 Attribute dc = i.GetCustomAttribute(typeof(ServiceContractAttribute));
