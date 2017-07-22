@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>added support for overriding parameter types #80</releaseNotes>
+    <releaseNotes>Added support for marking interfaces with SwaggerWcf attribute #82 #83 - from @heXelium</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>
