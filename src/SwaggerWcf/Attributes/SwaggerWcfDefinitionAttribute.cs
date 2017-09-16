@@ -20,6 +20,11 @@ namespace SwaggerWcf.Attributes
             ExternalDocsUrl = externalDocsUrl;
         }
 
+        public SwaggerWcfDefinitionAttribute(string modelName)
+        {
+            ModelName = modelName;
+        }
+
         /// <summary>
         ///     Description of the external documentation
         /// </summary>
@@ -29,5 +34,7 @@ namespace SwaggerWcf.Attributes
         ///     URL of the external documentation
         /// </summary>
         public string ExternalDocsUrl { get; set; }
+
+        public string ModelName { get; set; }
     }
 }

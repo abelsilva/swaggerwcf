@@ -52,9 +52,13 @@ namespace SwaggerWcf.Support
         private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags,
                                                           Stack<Type> typesStack)
         {
+            var attr = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+            string name = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                ? definitionType.FullName
+                : attr.ModelName;
             DefinitionSchema schema = new DefinitionSchema
             {
-                Name = definitionType.FullName
+                Name = name
             };
 
             ProcessTypeAttributes(definitionType, schema);
@@ -84,9 +88,14 @@ namespace SwaggerWcf.Support
             {
                 Type t = GetEnumerableType(definitionType);
 
+                var attr2 = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                string name2 = (attr2 == null || string.IsNullOrWhiteSpace(attr2.ModelName))
+                    ? t.FullName
+                    : attr2.ModelName;
+
                 if (t != null)
                 {
-                    schema.Ref = t.FullName;
+                    schema.Ref = name2;
                     typesStack.Push(t);
                 }
             }
@@ -120,6 +129,9 @@ namespace SwaggerWcf.Support
                         Url = definitionAttr.ExternalDocsUrl
                     };
                 }
+
+                if (!string.IsNullOrWhiteSpace(definitionAttr.ModelName))
+                    schema.Name = definitionAttr.ModelName;
             }
         }
 
@@ -147,11 +159,16 @@ namespace SwaggerWcf.Support
                         //prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, HttpUtility.HtmlEncode(t.FullName));
                         prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, null);
 
+                        var attr = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                        string name = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                            ? t.FullName
+                            : attr.ModelName;
+
                         TypeFormat st = Helpers.MapSwaggerType(t);
                         if (st.Type == ParameterType.Array || st.Type == ParameterType.Object)
                         {
                             prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
-                            prop.Items.Ref = t.FullName;
+                            prop.Items.Ref = name;
                         }
                         else
                         {
@@ -228,7 +245,12 @@ namespace SwaggerWcf.Support
             {
                 typesStack.Push(propertyInfo.PropertyType);
 
-                prop.Ref = propertyInfo.PropertyType.FullName;
+                var attr = propertyInfo.PropertyType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                    ? propertyInfo.PropertyType.FullName
+                    : attr.ModelName;
+
+                prop.Ref = refName;
 
                 return prop;
             }

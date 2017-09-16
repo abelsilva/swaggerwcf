@@ -50,7 +50,7 @@ namespace SwaggerWcf.Support
 
                 serviceType = allTypes.Except(allTypes.Select(type => type.BaseType)).Single();
 
-                types = new List<Type> {markedType};
+                types = new List<Type> { markedType };
             }
             else
             {
@@ -401,6 +401,12 @@ namespace SwaggerWcf.Support
                 if (typeFormat.Type == ParameterType.Array)
                 {
                     Type t = paramType.GetElementType() ?? GetEnumerableType(paramType);
+
+                    var attr2 = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                    string refName2 = (attr2 == null || string.IsNullOrWhiteSpace(attr2.ModelName))
+                        ? t.FullName
+                        : attr2.ModelName;
+
                     ParameterPrimitive arrayParam = new ParameterPrimitive
                     {
                         Name = name,
@@ -412,7 +418,7 @@ namespace SwaggerWcf.Support
                         {
                             Items = new ParameterSchema
                             {
-                                SchemaRef = t.FullName
+                                SchemaRef = refName2
                             }
                         },
                         CollectionFormat = CollectionFormat.Csv
@@ -444,8 +450,14 @@ namespace SwaggerWcf.Support
                 {
                     definitionsTypesList.Add(paramType);
                 }
+
+                var attr = paramType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                    ? paramType.FullName
+                    : attr.ModelName;
+
                 typeFormat = new TypeFormat(ParameterType.Object,
-                                            HttpUtility.HtmlEncode(paramType.FullName));
+                                            HttpUtility.HtmlEncode(refName));
 
                 return new ParameterSchema
                 {
@@ -627,10 +639,15 @@ namespace SwaggerWcf.Support
             }
             TypeFormat typeFormat = new TypeFormat(ParameterType.Unknown, null);
 
+            var attr = returnType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+            string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                ? returnType.FullName
+                : attr.ModelName;
+
             return new Schema
             {
                 TypeFormat = typeFormat,
-                Ref = HttpUtility.HtmlEncode(returnType.FullName)
+                Ref = HttpUtility.HtmlEncode(refName)
             };
         }
 
@@ -671,10 +688,14 @@ namespace SwaggerWcf.Support
                     if (t == null)
                         return null;
                     definitionsTypesList.Add(t);
+                    var attr = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
+                    string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
+                        ? t.FullName
+                        : attr.ModelName;
                     return new Schema
                     {
                         TypeFormat = typeFormat,
-                        Ref = HttpUtility.HtmlEncode(t.FullName)
+                        Ref = HttpUtility.HtmlEncode(refName)
                     };
                 default:
                     definitionsTypesList.Add(type);
