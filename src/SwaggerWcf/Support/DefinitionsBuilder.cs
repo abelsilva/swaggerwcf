@@ -52,13 +52,9 @@ namespace SwaggerWcf.Support
         private static Definition ConvertTypeToDefinition(Type definitionType, IList<string> hiddenTags,
                                                           Stack<Type> typesStack)
         {
-            var attr = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-            string name = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                ? definitionType.FullName
-                : attr.ModelName;
             DefinitionSchema schema = new DefinitionSchema
             {
-                Name = name
+                Name = definitionType.GetModelName()
             };
 
             ProcessTypeAttributes(definitionType, schema);
@@ -88,14 +84,9 @@ namespace SwaggerWcf.Support
             {
                 Type t = GetEnumerableType(definitionType);
 
-                var attr2 = definitionType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                string name2 = (attr2 == null || string.IsNullOrWhiteSpace(attr2.ModelName))
-                    ? t.FullName
-                    : attr2.ModelName;
-
                 if (t != null)
                 {
-                    schema.Ref = name2;
+                    schema.Ref = definitionType.GetModelName();
                     typesStack.Push(t);
                 }
             }
@@ -159,16 +150,11 @@ namespace SwaggerWcf.Support
                         //prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, HttpUtility.HtmlEncode(t.FullName));
                         prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, null);
 
-                        var attr = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                        string name = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                            ? t.FullName
-                            : attr.ModelName;
-
                         TypeFormat st = Helpers.MapSwaggerType(t);
                         if (st.Type == ParameterType.Array || st.Type == ParameterType.Object)
                         {
                             prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
-                            prop.Items.Ref = name;
+                            prop.Items.Ref = t.GetModelName();
                         }
                         else
                         {
@@ -227,7 +213,7 @@ namespace SwaggerWcf.Support
 
             // Special case - if it came out required, but we unwrapped a null-able type,
             // then it's necessarily not required.  Ideally this would only set the default,
-            // but we can't tell the difference between an explicit delaration of
+            // but we can't tell the difference between an explicit declaration of
             // IsRequired =false on the DataMember attribute and no declaration at all.
             if (prop.Required && propertyInfo.PropertyType.IsGenericType &&
                 propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -245,12 +231,7 @@ namespace SwaggerWcf.Support
             {
                 typesStack.Push(propertyInfo.PropertyType);
 
-                var attr = propertyInfo.PropertyType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                    ? propertyInfo.PropertyType.FullName
-                    : attr.ModelName;
-
-                prop.Ref = refName;
+                prop.Ref = propertyInfo.PropertyType.GetModelName();
 
                 return prop;
             }

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Web;
-using SwaggerWcf.Attributes;
 using SwaggerWcf.Configuration;
 using SwaggerWcf.Models;
 
@@ -120,11 +118,7 @@ namespace SwaggerWcf.Support
                 definitions.Add(type);
             }
 
-            var attr = type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-            string name = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                ? type.FullName
-                : attr.ModelName;
-            return new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(name));
+            return new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(type.GetModelName()));
         }
 
         private static string BuildTypeString(string typeName, string defaultNote = null, string typeNote = null)

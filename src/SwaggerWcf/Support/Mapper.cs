@@ -401,12 +401,6 @@ namespace SwaggerWcf.Support
                 if (typeFormat.Type == ParameterType.Array)
                 {
                     Type t = paramType.GetElementType() ?? GetEnumerableType(paramType);
-
-                    var attr2 = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                    string refName2 = (attr2 == null || string.IsNullOrWhiteSpace(attr2.ModelName))
-                        ? t.FullName
-                        : attr2.ModelName;
-
                     ParameterPrimitive arrayParam = new ParameterPrimitive
                     {
                         Name = name,
@@ -418,7 +412,7 @@ namespace SwaggerWcf.Support
                         {
                             Items = new ParameterSchema
                             {
-                                SchemaRef = refName2
+                                SchemaRef = t.GetModelName()
                             }
                         },
                         CollectionFormat = CollectionFormat.Csv
@@ -451,13 +445,8 @@ namespace SwaggerWcf.Support
                     definitionsTypesList.Add(paramType);
                 }
 
-                var attr = paramType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                    ? paramType.FullName
-                    : attr.ModelName;
-
                 typeFormat = new TypeFormat(ParameterType.Object,
-                                            HttpUtility.HtmlEncode(refName));
+                                             HttpUtility.HtmlEncode(paramType.GetModelName()));
 
                 return new ParameterSchema
                 {
@@ -639,15 +628,10 @@ namespace SwaggerWcf.Support
             }
             TypeFormat typeFormat = new TypeFormat(ParameterType.Unknown, null);
 
-            var attr = returnType.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-            string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                ? returnType.FullName
-                : attr.ModelName;
-
             return new Schema
             {
                 TypeFormat = typeFormat,
-                Ref = HttpUtility.HtmlEncode(refName)
+                Ref = HttpUtility.HtmlEncode(returnType.GetModelName())
             };
         }
 
@@ -688,14 +672,10 @@ namespace SwaggerWcf.Support
                     if (t == null)
                         return null;
                     definitionsTypesList.Add(t);
-                    var attr = t.GetCustomAttribute<SwaggerWcfDefinitionAttribute>();
-                    string refName = (attr == null || string.IsNullOrWhiteSpace(attr.ModelName))
-                        ? t.FullName
-                        : attr.ModelName;
                     return new Schema
                     {
                         TypeFormat = typeFormat,
-                        Ref = HttpUtility.HtmlEncode(refName)
+                        Ref = HttpUtility.HtmlEncode(t.GetModelName())
                     };
                 default:
                     definitionsTypesList.Add(type);
