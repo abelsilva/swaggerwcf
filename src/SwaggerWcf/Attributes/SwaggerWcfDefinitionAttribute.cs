@@ -9,6 +9,21 @@ namespace SwaggerWcf.Attributes
     public class SwaggerWcfDefinitionAttribute : Attribute
     {
         /// <summary>
+        ///     Description of the external documentation
+        /// </summary>
+        public string ExternalDocsDescription { get; set; }
+
+        /// <summary>
+        ///     URL of the external documentation
+        /// </summary>
+        public string ExternalDocsUrl { get; set; }
+
+        /// <summary>
+        /// Optional custom name for model. Model names default to class's fully qualified name
+        /// </summary>
+        public string ModelName { get; set; }
+
+        /// <summary>
         ///     Configures a description with more information
         /// </summary>
         /// <param name="externalDocsDescription">Description external docs description</param>
@@ -19,15 +34,5 @@ namespace SwaggerWcf.Attributes
             ExternalDocsDescription = externalDocsDescription;
             ExternalDocsUrl = externalDocsUrl;
         }
-
-        /// <summary>
-        ///     Description of the external documentation
-        /// </summary>
-        public string ExternalDocsDescription { get; set; }
-
-        /// <summary>
-        ///     URL of the external documentation
-        /// </summary>
-        public string ExternalDocsUrl { get; set; }
     }
 }

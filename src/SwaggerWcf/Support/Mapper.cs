@@ -412,7 +412,7 @@ namespace SwaggerWcf.Support
                         {
                             Items = new ParameterSchema
                             {
-                                SchemaRef = t.FullName
+                                SchemaRef = t.GetModelName()
                             }
                         },
                         CollectionFormat = CollectionFormat.Csv
@@ -444,8 +444,9 @@ namespace SwaggerWcf.Support
                 {
                     definitionsTypesList.Add(paramType);
                 }
+
                 typeFormat = new TypeFormat(ParameterType.Object,
-                                            HttpUtility.HtmlEncode(paramType.FullName));
+                                             HttpUtility.HtmlEncode(paramType.GetModelName()));
 
                 return new ParameterSchema
                 {
@@ -640,7 +641,7 @@ namespace SwaggerWcf.Support
             return new Schema
             {
                 TypeFormat = typeFormat,
-                Ref = HttpUtility.HtmlEncode(returnType.FullName)
+                Ref = HttpUtility.HtmlEncode(returnType.GetModelName())
             };
         }
 
@@ -684,7 +685,7 @@ namespace SwaggerWcf.Support
                     return new Schema
                     {
                         TypeFormat = typeFormat,
-                        Ref = HttpUtility.HtmlEncode(t.FullName)
+                        Ref = HttpUtility.HtmlEncode(t.GetModelName())
                     };
                 default:
                     definitionsTypesList.Add(type);

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SwaggerWcf.Attributes;
+using System;
 using System.Linq;
+using System.Reflection;
 
 namespace SwaggerWcf.Support
 {
@@ -15,5 +17,8 @@ namespace SwaggerWcf.Support
 
             return genericArguments.Any() ? genericArguments[0] : null;
         }
+
+        public static string GetModelName(this Type type) =>
+            type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>()?.ModelName ?? type.FullName;
     }
 }

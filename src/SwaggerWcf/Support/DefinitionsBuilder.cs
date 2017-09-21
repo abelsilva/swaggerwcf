@@ -54,7 +54,7 @@ namespace SwaggerWcf.Support
         {
             DefinitionSchema schema = new DefinitionSchema
             {
-                Name = definitionType.FullName
+                Name = definitionType.GetModelName()
             };
 
             ProcessTypeAttributes(definitionType, schema);
@@ -86,7 +86,7 @@ namespace SwaggerWcf.Support
 
                 if (t != null)
                 {
-                    schema.Ref = t.FullName;
+                    schema.Ref = definitionType.GetModelName();
                     typesStack.Push(t);
                 }
             }
@@ -120,6 +120,9 @@ namespace SwaggerWcf.Support
                         Url = definitionAttr.ExternalDocsUrl
                     };
                 }
+
+                if (!string.IsNullOrWhiteSpace(definitionAttr.ModelName))
+                    schema.Name = definitionAttr.ModelName;
             }
         }
 
@@ -151,7 +154,7 @@ namespace SwaggerWcf.Support
                         if (st.Type == ParameterType.Array || st.Type == ParameterType.Object)
                         {
                             prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
-                            prop.Items.Ref = t.FullName;
+                            prop.Items.Ref = t.GetModelName();
                         }
                         else
                         {
@@ -210,7 +213,7 @@ namespace SwaggerWcf.Support
 
             // Special case - if it came out required, but we unwrapped a null-able type,
             // then it's necessarily not required.  Ideally this would only set the default,
-            // but we can't tell the difference between an explicit delaration of
+            // but we can't tell the difference between an explicit declaration of
             // IsRequired =false on the DataMember attribute and no declaration at all.
             if (prop.Required && propertyInfo.PropertyType.IsGenericType &&
                 propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -228,7 +231,7 @@ namespace SwaggerWcf.Support
             {
                 typesStack.Push(propertyInfo.PropertyType);
 
-                prop.Ref = propertyInfo.PropertyType.FullName;
+                prop.Ref = propertyInfo.PropertyType.GetModelName();
 
                 return prop;
             }

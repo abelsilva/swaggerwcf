@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Web;
 using SwaggerWcf.Configuration;
 using SwaggerWcf.Models;
@@ -94,7 +93,7 @@ namespace SwaggerWcf.Support
             {
                 return new TypeFormat(ParameterType.String, "enum");
             }
-            
+
             //it's a collection/array, so it will use the swagger "container" syntax
             if (type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
@@ -118,7 +117,8 @@ namespace SwaggerWcf.Support
             {
                 definitions.Add(type);
             }
-            return new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(type.FullName));
+
+            return new TypeFormat(ParameterType.Object, HttpUtility.HtmlEncode(type.GetModelName()));
         }
 
         private static string BuildTypeString(string typeName, string defaultNote = null, string typeNote = null)
@@ -153,7 +153,7 @@ namespace SwaggerWcf.Support
 
             return prop.GetValue(attr) as T1;
         }
-        
+
         public static bool GetCustomAttributeValue<T>(MethodInfo method, string propertyName, bool defaultVal = false)
             where T : Attribute
         {
@@ -169,7 +169,7 @@ namespace SwaggerWcf.Support
                 return defaultVal;
             }
 
-            return (bool) prop.GetValue(attr);
+            return (bool)prop.GetValue(attr);
         }
 
         internal static TypeFormat MapElementType(Type type, List<Type> definitions)
