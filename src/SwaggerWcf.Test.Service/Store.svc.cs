@@ -12,6 +12,7 @@ namespace SwaggerWcf.Test.Service
     public class BookStore : IStore
     {
         #region /books
+
         [SwaggerWcfTag("Books")]
         [SwaggerWcfHeader("clientId", false, "Client ID", "000")]
         [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]

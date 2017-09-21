@@ -8,6 +8,8 @@ namespace SwaggerWcf.Models
     {
         public TypeFormat TypeFormat { get; set; } // for primitives
 
+        public TypeFormat ArrayTypeFormat { get; set; } // for primitives
+
         public string Ref { get; set; } // for references
 
         public string Name { get; set; }
@@ -75,8 +77,21 @@ namespace SwaggerWcf.Models
 
                     writer.WriteStartObject();
 
-                    writer.WritePropertyName("$ref");
-                    writer.WriteValue(string.Format("#/definitions/{0}", Ref));
+                    if (ArrayTypeFormat.IsPrimitiveType)
+                    {
+                        writer.WritePropertyName("type");
+                        writer.WriteValue(ArrayTypeFormat.Type.ToString().ToLower());
+                        if (!string.IsNullOrWhiteSpace(ArrayTypeFormat.Format))
+                        {
+                            writer.WritePropertyName("format");
+                            writer.WriteValue(ArrayTypeFormat.Format);
+                        }
+                    }
+                    else
+                    {
+                        writer.WritePropertyName("$ref");
+                        writer.WriteValue(string.Format("#/definitions/{0}", Ref));
+                    }
 
                     writer.WriteEndObject();
                 }

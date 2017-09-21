@@ -50,7 +50,7 @@ namespace SwaggerWcf.Support
 
                 serviceType = allTypes.Except(allTypes.Select(type => type.BaseType)).Single();
 
-                types = new List<Type> {markedType};
+                types = new List<Type> { markedType };
             }
             else
             {
@@ -603,12 +603,22 @@ namespace SwaggerWcf.Support
         {
             Schema s = schema;
 
-            if (ra.ResponseTypeOverride != null)
-                s = BuildSchema(ra.ResponseTypeOverride, implementation.Name, wrappedResponse, definitionsTypesList);
-
             if (ra.EmptyResponseOverride)
                 s = null;
-
+            else if (ra.ResponseTypeOverride != null)
+                s = BuildSchema(ra.ResponseTypeOverride, implementation.Name, wrappedResponse, definitionsTypesList);
+            else if (schema != null && schema.TypeFormat.Type == ParameterType.Array)
+            {
+                Type type = Type.GetType(schema.Ref);
+                if (type != null)
+                {
+                    TypeFormat arrayTypeFormat = Helpers.MapSwaggerType(type);
+                    if (arrayTypeFormat.IsPrimitiveType)
+                    {
+                        schema.ArrayTypeFormat = arrayTypeFormat;
+                    }
+                }
+            }
             return new Response
             {
                 Code = ra.Code,

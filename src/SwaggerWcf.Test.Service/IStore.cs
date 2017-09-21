@@ -11,7 +11,6 @@ namespace SwaggerWcf.Test.Service
     {
         #region /books
 
-        [SwaggerWcfSecurity("api-gateway", "fu", "bar")]
         [SwaggerWcfPath("Create book", "Create a book on the store")]
         // default Method for WebInvoke is POST
         [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Wrapped, //Method = "POST",
@@ -35,9 +34,9 @@ namespace SwaggerWcf.Test.Service
             RequestFormat = WebMessageFormat.Json)]
         [OperationContract]
         void UpdateBook(string id,
-                        [SwaggerWcfParameter(
-                            Description =
-                            "Book to be updated, make sure the id in the book matches the id in the path parameter")] Book value);
+            [SwaggerWcfParameter(
+                Description =
+                    "Book to be updated, make sure the id in the book matches the id in the path parameter")] Book value);
 
         [SwaggerWcfPath("Delete book", "Delete a book on the store")]
         [WebInvoke(UriTemplate = "/books/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]
@@ -79,10 +78,10 @@ namespace SwaggerWcf.Test.Service
             RequestFormat = WebMessageFormat.Json)]
         [OperationContract]
         void UpdateAuthor(string id,
-                          [SwaggerWcfParameter(
-                              Description =
-                              "Author to be updated, make sure the id in the author matches the id in the path parameter"
-                              )] Author value);
+            [SwaggerWcfParameter(
+                Description =
+                    "Author to be updated, make sure the id in the author matches the id in the path parameter"
+            )] Author value);
 
         [SwaggerWcfPath("Delete author", "Delete an author on the store")]
         [WebInvoke(UriTemplate = "/authors/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]
@@ -124,10 +123,10 @@ namespace SwaggerWcf.Test.Service
             RequestFormat = WebMessageFormat.Json)]
         [OperationContract]
         void UpdateLanguage(string id,
-                            [SwaggerWcfParameter(
-                                Description =
-                                "Language to be updated, make sure the id in the language matches the id in the path parameter"
-                                )] Language value);
+            [SwaggerWcfParameter(
+                Description =
+                    "Language to be updated, make sure the id in the language matches the id in the path parameter"
+            )] Language value);
 
         [SwaggerWcfPath("Delete language", "Delete an language on the store")]
         [WebInvoke(UriTemplate = "/languages/{id}", BodyStyle = WebMessageBodyStyle.Bare, Method = "DELETE")]

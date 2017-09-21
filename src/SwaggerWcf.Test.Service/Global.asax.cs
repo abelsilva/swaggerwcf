@@ -16,31 +16,13 @@ namespace SwaggerWcf.Test.Service
 
             var info = new Info
             {
+                Title = "Sample Service",
                 Description = "Sample Service to test SwaggerWCF",
                 Version = "0.0.1"
                 // etc
             };
-
-            var security = new SecurityDefinitions
-            {
-                {
-                    "api-gateway", new SecurityAuthorization
-                    {
-                        Type = "oauth2",
-                        Name = "api-gateway",
-                        Description = "Forces authentication with credentials via an api gateway",
-                        Flow = "implicit",
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "fu", "use fu scope"},
-                            { "bar", "use bar scope"},
-                        },
-                        AuthorizationUrl = "http://yourapi.net/oauth/token"
-                    }
-                }
-            };
-
-            SwaggerWcfEndpoint.Configure(info, security);
+            
+            SwaggerWcfEndpoint.Configure(info);
         }
 
         protected void Session_Start(object sender, EventArgs e)
