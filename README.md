@@ -22,6 +22,7 @@ Install-Package SwaggerWcf
 
 ### Step 2: Configure WCF
 #### ASP.NET
+
 Add the route in the `Application_Start` method inside `Global.asax`
 
 ```csharp
@@ -42,6 +43,14 @@ Edit `Web.config` and add the following (if it doesn't exist yet) inside the `sy
 ```xml
 
 <serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
+
+```
+
+Edit again `Web.config` and add the following (if it doesn't exist yet) inside the `system.webServer` block
+
+```xml
+
+<modules runAllManagedModulesForAllRequests="true"/>
 
 ```
 #### Self Hosted
