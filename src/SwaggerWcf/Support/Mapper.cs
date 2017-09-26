@@ -148,7 +148,7 @@ namespace SwaggerWcf.Support
                     continue;
 
                 string httpMethod = (wi == null) ? "GET" : wi.Method ?? "POST";
-                string uriTemplate = (wi == null) ? (wg.UriTemplate ?? "") : (wi.UriTemplate ?? "");
+                string uriTemplate = GetUriTemplate(wi, wg, declaration);
 
                 bool wrappedRequest = IsRequestWrapped(wg, wi);
                 bool wrappedResponse = IsResponseWrapped(wg, wi);
@@ -318,6 +318,11 @@ namespace SwaggerWcf.Support
                 }
                 yield return new Tuple<string, PathAction>(uriTemplate, operation);
             }
+        }
+
+        private string GetUriTemplate(WebInvokeAttribute wi, WebGetAttribute wg, MethodInfo declaration)
+        {
+            return ((wi == null) ? wg.UriTemplate : wi.UriTemplate) ?? declaration.Name;
         }
 
         private string RemoveParametersDefaultValuesFromUri(string uriTemplate)
