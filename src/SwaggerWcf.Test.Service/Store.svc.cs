@@ -78,7 +78,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfTag("Books")]
         [SwaggerWcfResponse(HttpStatusCode.OK, "Book found, value in the response body")]
         [SwaggerWcfResponse(HttpStatusCode.NoContent, "No books", true)]
-        public Book[] ReadBooks()
+        public Book[] ReadBooks(string filter = null)
         {
             WebOperationContext woc = WebOperationContext.Current;
 

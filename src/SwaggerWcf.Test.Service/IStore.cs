@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using SwaggerWcf.Attributes;
@@ -21,7 +23,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfPath("Get books", "Retrieve all books from the store")]
         [WebGet(UriTemplate = "/books?filter={filter}", BodyStyle = WebMessageBodyStyle.Bare)]
         [OperationContract]
-        Book[] ReadBooks();
+        Book[] ReadBooks(string filter = null);
 
         [SwaggerWcfPath("Get book", "Retrieve a book from the store using its id")]
         [WebGet(UriTemplate = "/books/{id}", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json,

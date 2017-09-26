@@ -116,7 +116,7 @@ namespace SwaggerWcf.Models
 
         private void SerializeExternalDocs(JsonWriter writer)
         {
-            if (ExternalDocumentation != null)
+            if (ExternalDocumentation?.Url != null)
             {
                 writer.WritePropertyName("externalDocs");
                 ExternalDocumentation.Serialize(writer);
