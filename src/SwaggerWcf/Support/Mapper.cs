@@ -301,7 +301,7 @@ namespace SwaggerWcf.Support
 
                     operation.Parameters.Add(new ParameterSchema
                     {
-                        Name = implementation.Name + "RequestWrapper",
+                        Name = implementation.GetWrappedName() + "RequestWrapper",
                         In = InType.Body,
                         Required = true,
                         SchemaRef = typeFormat.Format

@@ -63,6 +63,7 @@
     <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
     <Compile Include="Support\EnumerableExtensions.cs" />
+    <Compile Include="Support\MethodInfoExtensions.cs" />
     <Compile Include="SwaggerWcfEndpointBase.cs" />
     <Compile Include="Models\SecurityAuthorization.cs" />
     <Compile Include="Models\DefinitionSchema.cs" />
