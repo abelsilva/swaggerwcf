@@ -23,6 +23,7 @@ namespace SwaggerWcf.Test.Service
             };
             
             SwaggerWcfEndpoint.Configure(info);
+            SwaggerWcfEndpoint.DisableSwaggerUI = false;
         }
 
         protected void Session_Start(object sender, EventArgs e)

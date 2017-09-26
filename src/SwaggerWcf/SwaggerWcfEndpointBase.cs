@@ -18,7 +18,8 @@ namespace SwaggerWcf
             Support.StaticContent.GetFileCustom = getFileCustom;
         }
 
-        public abstract Stream GetSwaggerFile(); 
+        public abstract Stream GetSwaggerFile();
+        public static bool DisableSwaggerUI { get; set; }
 
         public Stream StaticContent(string content)
         {
@@ -26,6 +27,12 @@ namespace SwaggerWcf
 
             if (woc == null)
                 return Stream.Null;
+
+            if (DisableSwaggerUI)
+            {
+                woc.OutgoingResponse.StatusCode = HttpStatusCode.NotFound;
+                return null;
+            }
 
             if (string.IsNullOrWhiteSpace(content))
             {
