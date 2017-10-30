@@ -194,7 +194,7 @@ namespace SwaggerWcf.Support
                 {
                     externalDocs = new ExternalDocumentation
                     {
-                        Description = HttpUtility.HtmlEncode(externalDocsDescription),
+                        Description = externalDocsDescription,
                         Url = HttpUtility.HtmlEncode(externalDocsUrl)
                     };
                 }
@@ -208,7 +208,7 @@ namespace SwaggerWcf.Support
                 {
                     Id = httpMethod.ToLowerInvariant(),
                     Summary = summary,
-                    Description = HttpUtility.HtmlEncode(description),
+                    Description = description,
                     Tags =
                         methodTags.Where(t => !t.HideFromSpec).Select(t => HttpUtility.HtmlEncode(t.TagName)).ToList(),
                     Consumes = new List<string>(GetConsumes(implementation, declaration)),
