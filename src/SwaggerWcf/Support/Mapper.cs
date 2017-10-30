@@ -292,7 +292,7 @@ namespace SwaggerWcf.Support
 
                     TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
-                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate, wrappedRequest,
+                    operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
                                                           definitionsTypesList));
                 }
                 if (wrappedRequest)
@@ -361,8 +361,7 @@ namespace SwaggerWcf.Support
                    (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
-        private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter, SwaggerWcfParameterAttribute settings,
-            string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
+        private ParameterBase GetParameter(TypeFormat typeFormat, MethodInfo declaration, MethodInfo implementation, ParameterInfo parameter, SwaggerWcfParameterAttribute settings, string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
         {
             string description = settings?.Description;
             bool required = settings != null && settings.Required;
@@ -432,7 +431,16 @@ namespace SwaggerWcf.Support
                 }
                 if (typeFormat.IsPrimitiveType)
                 {
-                    if (!wrappedRequest)
+                    bool isGetRequest = implementation.GetCustomAttributes<WebGetAttribute>().Any() ||
+                                        declaration.GetCustomAttributes<WebGetAttribute>().Any();
+                    if (!isGetRequest)
+                    {
+                        WebInvokeAttribute webInvoke = implementation.GetCustomAttribute<WebInvokeAttribute>()
+                                                       ?? declaration.GetCustomAttribute<WebInvokeAttribute>();
+                        if (webInvoke != null && webInvoke.Method == "GET")
+                            isGetRequest = true;
+                    }
+                    if (!wrappedRequest && isGetRequest)
                     {
                         ParameterPrimitive paramPrimitive = new ParameterPrimitive
                         {
@@ -676,7 +684,7 @@ namespace SwaggerWcf.Support
             if (wrappedResponse)
             {
                 string funcName = implementation.Name;
-                
+
                 string typeName = implementation.GetCustomAttribute<SwaggerWcfReturnTypeAttribute>()?.Name
                                   ?? funcName + "Result";
 

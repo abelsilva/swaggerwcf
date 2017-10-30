@@ -82,12 +82,30 @@ namespace SwaggerWcf.Models
             }
             if (TypeFormat.Type != ParameterType.Unknown)
             {
-                writer.WritePropertyName("type");
-                writer.WriteValue(TypeFormat.Type.ToString().ToLower());
-                if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                if (In == InType.Body)
                 {
-                    writer.WritePropertyName("format");
-                    writer.WriteValue(TypeFormat.Format);
+                    writer.WritePropertyName("schema");
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(TypeFormat.Type.ToString().ToLower());
+                    if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                    {
+                        writer.WritePropertyName("format");
+                        writer.WriteValue(TypeFormat.Format);
+                    }
+
+                    writer.WriteEndObject();
+                }
+                else
+                {
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(TypeFormat.Type.ToString().ToLower());
+                    if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
+                    {
+                        writer.WritePropertyName("format");
+                        writer.WriteValue(TypeFormat.Format);
+                    }
                 }
             }
             if (AllowEmptyValue)
