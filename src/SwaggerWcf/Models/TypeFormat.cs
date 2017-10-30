@@ -12,15 +12,9 @@
             Format = format;
         }
 
-        internal bool IsPrimitiveType
-        {
-            get
-            {
-                return Type == ParameterType.Boolean ||
-                       Type == ParameterType.Integer ||
-                       Type == ParameterType.Number ||
-                       (Type == ParameterType.String && string.IsNullOrEmpty(Format));
-            }
-        }
+        internal bool IsPrimitiveType => Type == ParameterType.Boolean ||
+                                         Type == ParameterType.Integer ||
+                                         Type == ParameterType.Number ||
+                                         (Type == ParameterType.String && string.IsNullOrEmpty(Format));
     }
 }

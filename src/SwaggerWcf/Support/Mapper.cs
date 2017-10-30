@@ -292,7 +292,7 @@ namespace SwaggerWcf.Support
 
                     TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
-                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate,
+                    operation.Parameters.Add(GetParameter(typeFormat, parameter, settings, uriTemplate, wrappedRequest,
                                                           definitionsTypesList));
                 }
                 if (wrappedRequest)
@@ -361,16 +361,15 @@ namespace SwaggerWcf.Support
                    (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
-        private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter,
-                                           SwaggerWcfParameterAttribute settings, string uriTemplate,
-                                           IList<Type> definitionsTypesList)
+        private ParameterBase GetParameter(TypeFormat typeFormat, ParameterInfo parameter, SwaggerWcfParameterAttribute settings,
+            string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
         {
-            string description = settings != null ? settings.Description : null;
+            string description = settings?.Description;
             bool required = settings != null && settings.Required;
             string name = parameter.Name;
             DataMemberAttribute dataMemberAttribute = parameter.GetCustomAttribute<DataMemberAttribute>();
 
-            if (dataMemberAttribute != null && !string.IsNullOrEmpty(dataMemberAttribute.Name))
+            if (!string.IsNullOrEmpty(dataMemberAttribute?.Name))
                 name = dataMemberAttribute.Name;
 
             InType inType = GetInType(uriTemplate, parameter.Name);
@@ -433,15 +432,30 @@ namespace SwaggerWcf.Support
                 }
                 if (typeFormat.IsPrimitiveType)
                 {
-                    ParameterPrimitive paramPrimitive = new ParameterPrimitive
+                    if (!wrappedRequest)
                     {
-                        Name = name,
-                        Description = description,
-                        In = inType,
-                        Required = required,
-                        TypeFormat = typeFormat
-                    };
-                    return paramPrimitive;
+                        ParameterPrimitive paramPrimitive = new ParameterPrimitive
+                        {
+                            Name = name,
+                            Description = description,
+                            In = InType.Query,
+                            Required = required,
+                            TypeFormat = typeFormat
+                        };
+                        return paramPrimitive;
+                    }
+                    else
+                    {
+                        ParameterPrimitive paramPrimitive = new ParameterPrimitive
+                        {
+                            Name = name,
+                            Description = description,
+                            In = inType,
+                            Required = required,
+                            TypeFormat = typeFormat
+                        };
+                        return paramPrimitive;
+                    }
                 }
 
                 //it's a complex type, so we'll need to map it later
