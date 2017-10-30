@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Web;
@@ -20,6 +21,8 @@ namespace SwaggerWcf
 
         public abstract Stream GetSwaggerFile();
         public static bool DisableSwaggerUI { get; set; }
+        public static Func<string[], List<string>, List<string>> FilterVisibleTags { get; set; }
+        public static Func<string[], List<string>, List<string>> FilterHiddenTags { get; set; }
 
         public Stream StaticContent(string content)
         {

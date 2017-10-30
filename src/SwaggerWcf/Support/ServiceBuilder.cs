@@ -13,21 +13,17 @@ namespace SwaggerWcf.Support
 {
     internal class ServiceBuilder
     {
-        public static Service Build()
+        public static Service Build(string[] paths)
         {
-            Service service = BuildService();
-
-            return service;
+            return BuildServiceCommon(paths, BuildPaths);
         }
 
-        public static Service Build<TBusiness>()
+        public static Service Build<TBusiness>(string[] paths)
         {
-            Service service = BuildService<TBusiness>();
-
-            return service;
+            return BuildServiceCommon(paths, BuildPaths<TBusiness>);
         }
 
-        private static Service BuildService()
+        private static Service BuildServiceCommon(string[] paths, Action<Service, IList<string>, List<string>, IList<Type>> buildPaths)
         {
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
@@ -35,34 +31,13 @@ namespace SwaggerWcf.Support
 
             List<Type> definitionsTypesList = new List<Type>();
             Service service = new Service();
-            List<string> hiddenTags = GetHiddenTags(config);
-            List<string> visibleTags = GetVisibleTags(config);
+            List<string> hiddenTags = SwaggerWcfEndpointBase.FilterHiddenTags(paths, GetHiddenTags(config));
+            List<string> visibleTags = SwaggerWcfEndpointBase.FilterVisibleTags(paths, GetVisibleTags(config));
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
 
             ProcessSettings(service, settings);
 
-            BuildPaths(service, hiddenTags, visibleTags, definitionsTypesList);
-
-            service.Definitions = DefinitionsBuilder.Process(hiddenTags, visibleTags, definitionsTypesList);
-
-            return service;
-        }
-
-        private static Service BuildService<TBusiness>()
-        {
-            const string sectionName = "swaggerwcf";
-            SwaggerWcfSection config =
-                (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
-
-            List<Type> definitionsTypesList = new List<Type>();
-            Service service = new Service();
-            List<string> hiddenTags = GetHiddenTags(config);
-            List<string> visibleTags = GetVisibleTags(config);
-            IReadOnlyDictionary<string, string> settings = GetSettings(config);
-
-            ProcessSettings(service, settings);
-
-            BuildPaths<TBusiness>(service, hiddenTags, visibleTags, definitionsTypesList);
+            buildPaths(service, hiddenTags, visibleTags, definitionsTypesList);
 
             service.Definitions = DefinitionsBuilder.Process(hiddenTags, visibleTags, definitionsTypesList);
 
@@ -72,29 +47,24 @@ namespace SwaggerWcf.Support
 
         private static List<string> GetHiddenTags(SwaggerWcfSection config)
         {
-            return config.Tags == null
-                       ? new List<string>()
-                       : config.Tags.OfType<TagElement>()
-                               .Where(t => t.Visibile.Equals(false))
-                               .Select(t => t.Name)
-                               .ToList();
+            return config.Tags?.OfType<TagElement>()
+                       .Where(t => t.Visibile.Equals(false))
+                       .Select(t => t.Name)
+                       .ToList() ?? new List<string>();
         }
 
         private static List<string> GetVisibleTags(SwaggerWcfSection config)
         {
-            return config.Tags == null
-                       ? new List<string>()
-                       : config.Tags.OfType<TagElement>()
-                               .Where(t => t.Visibile.Equals(true))
-                               .Select(t => t.Name)
-                               .ToList();
+            return config.Tags?.OfType<TagElement>()
+                       .Where(t => t.Visibile.Equals(true))
+                       .Select(t => t.Name)
+                       .ToList() ?? new List<string>();
         }
 
         private static IReadOnlyDictionary<string, string> GetSettings(SwaggerWcfSection config)
         {
-            return config.Settings == null
-                       ? new Dictionary<string, string>()
-                       : config.Settings.OfType<SettingElement>().ToDictionary(se => se.Name, se => se.Value);
+            return config.Settings?.OfType<SettingElement>().ToDictionary(se => se.Name, se => se.Value)
+                ?? new Dictionary<string, string>();
         }
 
         private static void ProcessSettings(Service service, IReadOnlyDictionary<string, string> settings)

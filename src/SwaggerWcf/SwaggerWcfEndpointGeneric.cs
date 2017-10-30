@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using System.Threading;
@@ -10,8 +12,11 @@ namespace SwaggerWcf
 {
     public class SwaggerWcfEndpoint<TBusiness> : SwaggerWcfEndpointBase
     {
-        private static int _initialized;
         private static Service Service { get; set; }
+        public static Info Info { get; private set; }
+        public static SecurityDefinitions SecurityDefinitions { get; private set; }
+
+        private static int _initialized;
 
         public SwaggerWcfEndpoint()
         {
@@ -23,14 +28,15 @@ namespace SwaggerWcf
             if (Interlocked.CompareExchange(ref _initialized, 1, 0) != 0)
                 return;
 
-            Service = ServiceBuilder.Build<TBusiness>();
+            string[] paths = OperationContext.Current?.Host.BaseAddresses.Select(ba => ba.AbsolutePath).ToArray();
+
+            Service = ServiceBuilder.Build<TBusiness>(paths);
         }
 
         public static void Configure(Info info, SecurityDefinitions securityDefinitions = null)
         {
-            Init();
-            Service.Info = info;
-            Service.SecurityDefinitions = securityDefinitions;
+            Info = info;
+            SecurityDefinitions = securityDefinitions;
         }
 
         public override Stream GetSwaggerFile()

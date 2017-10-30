@@ -11,6 +11,10 @@ namespace SwaggerWcf.Test.Service
     {
         protected void Application_Start(object sender, EventArgs e)
         {
+            SwaggerWcfEndpoint.FilterVisibleTags = FilterVisibleTags;
+            SwaggerWcfEndpoint.FilterHiddenTags = FilterHiddenTags;
+            SwaggerWcfEndpoint.DisableSwaggerUI = false;
+
             RouteTable.Routes.Add(new ServiceRoute("v1/rest", new WebServiceHostFactory(), typeof(BookStore)));
             RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
 
@@ -21,9 +25,18 @@ namespace SwaggerWcf.Test.Service
                 Version = "0.0.1"
                 // etc
             };
-            
+
             SwaggerWcfEndpoint.Configure(info);
-            SwaggerWcfEndpoint.DisableSwaggerUI = false;
+        }
+
+        private static List<string> FilterVisibleTags(string[] path, List<string> visibleTags)
+        {
+            return visibleTags;
+        }
+
+        private static List<string> FilterHiddenTags(string[] path, List<string> visibleTags)
+        {
+            return visibleTags;
         }
 
         protected void Session_Start(object sender, EventArgs e)
