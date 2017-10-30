@@ -64,7 +64,6 @@
     <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
     <Compile Include="Support\EnumerableExtensions.cs" />
     <Compile Include="Support\MethodInfoExtensions.cs" />
-    <Compile Include="SwaggerWcfEndpointBase.cs" />
     <Compile Include="Models\SecurityAuthorization.cs" />
     <Compile Include="Models\DefinitionSchema.cs" />
     <Compile Include="Models\DefinitionProperty.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="Models\InfoContact.cs" />
     <Compile Include="Models\Info.cs" />
     <Compile Include="Models\SecurityDefinitions.cs" />
+    <Compile Include="Support\ListExtensions.cs" />
     <Compile Include="Support\TypeBuilder.cs" />
     <Compile Include="SwaggerWcfEndpoint.cs" />
     <Compile Include="ISwaggerWcfEndpoint.cs" />

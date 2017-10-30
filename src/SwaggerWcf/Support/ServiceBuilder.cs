@@ -13,17 +13,17 @@ namespace SwaggerWcf.Support
 {
     internal class ServiceBuilder
     {
-        public static Service Build(string[] paths)
+        public static Service Build(string path)
         {
-            return BuildServiceCommon(paths, BuildPaths);
+            return BuildServiceCommon(path, BuildPaths);
         }
 
-        public static Service Build<TBusiness>(string[] paths)
+        public static Service Build<TBusiness>(string path)
         {
-            return BuildServiceCommon(paths, BuildPaths<TBusiness>);
+            return BuildServiceCommon(path, BuildPaths<TBusiness>);
         }
 
-        private static Service BuildServiceCommon(string[] paths, Action<Service, IList<string>, List<string>, IList<Type>> buildPaths)
+        private static Service BuildServiceCommon(string path, Action<Service, IList<string>, List<string>, IList<Type>> buildPaths)
         {
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
@@ -31,8 +31,8 @@ namespace SwaggerWcf.Support
 
             List<Type> definitionsTypesList = new List<Type>();
             Service service = new Service();
-            List<string> hiddenTags = SwaggerWcfEndpointBase.FilterHiddenTags(paths, GetHiddenTags(config));
-            List<string> visibleTags = SwaggerWcfEndpointBase.FilterVisibleTags(paths, GetVisibleTags(config));
+            List<string> hiddenTags = SwaggerWcfEndpoint.FilterHiddenTags(path, GetHiddenTags(config));
+            List<string> visibleTags = SwaggerWcfEndpoint.FilterVisibleTags(path, GetVisibleTags(config));
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
 
             ProcessSettings(service, settings);

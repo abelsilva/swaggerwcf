@@ -29,14 +29,14 @@ namespace SwaggerWcf.Test.Service
             SwaggerWcfEndpoint.Configure(info);
         }
 
-        private static List<string> FilterVisibleTags(string[] path, List<string> visibleTags)
+        private static List<string> FilterVisibleTags(string path, List<string> visibleTags)
         {
             return visibleTags;
         }
 
-        private static List<string> FilterHiddenTags(string[] path, List<string> visibleTags)
+        private static List<string> FilterHiddenTags(string path, List<string> hiddenTags)
         {
-            return visibleTags;
+            return hiddenTags;
         }
 
         protected void Session_Start(object sender, EventArgs e)
