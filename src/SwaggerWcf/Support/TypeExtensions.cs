@@ -22,6 +22,6 @@ namespace SwaggerWcf.Support
             type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>()?.ModelName ?? type.FullName;
 
         public static string GetModelWrappedName(this Type type) =>
-            type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>()?.ModelName ?? type.Name;
+            type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>()?.ModelName ?? type.FullName;
     }
 }
