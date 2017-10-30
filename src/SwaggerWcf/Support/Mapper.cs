@@ -582,7 +582,7 @@ namespace SwaggerWcf.Support
 
             Schema schema = returnType.IsEnum
                                 ? BuildSchemaForEnum(returnType, definitionsTypesList)
-                                : BuildSchema(returnType, implementation.Name, wrappedResponse, definitionsTypesList);
+                                : BuildSchema(returnType, implementation, wrappedResponse, definitionsTypesList);
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
@@ -612,7 +612,7 @@ namespace SwaggerWcf.Support
             if (ra.EmptyResponseOverride)
                 s = null;
             else if (ra.ResponseTypeOverride != null)
-                s = BuildSchema(ra.ResponseTypeOverride, implementation.Name, wrappedResponse, definitionsTypesList);
+                s = BuildSchema(ra.ResponseTypeOverride, implementation, wrappedResponse, definitionsTypesList);
             else if (schema != null && schema.TypeFormat.Type == ParameterType.Array)
             {
                 Type type = Type.GetType(schema.Ref);
@@ -650,7 +650,7 @@ namespace SwaggerWcf.Support
             };
         }
 
-        private Schema BuildSchema(Type type, string funcName, bool wrappedResponse, IList<Type> definitionsTypesList)
+        private Schema BuildSchema(Type type, MethodInfo implementation, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
             if (type == typeof(void))
                 return null;
@@ -661,8 +661,10 @@ namespace SwaggerWcf.Support
             TypeFormat typeFormat;
             if (wrappedResponse)
             {
-                //TODO: try to use [return: MessageParameter(Name = "MyResult")]
-                string typeName = funcName + "Result";
+                string funcName = implementation.Name;
+                
+                string typeName = implementation.GetCustomAttribute<SwaggerWcfReturnTypeAttribute>()?.Name
+                                  ?? funcName + "Result";
 
                 TypeBuilder typeBuilder = new TypeBuilder(typeName + "Wrapper");
 

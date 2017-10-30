@@ -13,14 +13,20 @@ namespace SwaggerWcf.Attributes
         ///     Overrides the return type
         /// </summary>
         /// <param name="returnType">Method return type</param>
-        public SwaggerWcfReturnTypeAttribute(Type returnType = null)
+        public SwaggerWcfReturnTypeAttribute(Type returnType = null, string name = null)
         {
             ReturnType = returnType;
+            Name = name;
         }
 
         /// <summary>
         ///     Override Return Type
         /// </summary>
         public Type ReturnType { get; set; }
+
+        /// <summary>
+        ///     Override Return Type in Wrapped Responses
+        /// </summary>
+        public string Name { get; set; }
     }
 }
