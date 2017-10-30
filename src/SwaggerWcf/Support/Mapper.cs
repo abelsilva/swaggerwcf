@@ -686,12 +686,25 @@ namespace SwaggerWcf.Support
                     Type t = type.GetElementType() ?? GetEnumerableType(type);
                     if (t == null)
                         return null;
-                    definitionsTypesList.Add(t);
-                    return new Schema
+
+                    TypeFormat arrayTypeFormat = Helpers.MapSwaggerType(t);
+                    if (arrayTypeFormat.IsPrimitiveType)
                     {
-                        TypeFormat = typeFormat,
-                        Ref = HttpUtility.HtmlEncode(t.GetModelName())
-                    };
+                        return new Schema
+                        {
+                            TypeFormat = typeFormat,
+                            ArrayTypeFormat = arrayTypeFormat
+                        };
+                    }
+                    else
+                    {
+                        definitionsTypesList.Add(t);
+                        return new Schema
+                        {
+                            TypeFormat = typeFormat,
+                            Ref = HttpUtility.HtmlEncode(t.GetModelName())
+                        };
+                    }
                 default:
                     definitionsTypesList.Add(type);
                     return new Schema
