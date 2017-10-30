@@ -14,7 +14,7 @@ namespace SwaggerWcf.Attributes
         /// <param name="servicePath">Service path</param>
         public SwaggerWcfAttribute(string servicePath)
         {
-            ServicePath = servicePath;
+            ServicePath = servicePath.StartsWith("/") ? servicePath : $"/{servicePath}";
         }
 
         /// <summary>
