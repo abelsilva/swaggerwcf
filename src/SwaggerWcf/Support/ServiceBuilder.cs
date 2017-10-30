@@ -13,9 +13,9 @@ namespace SwaggerWcf.Support
 {
     internal class ServiceBuilder
     {
-        public static Service Build()
+        public static Service Build(List<string> visibleTags_RoutePrefix)
         {
-            Service service = BuildService();
+            Service service = BuildService(visibleTags_RoutePrefix);
 
             return service;
         }
@@ -27,7 +27,7 @@ namespace SwaggerWcf.Support
             return service;
         }
 
-        private static Service BuildService()
+        private static Service BuildService(List<string> visibleTags_RoutePrefix)
         {
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
@@ -37,6 +37,7 @@ namespace SwaggerWcf.Support
             Service service = new Service();
             List<string> hiddenTags = GetHiddenTags(config);
             List<string> visibleTags = GetVisibleTags(config);
+            if (visibleTags_RoutePrefix != null) visibleTags.AddRange(visibleTags_RoutePrefix);
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
 
             ProcessSettings(service, settings);
