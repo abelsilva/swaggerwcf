@@ -233,6 +233,7 @@ namespace SwaggerWcf.Support
                 // remove duplicates
                 headers = headers.GroupBy(h => h.Name).Select(g => g.First()).ToList();
 
+                // parameters - headers
                 foreach (SwaggerWcfHeaderAttribute attr in headers)
                 {
                     operation.Parameters.Add(new ParameterPrimitive
@@ -246,7 +247,12 @@ namespace SwaggerWcf.Support
                     });
                 }
 
+                bool isGetRequest = httpMethod == "GET";
                 TypeBuilder typeBuilder = null;
+                if (!wrappedRequest && !isGetRequest && parameters.Length > 1)
+                {
+                    wrappedRequest = true;
+                }
                 if (wrappedRequest)
                 {
                     typeBuilder = new TypeBuilder(implementation.Name + "Request");
