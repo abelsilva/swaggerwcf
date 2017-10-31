@@ -435,7 +435,7 @@ namespace SwaggerWcf.Support
 
                     return arrayParam;
                 }
-                if (typeFormat.IsPrimitiveType)
+                if (typeFormat.IsPrimitiveType || typeFormat.IsEnum)
                 {
                     bool isGetRequest = implementation.GetCustomAttributes<WebGetAttribute>().Any() ||
                                         declaration.GetCustomAttributes<WebGetAttribute>().Any();

@@ -16,5 +16,8 @@
                                          Type == ParameterType.Integer ||
                                          Type == ParameterType.Number ||
                                          (Type == ParameterType.String && string.IsNullOrEmpty(Format));
+
+        // possible that enum should be included in primitive type?
+        internal bool IsEnum => Type == ParameterType.String && Format == "enum";
     }
 }
