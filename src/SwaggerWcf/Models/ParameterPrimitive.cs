@@ -89,6 +89,13 @@ namespace SwaggerWcf.Models
 
                     writer.WritePropertyName("type");
                     writer.WriteValue(TypeFormat.Type.ToString().ToLower());
+
+                    if (TypeFormat.Type == ParameterType.Array && Items != null)
+                    {
+                        writer.WritePropertyName("items");
+                        Items.Serialize(writer);
+                    }
+
                     if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
                     {
                         writer.WritePropertyName("format");
@@ -113,12 +120,12 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("allowEmptyValue");
                 writer.WriteValue(AllowEmptyValue);
             }
-            if (TypeFormat.Type == ParameterType.Array && Items != null)
+            if (In != InType.Body && TypeFormat.Type == ParameterType.Array && Items != null)
             {
                 writer.WritePropertyName("items");
                 Items.Serialize(writer);
             }
-            if (TypeFormat.Type == ParameterType.Array)
+            if (In != InType.Body && TypeFormat.Type == ParameterType.Array && Items != null)
             {
                 writer.WritePropertyName("collectionFormat");
                 writer.WriteValue(CollectionFormat);

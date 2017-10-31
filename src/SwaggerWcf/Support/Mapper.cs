@@ -410,6 +410,29 @@ namespace SwaggerWcf.Support
                 if (typeFormat.Type == ParameterType.Array)
                 {
                     Type t = paramType.GetElementType() ?? GetEnumerableType(paramType);
+                    TypeFormat subTypeFormat = Helpers.MapSwaggerType(t);
+
+                    ParameterItems items;
+
+                    if (subTypeFormat.IsPrimitiveType || subTypeFormat.IsEnum)
+                    {
+                        items = new ParameterItems
+                        {
+                            TypeFormat = subTypeFormat
+                        };
+                    }
+                    else
+                    {
+                        items = new ParameterItems
+                        {
+                            Items = new ParameterSchema
+                            {
+
+                                SchemaRef = t.GetModelName()
+                            }
+                        };
+                    }
+
                     ParameterPrimitive arrayParam = new ParameterPrimitive
                     {
                         Name = name,
@@ -417,13 +440,7 @@ namespace SwaggerWcf.Support
                         In = inType,
                         Required = required,
                         TypeFormat = typeFormat,
-                        Items = new ParameterItems
-                        {
-                            Items = new ParameterSchema
-                            {
-                                SchemaRef = t.GetModelName()
-                            }
-                        },
+                        Items = items,
                         CollectionFormat = CollectionFormat.Csv
                     };
 

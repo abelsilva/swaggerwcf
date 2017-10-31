@@ -29,13 +29,10 @@ namespace SwaggerWcf.Models
             if (!string.IsNullOrWhiteSpace(Ref))
             {
                 writer.WritePropertyName("$ref");
-                writer.WriteValue(string.Format("#/definitions/{0}", Ref));
+                writer.WriteValue($"#/definitions/{Ref}");
             }
 
-            if (Items != null)
-            {
-                Items.Serialize(writer, true);
-            }
+            Items?.Serialize(writer, true);
 
             writer.WriteEndObject();
         }
