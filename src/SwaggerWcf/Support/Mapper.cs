@@ -627,14 +627,14 @@ namespace SwaggerWcf.Support
 
             Schema schema = returnType.IsEnum
                                 ? BuildSchemaForEnum(returnType, definitionsTypesList)
-                                : BuildSchema(returnType, implementation, wrappedResponse, definitionsTypesList);
+                                : BuildSchema(returnType, implementation, declaration, wrappedResponse, definitionsTypesList);
 
             List<SwaggerWcfResponseAttribute> responses =
                 implementation.GetCustomAttributes<SwaggerWcfResponseAttribute>().ToList();
             responses = responses.Concat(declaration.GetCustomAttributes<SwaggerWcfResponseAttribute>()).FilterUnique().ToList();
 
             List<Response> res =
-                responses.Select(ra => ConvertResponse(ra, schema, implementation, wrappedResponse, definitionsTypesList))
+                responses.Select(ra => ConvertResponse(ra, schema, implementation, declaration, wrappedResponse, definitionsTypesList))
                     .ToList();
 
             if (!res.Any())
@@ -649,7 +649,7 @@ namespace SwaggerWcf.Support
             return res;
         }
 
-        private Response ConvertResponse(SwaggerWcfResponseAttribute ra, Schema schema, MethodInfo implementation,
+        private Response ConvertResponse(SwaggerWcfResponseAttribute ra, Schema schema, MethodInfo implementation, MethodInfo declaration,
                                          bool wrappedResponse, IList<Type> definitionsTypesList)
         {
             Schema s = schema;
@@ -657,7 +657,7 @@ namespace SwaggerWcf.Support
             if (ra.EmptyResponseOverride)
                 s = null;
             else if (ra.ResponseTypeOverride != null)
-                s = BuildSchema(ra.ResponseTypeOverride, implementation, wrappedResponse, definitionsTypesList);
+                s = BuildSchema(ra.ResponseTypeOverride, implementation, declaration, wrappedResponse, definitionsTypesList);
             else if (schema != null && schema.TypeFormat.Type == ParameterType.Array)
             {
                 Type type = Type.GetType(schema.Ref);
@@ -695,7 +695,7 @@ namespace SwaggerWcf.Support
             };
         }
 
-        private Schema BuildSchema(Type type, MethodInfo implementation, bool wrappedResponse, IList<Type> definitionsTypesList)
+        private Schema BuildSchema(Type type, MethodInfo implementation, MethodInfo declaration, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
             if (type == typeof(void))
                 return null;
@@ -709,6 +709,7 @@ namespace SwaggerWcf.Support
                 string funcName = implementation.Name;
 
                 string typeName = implementation.GetCustomAttribute<SwaggerWcfReturnTypeAttribute>()?.Name
+                                  ?? declaration.GetCustomAttribute<SwaggerWcfReturnTypeAttribute>()?.Name
                                   ?? funcName + "Result";
 
                 TypeBuilder typeBuilder = new TypeBuilder(typeName + "Wrapper");
