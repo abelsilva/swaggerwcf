@@ -255,7 +255,7 @@ namespace SwaggerWcf.Support
                 }
                 if (wrappedRequest)
                 {
-                    typeBuilder = new TypeBuilder(implementation.Name + "Request");
+                    typeBuilder = new TypeBuilder(implementation.GetWrappedName(declaration));
                 }
                 foreach (ParameterInfo parameter in parameters)
                 {
@@ -307,7 +307,7 @@ namespace SwaggerWcf.Support
 
                     operation.Parameters.Add(new ParameterSchema
                     {
-                        Name = implementation.GetWrappedName() + "RequestWrapper",
+                        Name = implementation.GetWrappedName(declaration) + "Wrapper",
                         In = InType.Body,
                         Required = true,
                         SchemaRef = typeFormat.Format
