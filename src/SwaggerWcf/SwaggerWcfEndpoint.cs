@@ -29,11 +29,18 @@ namespace SwaggerWcf
         }
 
         internal static Info Info { get; private set; }
+
         internal static SecurityDefinitions SecurityDefinitions { get; private set; }
+
         private static Dictionary<string, string> SwaggerFiles { get; } = new Dictionary<string, string>();
+
         public static bool DisableSwaggerUI { get; set; }
-        public static Func<string, List<string>, List<string>> FilterVisibleTags { get; set; }
-        public static Func<string, List<string>, List<string>> FilterHiddenTags { get; set; }
+
+        public static Func<string, List<string>, List<string>> FilterVisibleTags { get; set; } =
+            (string path, List<string> visibleTags) => visibleTags;
+
+        public static Func<string, List<string>, List<string>> FilterHiddenTags { get; set; } =
+            (string path, List<string> hiddenTags) => hiddenTags;
 
         public static void Configure(Info info, SecurityDefinitions securityDefinitions = null)
         {
