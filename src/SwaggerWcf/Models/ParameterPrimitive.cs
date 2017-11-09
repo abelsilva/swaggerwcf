@@ -93,7 +93,13 @@ namespace SwaggerWcf.Models
                     if (TypeFormat.Type == ParameterType.Array && Items != null)
                     {
                         writer.WritePropertyName("items");
-                        Items.Serialize(writer);
+
+                        writer.WriteStartObject();
+
+                        writer.WritePropertyName("$ref");
+                        writer.WriteValue($"#/definitions/{Items.Ref}");
+
+                        writer.WriteEndObject();
                     }
 
                     if (!string.IsNullOrWhiteSpace(TypeFormat.Format))
