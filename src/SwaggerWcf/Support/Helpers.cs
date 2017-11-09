@@ -74,6 +74,10 @@ namespace SwaggerWcf.Support
             {
                 return new TypeFormat(ParameterType.String, "date-time");
             }
+            if (type == typeof(DateTimeOffset))
+            {
+                return new TypeFormat(ParameterType.String, "date-time");
+            }
             if (type == typeof(Guid))
             {
                 return new TypeFormat(ParameterType.String, "guid");
