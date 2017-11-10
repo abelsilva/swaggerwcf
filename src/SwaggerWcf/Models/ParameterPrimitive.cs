@@ -97,7 +97,8 @@ namespace SwaggerWcf.Models
                         writer.WriteStartObject();
 
                         writer.WritePropertyName("$ref");
-                        writer.WriteValue($"#/definitions/{Items.Ref}");
+                        writer.WriteValue($"#/definitions/{Items?.Ref ?? (Items?.Items as ParameterSchema)?.SchemaRef}");
+                        //writer.WriteValue($"#/definitions/{Items?.Ref}");
 
                         writer.WriteEndObject();
                     }

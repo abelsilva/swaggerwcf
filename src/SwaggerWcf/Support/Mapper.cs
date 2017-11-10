@@ -660,7 +660,7 @@ namespace SwaggerWcf.Support
                 s = BuildSchema(ra.ResponseTypeOverride, implementation, declaration, wrappedResponse, definitionsTypesList);
             else if (schema != null && schema.TypeFormat.Type == ParameterType.Array)
             {
-                Type type = Type.GetType(schema.Ref);
+                Type type = schema.Ref != null ? Type.GetType(schema.Ref) : null;
                 if (type != null)
                 {
                     TypeFormat arrayTypeFormat = Helpers.MapSwaggerType(type);
