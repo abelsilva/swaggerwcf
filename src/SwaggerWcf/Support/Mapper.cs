@@ -93,13 +93,7 @@ namespace SwaggerWcf.Support
 
         private Path GetPath(string basePath, string pathUrl, List<Path> paths)
         {
-            string id = basePath;
-            if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
-                id += pathUrl.Substring(1);
-            else if (!basePath.EndsWith("/") && !string.IsNullOrWhiteSpace(pathUrl) && !pathUrl.StartsWith("/"))
-                id += "/" + pathUrl;
-            else
-                id += pathUrl;
+            string id = ConcatPaths(basePath, pathUrl);
 
             Path path = paths.FirstOrDefault(p => p.Id == id);
             if (path == null)
@@ -112,6 +106,18 @@ namespace SwaggerWcf.Support
                 paths.Add(path);
             }
 
+            return path;
+        }
+
+        private static string ConcatPaths(string basePath, string pathUrl)
+        {
+            string path = basePath;
+            if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
+                path += pathUrl.Substring(1);
+            else if (!basePath.EndsWith("/") && !string.IsNullOrWhiteSpace(pathUrl) && !pathUrl.StartsWith("/"))
+                path += "/" + pathUrl;
+            else
+                path += pathUrl;
             return path;
         }
 
@@ -203,6 +209,14 @@ namespace SwaggerWcf.Support
                     Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(implementation, "Deprecated");
                 if (!deprecated)
                     deprecated = Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(declaration, "Deprecated");
+
+                string operationPath =
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "OperationPath") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "OperationPath");
+                if (!string.IsNullOrWhiteSpace(operationPath))
+                {
+                    uriTemplate = ConcatPaths(operationPath, uriTemplate);
+                }
 
                 PathAction operation = new PathAction
                 {

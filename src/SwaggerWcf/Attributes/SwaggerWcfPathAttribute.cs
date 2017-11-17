@@ -19,7 +19,8 @@ namespace SwaggerWcf.Attributes
         /// <param name="deprecated">Path deprecated (defaults to false)</param>
         public SwaggerWcfPathAttribute(string summary = null, string description = null, string operationId = null,
                                        string externalDocsDescription = null,
-                                       string externalDocsUrl = null, bool deprecated = false)
+                                       string externalDocsUrl = null, bool deprecated = false,
+                                       string operationPath = null)
         {
             Summary = summary;
             Description = description;
@@ -27,6 +28,7 @@ namespace SwaggerWcf.Attributes
             ExternalDocsDescription = externalDocsDescription;
             ExternalDocsUrl = externalDocsUrl;
             Deprecated = deprecated;
+            OperationPath = operationPath;
         }
 
         /// <summary>
@@ -58,5 +60,10 @@ namespace SwaggerWcf.Attributes
         ///     Path deprecated
         /// </summary>
         public bool Deprecated { get; set; }
+
+        /// <summary>
+        ///     Operation path, extends service path
+        /// </summary>
+        public string OperationPath { get; set; }
     }
 }
