@@ -372,10 +372,6 @@ namespace SwaggerWcf.Support
             string description = settings?.Description;
             bool required = settings != null && settings.Required;
             string name = parameter.Name;
-            DataMemberAttribute dataMemberAttribute = parameter.GetCustomAttribute<DataMemberAttribute>();
-
-            if (!string.IsNullOrEmpty(dataMemberAttribute?.Name))
-                name = dataMemberAttribute.Name;
 
             InType inType = GetInType(uriTemplate, parameter.Name);
             if (inType == InType.Path)
