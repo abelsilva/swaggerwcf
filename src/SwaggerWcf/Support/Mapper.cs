@@ -299,7 +299,7 @@ namespace SwaggerWcf.Support
                     TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
                     operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
-                                                          definitionsTypesList));
+                                                          definitionsTypesList, inType));
                 }
                 if (wrappedRequest)
                 {
@@ -367,13 +367,20 @@ namespace SwaggerWcf.Support
                    (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
-        private ParameterBase GetParameter(TypeFormat typeFormat, MethodInfo declaration, MethodInfo implementation, ParameterInfo parameter, SwaggerWcfParameterAttribute settings, string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
+        private ParameterBase GetParameter(TypeFormat typeFormat,
+                                           MethodInfo declaration,
+                                           MethodInfo implementation,
+                                           ParameterInfo parameter,
+                                           SwaggerWcfParameterAttribute settings,
+                                           string uriTemplate,
+                                           bool wrappedRequest,
+                                           IList<Type> definitionsTypesList,
+                                           InType inType)
         {
             string description = settings?.Description;
             bool required = settings != null && settings.Required;
             string name = parameter.Name;
 
-            InType inType = GetInType(uriTemplate, parameter.Name);
             if (inType == InType.Path)
                 required = true;
 
