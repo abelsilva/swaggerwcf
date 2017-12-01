@@ -522,9 +522,10 @@ namespace SwaggerWcf.Support
 
         private InType GetInType(string uriTemplate, string parameterName)
         {
-            Regex reg = new Regex(@"\{" + parameterName + @"\}");
-            Regex regWithDefaultValue = new Regex(@"\{" + parameterName + @"=[a-zA-Z0-9]+\}");
-            if (!reg.Match(uriTemplate).Success && !regWithDefaultValue.Match(uriTemplate).Success)
+            Match match = new Regex(@"\{" + parameterName + @"\}").Match(uriTemplate);
+            Match matchWithDefaultValue = new Regex(@"/\{" + parameterName + @"=[a-zA-Z0-9]+\}$").Match(uriTemplate);
+
+            if (!match.Success && !matchWithDefaultValue.Success)
                 return InType.Body;
 
             int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
@@ -532,10 +533,10 @@ namespace SwaggerWcf.Support
             if (questionMarkPosition == -1)
                 return InType.Path;
 
-            if (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                return InType.Path;
+            if (match.Success)
+                return questionMarkPosition > match.Index ? InType.Path : InType.Query;
 
-            return regWithDefaultValue.Match(uriTemplate).Success ? InType.Body : InType.Query;
+            return questionMarkPosition > matchWithDefaultValue.Index ? InType.Path : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
