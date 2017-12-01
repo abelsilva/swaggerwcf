@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,10 +50,33 @@ namespace SwaggerWcf
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
+        public static string GenerateSwaggerFile()
+        {
+            Service service = null;
+            string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
+
+            foreach (string path in paths)
+            {
+                service = ServiceBuilder.Build("/");
+                service.Info = Info;
+                service.SecurityDefinitions = SecurityDefinitions;
+
+                string swagger = Serializer.Process(service);
+                if (SwaggerFiles.ContainsKey(path) == false)
+                    SwaggerFiles.Add(path, swagger);
+            }
+
+            return JsonConvert.SerializeObject(service, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
         internal static void Init(Func<string, Service> buildService)
         {
             string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
-            
+
             foreach (string path in paths)
             {
                 Service service = buildService(path);
