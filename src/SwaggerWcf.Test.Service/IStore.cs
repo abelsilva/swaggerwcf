@@ -21,9 +21,9 @@ namespace SwaggerWcf.Test.Service
         Book CreateBook([SwaggerWcfParameter(Description = "Book to be created, the id will be replaced")] Book value);
 
         [SwaggerWcfPath("Get books", "Retrieve all books from the store")]
-        [WebGet(UriTemplate = "/books?filter={filter}", BodyStyle = WebMessageBodyStyle.Bare)]
+        [WebGet(UriTemplate = "/books?filter={filterText}", BodyStyle = WebMessageBodyStyle.Bare)]
         [OperationContract]
-        Book[] ReadBooks(string filter = null);
+        Book[] ReadBooks(string filterText = null);
 
         [SwaggerWcfPath("Get book", "Retrieve a book from the store using its id")]
         [WebGet(UriTemplate = "/books/{id}", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json,

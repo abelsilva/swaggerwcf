@@ -313,7 +313,7 @@ namespace SwaggerWcf.Support
                     TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
                     operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
-                                                          definitionsTypesList));
+                                                          definitionsTypesList, inType));
                 }
                 if (wrappedRequest)
                 {
@@ -381,17 +381,20 @@ namespace SwaggerWcf.Support
                    (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
-        private ParameterBase GetParameter(TypeFormat typeFormat, MethodInfo declaration, MethodInfo implementation, ParameterInfo parameter, SwaggerWcfParameterAttribute settings, string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
+        private ParameterBase GetParameter(TypeFormat typeFormat,
+                                           MethodInfo declaration,
+                                           MethodInfo implementation,
+                                           ParameterInfo parameter,
+                                           SwaggerWcfParameterAttribute settings,
+                                           string uriTemplate,
+                                           bool wrappedRequest,
+                                           IList<Type> definitionsTypesList,
+                                           InType inType)
         {
             string description = settings?.Description;
             bool required = settings != null && settings.Required;
-            string name = parameter.Name;
-            DataMemberAttribute dataMemberAttribute = parameter.GetCustomAttribute<DataMemberAttribute>();
+            string name = inType == InType.Query ? ResolveParameterNameFromUri(uriTemplate, parameter) : parameter.Name;
 
-            if (!string.IsNullOrEmpty(dataMemberAttribute?.Name))
-                name = dataMemberAttribute.Name;
-
-            InType inType = GetInType(uriTemplate, parameter.Name);
             if (inType == InType.Path)
                 required = true;
 
@@ -534,9 +537,29 @@ namespace SwaggerWcf.Support
             return param;
         }
 
+        private static string ResolveParameterNameFromUri(string uriTemplate, ParameterInfo parameter)
+        {
+            int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
+            var uriParameters = HttpUtility.ParseQueryString(uriTemplate.Substring(questionMarkPosition + 1));
+
+            string parameterTemplate = GetParameterNameTemplate(parameter.Name);
+
+            var resolvedParameter = uriParameters
+                .AllKeys
+                .Select(k => new { Name = k, Template = uriParameters.Get(k) })
+                .FirstOrDefault(p => p.Template.Equals(parameterTemplate, StringComparison.Ordinal));
+
+            return resolvedParameter != null ? resolvedParameter.Name : parameter.Name;
+        }
+
+        private static string GetParameterNameTemplate(string parameterName)
+        {
+            return string.Format("{{{0}}}", parameterName);
+        }
+
         private InType GetInType(string uriTemplate, string parameterName)
         {
-            Regex reg = new Regex(@"\{" + parameterName + @"\}");
+            Regex reg = new Regex(GetParameterNameTemplate(parameterName));
             Regex regWithDefaultValue = new Regex(@"\{" + parameterName + @"=[a-zA-Z0-9]+\}");
             if (!reg.Match(uriTemplate).Success && !regWithDefaultValue.Match(uriTemplate).Success)
                 return InType.Body;
