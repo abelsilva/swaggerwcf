@@ -711,7 +711,7 @@ namespace SwaggerWcf.Support
 
         private Schema BuildSchema(Type type, MethodInfo implementation, MethodInfo declaration, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
-            if (type == typeof(void))
+            if (type == typeof(void) || type == typeof(Task))
                 return null;
 
             if (type.BaseType == typeof(Task))
