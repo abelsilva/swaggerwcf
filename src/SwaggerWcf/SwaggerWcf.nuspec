@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>fix for #117</releaseNotes>
+    <releaseNotes>fix for #125 #106 #123 + merge #120 #121 #122</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>swagger wcf .net c#</tags>
   </metadata>
