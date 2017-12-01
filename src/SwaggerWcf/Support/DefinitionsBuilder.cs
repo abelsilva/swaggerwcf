@@ -327,7 +327,12 @@ namespace SwaggerWcf.Support
 
         private static string GetEnumMemberValue(Type enumType, string enumName)
         {
-            return string.IsNullOrWhiteSpace(enumName) ? null : (Enum.Parse(enumType, enumName, true)).ToString();
+            if (string.IsNullOrWhiteSpace(enumName))
+                return null;
+            var enumVal = Enum.Parse(enumType, enumName, true);
+            var underlyingType = Enum.GetUnderlyingType(enumType);
+            var value = Convert.ChangeType(enumVal, underlyingType);
+            return Convert.ToString(value);
         }
     }
 }
