@@ -31,9 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -56,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SwaggerWcfLicenseInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfContactInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfServiceInfoAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfRequestTypeAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfSecurityAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfContentTypesAttribute.cs" />
@@ -63,6 +65,9 @@
     <Compile Include="Attributes\SwaggerWcfHeaderAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
+    <Compile Include="Models\PathItem.cs" />
+    <Compile Include="Models\Scheme.cs" />
+    <Compile Include="Support\AttributeExtensions.cs" />
     <Compile Include="Support\EnumerableExtensions.cs" />
     <Compile Include="Support\MethodInfoExtensions.cs" />
     <Compile Include="Models\SecurityAuthorization.cs" />
@@ -103,7 +108,7 @@
     <Compile Include="Models\Property.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Models\Schema.cs" />
-    <Compile Include="Models\Service.cs" />
+    <Compile Include="Models\SwaggerSchema.cs" />
     <Compile Include="Models\TypeFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\Helpers.cs" />
@@ -116,6 +121,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="www\swagger-ui.zip" />
+    <None Include="generate-swagger-file.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="SwaggerWcf.nuspec" />
   </ItemGroup>

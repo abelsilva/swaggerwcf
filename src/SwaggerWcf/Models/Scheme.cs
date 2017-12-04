@@ -4,13 +4,11 @@ using Newtonsoft.Json.Converters;
 namespace SwaggerWcf.Models
 {
     [JsonConverter(typeof(StringEnumConverter), true)]
-    public enum InType
+    public enum Scheme
     {
-        Unknown = 0,
-        Body = 1,
-        Path = 2,
-        Query = 3,
-        FormData = 4,
-        Header = 5
+        Http,
+        Https,
+        Ws,
+        Wss
     }
 }

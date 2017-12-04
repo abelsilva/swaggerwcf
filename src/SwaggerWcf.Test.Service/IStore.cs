@@ -5,10 +5,38 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Test.Service.Data;
+using SwaggerWcf.Models;
 
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
+    [SwaggerWcf(
+        BasePath = "/v1/rest",
+        Schemes = new[] { Scheme.Http, Scheme.Https },
+        Host = "example.org",
+        Consumes = new[] {
+            "text/plain; charset=utf-8",
+            "application/json",
+        },
+        Produces = new[]{
+            "application/vnd.github+json",
+            "application/vnd.github.v3+json",
+        }
+    )]
+    [SwaggerWcfServiceInfo(
+        title: "SampleService",
+        version: "0.0.1",
+        Description = "Sample Service to test SwaggerWCF"
+    )]
+    [SwaggerWcfContactInfo(
+        Name = "Abel Silva",
+        Email = "no@e.mail",
+        Url = "http://github.com/abelsilva/swaggerwcf"
+    )]
+    [SwaggerWcfLicenseInfo(
+        name: "Apache License 2.0",
+        Url = "https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE"
+    )]
     public interface IStore
     {
         #region /books

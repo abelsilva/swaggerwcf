@@ -1,5 +1,9 @@
-﻿namespace SwaggerWcf.Models
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace SwaggerWcf.Models
 {
+    [JsonConverter(typeof(StringEnumConverter), true)]
     public enum ParameterType
     {
         Unknown = 0,

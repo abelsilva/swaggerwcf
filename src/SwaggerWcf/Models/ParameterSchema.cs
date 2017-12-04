@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class ParameterSchema : ParameterBase
+    public class ParameterSchema : ParameterBase
     {
         public string SchemaRef { get; set; }
 

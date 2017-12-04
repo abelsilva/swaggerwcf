@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
-    internal class Property
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    public class Property
     {
         public Property()
         {
@@ -16,9 +18,9 @@ namespace SwaggerWcf.Models
             MinItems = int.MinValue;
             MultipleOf = decimal.MinValue;
         }
-        
+
         public string Title { get; set; }
-        
+
         public string Description { get; set; }
 
         public bool Required { get; set; }
@@ -156,7 +158,7 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("multipleOf");
                 writer.WriteValue(MultipleOf);
             }
-            
+
             writer.WriteEndObject();
         }
     }

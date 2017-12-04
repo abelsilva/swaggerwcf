@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class SecurityAuthorization
     {
         /// <summary>
@@ -111,7 +113,7 @@ namespace SwaggerWcf.Models
 
                 writer.WriteEndObject();
             }
-         
+
             writer.WriteEndObject();
         }
     }

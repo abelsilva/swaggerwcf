@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Text;
 using SwaggerWcf.Models;
 using SwaggerWcf.Support;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace SwaggerWcf
 {
@@ -23,7 +25,7 @@ namespace SwaggerWcf
             Init(ServiceBuilder.Build);
         }
 
-        internal SwaggerWcfEndpoint(Func<string, Service> buildService)
+        internal SwaggerWcfEndpoint(Func<string, SwaggerSchema> buildService)
         {
             Init(buildService);
         }
@@ -49,13 +51,33 @@ namespace SwaggerWcf
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal static void Init(Func<string, Service> buildService)
+        public static string GenerateSwaggerFile()
+        {
+            string path = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).Single();
+
+            SwaggerSchema service = ServiceBuilder.Build("/");
+
+            service.Info = Info;
+            service.SecurityDefinitions = SecurityDefinitions;
+
+            string swagger = Serializer.Process(service);
+            if (SwaggerFiles.ContainsKey(path) == false)
+                SwaggerFiles.Add(path, swagger);
+
+            return JsonConvert.SerializeObject(service, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void Init(Func<string, SwaggerSchema> buildService)
         {
             string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
-            
+
             foreach (string path in paths)
             {
-                Service service = buildService(path);
+                SwaggerSchema service = buildService(path);
                 if (Info != null)
                     service.Info = Info;
                 if (SecurityDefinitions != null)

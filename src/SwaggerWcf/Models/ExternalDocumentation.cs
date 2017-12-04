@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
-    internal class ExternalDocumentation
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    public class ExternalDocumentation
     {
         public string Description { get; set; }
 

@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class Info
     {
+        [JsonProperty(Required = Required.Always)]
         public string Version { get; set; }
 
+        [JsonProperty(Required = Required.Always)]
         public string Title { get; set; }
 
         public string Description { get; set; }

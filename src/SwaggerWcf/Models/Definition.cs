@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
-    internal class Definition
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    public class Definition
     {
         public DefinitionSchema Schema { get; set; }
 
@@ -10,7 +12,7 @@ namespace SwaggerWcf.Models
         {
             if (Schema == null)
                 return;
-            
+
             writer.WritePropertyName(Schema.Name);
 
             writer.WriteStartObject();

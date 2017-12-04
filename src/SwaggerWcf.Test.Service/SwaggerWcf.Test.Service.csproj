@@ -127,4 +127,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <Exec WorkingDirectory="bin"
+          Command="powershell -File .\generate-swagger-file.ps1" >
+    </Exec>
+  </Target>
 </Project>

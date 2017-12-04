@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class Example
+    public class Example
     {
         public string MimeType { get; set; }
 

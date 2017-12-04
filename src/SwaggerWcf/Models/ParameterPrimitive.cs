@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class ParameterPrimitive : ParameterBase
+    public class ParameterPrimitive : ParameterBase
     {
         public ParameterPrimitive()
         {

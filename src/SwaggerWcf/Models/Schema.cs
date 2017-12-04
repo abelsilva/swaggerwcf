@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
-    internal class Schema
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    public class Schema
     {
         public TypeFormat TypeFormat { get; set; } // for primitives
 
