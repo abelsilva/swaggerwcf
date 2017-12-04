@@ -93,13 +93,7 @@ namespace SwaggerWcf.Support
 
         private Path GetPath(string basePath, string pathUrl, List<Path> paths)
         {
-            string id = basePath;
-            if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
-                id += pathUrl.Substring(1);
-            else if (!basePath.EndsWith("/") && !string.IsNullOrWhiteSpace(pathUrl) && !pathUrl.StartsWith("/"))
-                id += "/" + pathUrl;
-            else
-                id += pathUrl;
+            string id = ConcatPaths(basePath, pathUrl);
 
             Path path = paths.FirstOrDefault(p => p.Id == id);
             if (path == null)
@@ -112,6 +106,18 @@ namespace SwaggerWcf.Support
                 paths.Add(path);
             }
 
+            return path;
+        }
+
+        private static string ConcatPaths(string basePath, string pathUrl)
+        {
+            string path = basePath;
+            if (basePath.EndsWith("/") && pathUrl.StartsWith("/"))
+                path += pathUrl.Substring(1);
+            else if (!basePath.EndsWith("/") && !string.IsNullOrWhiteSpace(pathUrl) && !pathUrl.StartsWith("/"))
+                path += "/" + pathUrl;
+            else
+                path += pathUrl;
             return path;
         }
 
@@ -203,6 +209,14 @@ namespace SwaggerWcf.Support
                     Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(implementation, "Deprecated");
                 if (!deprecated)
                     deprecated = Helpers.GetCustomAttributeValue<SwaggerWcfPathAttribute>(declaration, "Deprecated");
+
+                string operationPath =
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(implementation, "OperationPath") ??
+                    Helpers.GetCustomAttributeValue<string, SwaggerWcfPathAttribute>(declaration, "OperationPath");
+                if (!string.IsNullOrWhiteSpace(operationPath))
+                {
+                    uriTemplate = ConcatPaths(operationPath, uriTemplate);
+                }
 
                 PathAction operation = new PathAction
                 {
@@ -299,7 +313,7 @@ namespace SwaggerWcf.Support
                     TypeFormat typeFormat = Helpers.MapSwaggerType(type, definitionsTypesList);
 
                     operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
-                                                          definitionsTypesList));
+                                                          definitionsTypesList, inType));
                 }
                 if (wrappedRequest)
                 {
@@ -367,17 +381,20 @@ namespace SwaggerWcf.Support
                    (wi.BodyStyle == WebMessageBodyStyle.Wrapped || wi.BodyStyle == WebMessageBodyStyle.WrappedResponse);
         }
 
-        private ParameterBase GetParameter(TypeFormat typeFormat, MethodInfo declaration, MethodInfo implementation, ParameterInfo parameter, SwaggerWcfParameterAttribute settings, string uriTemplate, bool wrappedRequest, IList<Type> definitionsTypesList)
+        private ParameterBase GetParameter(TypeFormat typeFormat,
+                                           MethodInfo declaration,
+                                           MethodInfo implementation,
+                                           ParameterInfo parameter,
+                                           SwaggerWcfParameterAttribute settings,
+                                           string uriTemplate,
+                                           bool wrappedRequest,
+                                           IList<Type> definitionsTypesList,
+                                           InType inType)
         {
             string description = settings?.Description;
             bool required = settings != null && settings.Required;
-            string name = parameter.Name;
-            DataMemberAttribute dataMemberAttribute = parameter.GetCustomAttribute<DataMemberAttribute>();
+            string name = inType == InType.Query ? ResolveParameterNameFromUri(uriTemplate, parameter) : parameter.Name;
 
-            if (!string.IsNullOrEmpty(dataMemberAttribute?.Name))
-                name = dataMemberAttribute.Name;
-
-            InType inType = GetInType(uriTemplate, parameter.Name);
             if (inType == InType.Path)
                 required = true;
 
@@ -520,11 +537,31 @@ namespace SwaggerWcf.Support
             return param;
         }
 
+        private static string ResolveParameterNameFromUri(string uriTemplate, ParameterInfo parameter)
+        {
+            int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
+            var uriParameters = HttpUtility.ParseQueryString(uriTemplate.Substring(questionMarkPosition + 1));
+
+            string parameterTemplate = GetParameterNameTemplate(parameter.Name);
+
+            var resolvedParameter = uriParameters
+                .AllKeys
+                .Select(k => new { Name = k, Template = uriParameters.Get(k) })
+                .FirstOrDefault(p => p.Template.Equals(parameterTemplate, StringComparison.Ordinal));
+
+            return resolvedParameter != null ? resolvedParameter.Name : parameter.Name;
+        }
+
+        private static string GetParameterNameTemplate(string parameterName)
+        {
+            return $"{{{parameterName}}}";
+        }
+
         private InType GetInType(string uriTemplate, string parameterName)
         {
-            Regex reg = new Regex(@"\{" + parameterName + @"\}");
-            Regex regWithDefaultValue = new Regex(@"\{" + parameterName + @"=[a-zA-Z0-9]+\}");
-            if (!reg.Match(uriTemplate).Success && !regWithDefaultValue.Match(uriTemplate).Success)
+            Match match = new Regex(GetParameterNameTemplate(parameterName)).Match(uriTemplate);
+
+            if (!match.Success)
                 return InType.Body;
 
             int questionMarkPosition = uriTemplate.IndexOf("?", StringComparison.Ordinal);
@@ -532,10 +569,7 @@ namespace SwaggerWcf.Support
             if (questionMarkPosition == -1)
                 return InType.Path;
 
-            if (questionMarkPosition > uriTemplate.IndexOf(parameterName, StringComparison.Ordinal))
-                return InType.Path;
-
-            return regWithDefaultValue.Match(uriTemplate).Success ? InType.Body : InType.Query;
+            return questionMarkPosition > match.Index ? InType.Path : InType.Query;
         }
 
         private IEnumerable<string> GetConsumes(MethodInfo implementation, MethodInfo declaration)
@@ -697,7 +731,7 @@ namespace SwaggerWcf.Support
 
         private Schema BuildSchema(Type type, MethodInfo implementation, MethodInfo declaration, bool wrappedResponse, IList<Type> definitionsTypesList)
         {
-            if (type == typeof(void))
+            if (type == typeof(void) || type == typeof(Task))
                 return null;
 
             if (type.BaseType == typeof(Task))

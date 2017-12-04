@@ -78,7 +78,7 @@ namespace SwaggerWcf.Test.Service
         [SwaggerWcfTag("Books")]
         [SwaggerWcfResponse(HttpStatusCode.OK, "Book found, value in the response body")]
         [SwaggerWcfResponse(HttpStatusCode.NoContent, "No books", true)]
-        public Book[] ReadBooks(string filter = null)
+        public Book[] ReadBooks(string filterText = null)
         {
             WebOperationContext woc = WebOperationContext.Current;
 
@@ -88,7 +88,9 @@ namespace SwaggerWcf.Test.Service
             if (Store.Books.Any())
             {
                 woc.OutgoingResponse.StatusCode = HttpStatusCode.OK;
-                return Store.Books.ToArray();
+                return string.IsNullOrEmpty(filterText)
+                    ? Store.Books.ToArray()
+                    : Store.Books.Where(b => b.Author.Name.Contains(filterText) || b.Title.Contains(filterText)).ToArray();
             }
 
             woc.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;

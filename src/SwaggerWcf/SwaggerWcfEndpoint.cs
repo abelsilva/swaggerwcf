@@ -80,8 +80,10 @@ namespace SwaggerWcf
             foreach (string path in paths)
             {
                 Service service = buildService(path);
-                service.Info = Info;
-                service.SecurityDefinitions = SecurityDefinitions;
+                if (Info != null)
+                    service.Info = Info;
+                if (SecurityDefinitions != null)
+                    service.SecurityDefinitions = SecurityDefinitions;
 
                 string swagger = Serializer.Process(service);
                 if (SwaggerFiles.ContainsKey(path) == false)
