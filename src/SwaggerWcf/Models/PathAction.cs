@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 namespace SwaggerWcf.Models
 {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-    internal class PathAction
+    public class PathAction
     {
         public PathAction()
         {

@@ -8,7 +8,7 @@ namespace SwaggerWcf.Support
 {
     internal class Serializer
     {
-        internal static string Process(Service service)
+        internal static string Process(SwaggerSchema service)
         {
             var sb = new StringBuilder();
             var sw = new StringWriter(sb);

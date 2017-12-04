@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 namespace SwaggerWcf.Models
 {
     [JsonConverter(typeof(StringEnumConverter), true)]
-    internal enum InType
+    public enum InType
     {
         Unknown = 0,
         Body = 1,

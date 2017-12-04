@@ -6,9 +6,9 @@ using Newtonsoft.Json.Serialization;
 namespace SwaggerWcf.Models
 {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-    internal sealed class Service
+    public sealed class SwaggerSchema
     {
-        public string Swagger { get; set; }
+        public string Swagger => "2.0";
 
         public Info Info { get; set; }
 
@@ -16,23 +16,17 @@ namespace SwaggerWcf.Models
 
         public string BasePath { get; set; }
 
-        public List<string> Schemes { get; set; }
+        public IEnumerable<string> Schemes { get; set; }
 
-        public List<Path> Paths { get; set; }
+        public Dictionary<string, PathItem> Paths { get; set; }
 
-        public List<Definition> Definitions { get; set; }
+        public IEnumerable<Definition> Definitions { get; set; }
 
         public SecurityDefinitions SecurityDefinitions { get; set; }
 
-        public Service()
-        {
-            Swagger = "2.0";
-            Paths = new List<Path>();
-            Definitions = new List<Definition>();
-        }
-
         public void Serialize(JsonWriter writer)
         {
+            /*
             writer.WriteStartObject();
 
             writer.WritePropertyName("swagger");
@@ -81,37 +75,38 @@ namespace SwaggerWcf.Models
             }
 
             writer.WriteEndObject();
+            */
         }
 
-        private void WritePaths(JsonWriter writer)
-        {
-            writer.WriteStartObject();
-            foreach (Path p in Paths.OrderBy(p => p.Id))
-            {
-                p.Serialize(writer);
-            }
-            writer.WriteEndObject();
-        }
+        //private void WritePaths(JsonWriter writer)
+        //{
+        //    writer.WriteStartObject();
+        //    foreach (Path p in Paths.OrderBy(p => p.Id))
+        //    {
+        //        p.Serialize(writer);
+        //    }
+        //    writer.WriteEndObject();
+        //}
 
-        private void WriteDefinitions(JsonWriter writer)
-        {
-            writer.WriteStartObject();
-            foreach (Definition d in Definitions.OrderBy(d => d.Schema.Name))
-            {
-                d.Serialize(writer);
-            }
-            writer.WriteEndObject();
-        }
+        //private void WriteDefinitions(JsonWriter writer)
+        //{
+        //    writer.WriteStartObject();
+        //    foreach (Definition d in Definitions.OrderBy(d => d.Schema.Name))
+        //    {
+        //        d.Serialize(writer);
+        //    }
+        //    writer.WriteEndObject();
+        //}
 
-        private void WriteSecurityDefinitions(JsonWriter writer)
-        {
-            writer.WriteStartObject();
-            foreach (var d in SecurityDefinitions)
-            {
-                writer.WritePropertyName(d.Key);
-                d.Value.Serialize(writer);
-            }
-            writer.WriteEndObject();
-        }
+        //private void WriteSecurityDefinitions(JsonWriter writer)
+        //{
+        //    writer.WriteStartObject();
+        //    foreach (var d in SecurityDefinitions)
+        //    {
+        //        writer.WritePropertyName(d.Key);
+        //        d.Value.Serialize(writer);
+        //    }
+        //    writer.WriteEndObject();
+        //}
     }
 }

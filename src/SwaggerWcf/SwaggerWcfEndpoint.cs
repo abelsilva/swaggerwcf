@@ -25,7 +25,7 @@ namespace SwaggerWcf
             Init(ServiceBuilder.Build);
         }
 
-        internal SwaggerWcfEndpoint(Func<string, Service> buildService)
+        internal SwaggerWcfEndpoint(Func<string, SwaggerSchema> buildService)
         {
             Init(buildService);
         }
@@ -55,7 +55,7 @@ namespace SwaggerWcf
         {
             string path = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).Single();
 
-            Service service = ServiceBuilder.Build("/");
+            SwaggerSchema service = ServiceBuilder.Build("/");
 
             service.Info = Info;
             service.SecurityDefinitions = SecurityDefinitions;
@@ -71,13 +71,13 @@ namespace SwaggerWcf
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal static void Init(Func<string, Service> buildService)
+        internal static void Init(Func<string, SwaggerSchema> buildService)
         {
             string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
 
             foreach (string path in paths)
             {
-                Service service = buildService(path);
+                SwaggerSchema service = buildService(path);
                 if (Info != null)
                     service.Info = Info;
                 if (SecurityDefinitions != null)

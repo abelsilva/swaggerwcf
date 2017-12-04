@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 namespace SwaggerWcf.Models
 {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-    internal class ParameterItems
+    public class ParameterItems
     {
         public TypeFormat TypeFormat { get; set; }
 

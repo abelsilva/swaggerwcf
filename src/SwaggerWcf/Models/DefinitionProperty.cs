@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace SwaggerWcf.Models
 {
-    internal class DefinitionProperty
+    public class DefinitionProperty
     {
         public DefinitionProperty()
         {
@@ -94,7 +94,7 @@ namespace SwaggerWcf.Models
                     writer.WritePropertyName("default");
                     writer.WriteValue(Default);
                 }
-                if (Example!=null)
+                if (Example != null)
                 {
                     writer.WritePropertyName("example");
                     if (Example.GetType().IsArray)

@@ -13,24 +13,24 @@ namespace SwaggerWcf.Support
 {
     internal class ServiceBuilder
     {
-        public static Service Build(string path)
+        public static SwaggerSchema Build(string path)
         {
             return BuildServiceCommon(path, BuildPaths);
         }
 
-        public static Service Build<TBusiness>(string path)
+        public static SwaggerSchema Build<TBusiness>(string path)
         {
             return BuildServiceCommon(path, BuildPaths<TBusiness>);
         }
 
-        private static Service BuildServiceCommon(string path, Action<Service, IList<string>, List<string>, IList<Type>> buildPaths)
+        private static SwaggerSchema BuildServiceCommon(string path, Action<SwaggerSchema, IList<string>, List<string>, IList<Type>> buildPaths)
         {
             const string sectionName = "swaggerwcf";
             SwaggerWcfSection config =
                 (SwaggerWcfSection)(ConfigurationManager.GetSection(sectionName) ?? new SwaggerWcfSection());
 
             List<Type> definitionsTypesList = new List<Type>();
-            Service service = new Service();
+            SwaggerSchema service = new SwaggerSchema();
             List<string> hiddenTags = SwaggerWcfEndpoint.FilterHiddenTags(path, GetHiddenTags(config));
             List<string> visibleTags = SwaggerWcfEndpoint.FilterVisibleTags(path, GetVisibleTags(config));
             IReadOnlyDictionary<string, string> settings = GetSettings(config);
@@ -67,7 +67,7 @@ namespace SwaggerWcf.Support
                 ?? new Dictionary<string, string>();
         }
 
-        private static void ProcessSettings(Service service, IReadOnlyDictionary<string, string> settings)
+        private static void ProcessSettings(SwaggerSchema service, IReadOnlyDictionary<string, string> settings)
         {
             if (settings.ContainsKey("BasePath"))
                 service.BasePath = settings["BasePath"];
@@ -104,10 +104,10 @@ namespace SwaggerWcf.Support
                 service.Info.License.Name = settings["InfoLicenseName"];
         }
 
-        private static void BuildPaths(Service service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
+        private static void BuildPaths(SwaggerSchema service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            service.Paths = new List<Path>();
+            service.Paths = new Dictionary<string, PathItem>();
 
             foreach (Assembly assembly in assemblies)
             {
@@ -130,16 +130,16 @@ namespace SwaggerWcf.Support
 
                     Mapper mapper = new Mapper(hiddenTags, visibleTags);
 
-                    IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, ti.AsType(), definitionsTypesList);
-                    service.Paths.AddRange(paths);
+                    IEnumerable<Path> paths = mapper.FindMethods(da.BasePath, ti.AsType(), definitionsTypesList);
+                    //service.Paths.AddRange(paths);
                 }
             }
         }
 
-        private static void BuildPaths<TBusiness>(Service service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
+        private static void BuildPaths<TBusiness>(SwaggerSchema service, IList<string> hiddenTags, List<string> visibleTags, IList<Type> definitionsTypesList)
         {
             Type type = typeof(TBusiness);
-            service.Paths = new List<Path>();
+            service.Paths = new Dictionary<string, PathItem>();
 
             SwaggerWcfAttribute da = type.GetCustomAttribute<SwaggerWcfAttribute>();
             if (da == null || hiddenTags.Any(ht => ht == type.Name))
@@ -147,8 +147,8 @@ namespace SwaggerWcf.Support
 
             Mapper mapper = new Mapper(hiddenTags, visibleTags);
 
-            IEnumerable<Path> paths = mapper.FindMethods(da.ServicePath, type, definitionsTypesList);
-            service.Paths.AddRange(paths);
+            IEnumerable<Path> paths = mapper.FindMethods(da.BasePath, type, definitionsTypesList);
+            //service.Paths.AddRange(paths);
         }
     }
 }
