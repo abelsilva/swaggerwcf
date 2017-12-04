@@ -66,6 +66,7 @@
     <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
     <Compile Include="Models\PathItem.cs" />
+    <Compile Include="Models\Scheme.cs" />
     <Compile Include="Support\AttributeExtensions.cs" />
     <Compile Include="Support\EnumerableExtensions.cs" />
     <Compile Include="Support\MethodInfoExtensions.cs" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwaggerWcf.Models;
+using System;
 
 namespace SwaggerWcf.Attributes
 {
@@ -13,22 +14,32 @@ namespace SwaggerWcf.Attributes
         /// the API is served directly under the host. The value MUST start with a leading slash (/). The
         /// basePath does not support path templating.
         /// </summary>
-        public string BasePath { get; }
+        public string BasePath { get; set; }
 
         /// <summary>
-        /// Export this service on Swagger file with service base path of "/"
+        /// The host (name or ip) serving the API. This MUST be the host only and does not include the scheme
+        /// nor sub-paths. It MAY include a port. If the host is not included, the host serving the documentation
+        /// is to be used (including the port). The host does not support path templating.
         /// </summary>
-        public SwaggerWcfAttribute()
-            : this("/")
-        { }
+        public string Host { get; set; }
 
         /// <summary>
-        /// Export this service on Swagger file with service base path
+        /// The transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss". If
+        /// the schemes is not included, the default scheme to be used is the one used to access the Swagger
+        /// definition itself.
         /// </summary>
-        /// <param name="basePath">Service path</param>
-        public SwaggerWcfAttribute(string basePath)
-        {
-            BasePath = basePath.StartsWith("/") ? basePath : $"/{basePath}";
-        }
+        public Scheme[] Schemes { get; set; }
+
+        /// <summary>
+        /// A list of MIME types the APIs can consume. This is global to all APIs but can be overridden on
+        /// specific API calls. Value MUST be as described under Mime Types.
+        /// </summary>
+        public string[] Consumes { get; set; }
+
+        /// <summary>
+        /// A list of MIME types the APIs can produce. This is global to all APIs but can be overridden on
+        /// specific API calls. Value MUST be as described under Mime Types.
+        /// </summary>
+        public string[] Produces { get; set; }
     }
 }

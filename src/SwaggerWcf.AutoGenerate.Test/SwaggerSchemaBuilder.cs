@@ -31,10 +31,16 @@ namespace SwaggerWcf.AutoGenerate.Test
 
         public SwaggerSchema Build()
         {
+            var attr = _serviceContractType.GetCustomAttribute<SwaggerWcfAttribute>();
+
             SwaggerSchema swaggerSchema = new SwaggerSchema
             {
-                BasePath = _serviceContractType.GetBasePath(),
                 Info = _serviceContractType.GetServiceInfo(),
+                Host = attr.Host,
+                BasePath = attr.BasePath,
+                Schemes = attr.Schemes,
+                Consumes = attr.Consumes,
+                Produces = attr.Produces,
             };
 
             return swaggerSchema;

@@ -5,11 +5,24 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using SwaggerWcf.Attributes;
 using SwaggerWcf.Test.Service.Data;
+using SwaggerWcf.Models;
 
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
-    [SwaggerWcf("/v1/rest")]
+    [SwaggerWcf(
+        BasePath = "/v1/rest",
+        Schemes = new[] { Scheme.Http, Scheme.Https },
+        Host = "example.org",
+        Consumes = new[] {
+            "text/plain; charset=utf-8",
+            "application/json",
+        },
+        Produces = new[]{
+            "application/vnd.github+json",
+            "application/vnd.github.v3+json",
+        }
+    )]
     [SwaggerWcfServiceInfo(
         title: "SampleService",
         version: "0.0.1",

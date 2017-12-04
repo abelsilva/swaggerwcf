@@ -2,6 +2,7 @@
 using SwaggerWcf.Models;
 using SwaggerWcf.Support;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SwaggerWcf.AutoGenerate.Test
@@ -28,8 +29,5 @@ namespace SwaggerWcf.AutoGenerate.Test
 
             return info;
         }
-
-        public static string GetBasePath(this Type type) =>
-            type.GetCustomAttribute<SwaggerWcfAttribute>().BasePath;
     }
 }
