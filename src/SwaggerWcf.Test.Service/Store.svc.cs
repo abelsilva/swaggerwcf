@@ -8,7 +8,6 @@ using SwaggerWcf.Test.Service.Data;
 
 namespace SwaggerWcf.Test.Service
 {
-    [SwaggerWcf("/v1/rest")]
     public class BookStore : IStore
     {
         #region /books

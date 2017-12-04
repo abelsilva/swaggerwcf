@@ -9,6 +9,21 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
+    [SwaggerWcf("/v1/rest")]
+    [SwaggerWcfServiceInfo(
+        title: "SampleService",
+        version: "0.0.1",
+        Description = "Sample Service to test SwaggerWCF"
+    )]
+    [SwaggerWcfContactInfo(
+        Name = "Abel Silva",
+        Email = "no@e.mail",
+        Url = "http://github.com/abelsilva/swaggerwcf"
+    )]
+    [SwaggerWcfLicenseInfo(
+        name: "Apache License 2.0",
+        Url = "https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE"
+    )]
     public interface IStore
     {
         #region /books

@@ -1,18 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     internal sealed class Service
     {
-        public Service()
-        {
-            Swagger = "2.0";
-            Paths = new List<Path>();
-            Definitions = new List<Definition>();
-        }
-
         public string Swagger { get; set; }
 
         public Info Info { get; set; }
@@ -23,11 +18,18 @@ namespace SwaggerWcf.Models
 
         public List<string> Schemes { get; set; }
 
-	public List<Path> Paths { get; set; }
+        public List<Path> Paths { get; set; }
 
         public List<Definition> Definitions { get; set; }
 
         public SecurityDefinitions SecurityDefinitions { get; set; }
+
+        public Service()
+        {
+            Swagger = "2.0";
+            Paths = new List<Path>();
+            Definitions = new List<Definition>();
+        }
 
         public void Serialize(JsonWriter writer)
         {
@@ -50,7 +52,7 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("basePath");
                 writer.WriteValue(BasePath);
             }
-	    if (Schemes != null && Schemes.Any())
+            if (Schemes != null && Schemes.Any())
             {
                 writer.WritePropertyName("schemes");
                 writer.WriteStartArray();

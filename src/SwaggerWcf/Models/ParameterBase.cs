@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     internal abstract class ParameterBase
     {
         public string Name { get; set; }
@@ -13,7 +15,7 @@ namespace SwaggerWcf.Models
         public string Description { get; set; }
 
         public bool Required { get; set; }
-        
+
         public abstract void Serialize(JsonWriter writer);
         public abstract void Serialize(JsonWriter writer, bool skipStartEndObject);
     }

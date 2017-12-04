@@ -12,11 +12,12 @@ namespace SwaggerWcf.Support
         public TypeBuilder(string typeName)
         {
             TypeName = typeName;
-            Fields = new Dictionary<string, Tuple<Type,bool>>();
+            Fields = new Dictionary<string, Tuple<Type, bool>>();
         }
 
         private string TypeName { get; set; }
-        private Dictionary<string, Tuple<Type,bool>> Fields { get; set; }
+
+        private Dictionary<string, Tuple<Type, bool>> Fields { get; set; }
 
         public Type Type
         {
@@ -41,9 +42,9 @@ namespace SwaggerWcf.Support
             ConstructorBuilder constructor =
                 tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName |
                                             MethodAttributes.RTSpecialName);
-            
+
             // NOTE: assuming your list contains Field objects with fields FieldName(string) and FieldType(Type)
-            foreach (KeyValuePair<string, Tuple<Type,bool>> field in Fields)
+            foreach (KeyValuePair<string, Tuple<Type, bool>> field in Fields)
                 CreateProperty(tb, field.Key, field.Value.Item1, field.Value.Item2);
 
             Type objectType = tb.CreateType();

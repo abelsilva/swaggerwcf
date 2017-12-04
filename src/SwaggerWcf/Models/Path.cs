@@ -1,19 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     internal class Path
     {
+        public string Id { get; set; }
+
+        public List<PathAction> Actions { get; set; }
+
         public Path()
         {
             Actions = new List<PathAction>();
         }
-
-        public string Id { get; set; }
-        
-        public List<PathAction> Actions { get; set; }
 
         public void Serialize(JsonWriter writer)
         {

@@ -1,5 +1,9 @@
-﻿namespace SwaggerWcf.Models
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public struct TypeFormat
     {
         public ParameterType Type;

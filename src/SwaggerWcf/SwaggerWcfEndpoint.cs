@@ -11,6 +11,7 @@ using System.Text;
 using SwaggerWcf.Models;
 using SwaggerWcf.Support;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace SwaggerWcf
 {
@@ -52,19 +53,16 @@ namespace SwaggerWcf
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static string GenerateSwaggerFile()
         {
-            Service service = null;
-            string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
+            string path = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).Single();
 
-            foreach (string path in paths)
-            {
-                service = ServiceBuilder.Build("/");
-                service.Info = Info;
-                service.SecurityDefinitions = SecurityDefinitions;
+            Service service = ServiceBuilder.Build("/");
 
-                string swagger = Serializer.Process(service);
-                if (SwaggerFiles.ContainsKey(path) == false)
-                    SwaggerFiles.Add(path, swagger);
-            }
+            service.Info = Info;
+            service.SecurityDefinitions = SecurityDefinitions;
+
+            string swagger = Serializer.Process(service);
+            if (SwaggerFiles.ContainsKey(path) == false)
+                SwaggerFiles.Add(path, swagger);
 
             return JsonConvert.SerializeObject(service, new JsonSerializerSettings
             {

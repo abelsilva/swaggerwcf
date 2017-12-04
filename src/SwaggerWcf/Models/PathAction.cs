@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     internal class PathAction
     {
         public PathAction()
@@ -17,7 +19,7 @@ namespace SwaggerWcf.Models
         }
 
         public string Id { get; set; }
-        
+
         public List<string> Tags { get; set; }
 
         public string Summary { get; set; }
@@ -39,7 +41,7 @@ namespace SwaggerWcf.Models
         public List<string> Schemes { get; set; }
 
         public bool Deprecated { get; set; }
-        
+
         public List<KeyValuePair<string, string[]>> Security { get; set; }
 
         public void Serialize(JsonWriter writer)
@@ -47,7 +49,7 @@ namespace SwaggerWcf.Models
             writer.WritePropertyName(Id);
 
             writer.WriteStartObject();
-            
+
             if (Tags != null && Tags.Any())
             {
                 writer.WritePropertyName("tags");

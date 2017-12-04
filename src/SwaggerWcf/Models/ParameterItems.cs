@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SwaggerWcf.Models
 {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     internal class ParameterItems
     {
         public TypeFormat TypeFormat { get; set; }
 
         public ParameterBase Items { get; set; }
-        
+
         public string Ref { get; set; }
 
         public void Serialize(JsonWriter writer)
@@ -25,7 +27,7 @@ namespace SwaggerWcf.Models
                     writer.WriteValue(TypeFormat.Format);
                 }
             }
-            
+
             if (!string.IsNullOrWhiteSpace(Ref))
             {
                 writer.WritePropertyName("$ref");
