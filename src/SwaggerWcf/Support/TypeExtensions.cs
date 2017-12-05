@@ -1,4 +1,5 @@
 ﻿using SwaggerWcf.Attributes;
+using SwaggerWcf.Models;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -23,5 +24,15 @@ namespace SwaggerWcf.Support
 
         public static string GetModelWrappedName(this Type type) =>
             type.GetCustomAttribute<SwaggerWcfDefinitionAttribute>()?.ModelName ?? type.FullName;
+
+        internal static Info GetServiceInfo(this TypeInfo typeInfo)
+        {
+            var infoAttr = typeInfo.GetCustomAttribute<SwaggerWcfServiceInfoAttribute>() ??
+                throw new ArgumentException($"{typeInfo.FullName} does not have {nameof(SwaggerWcfServiceInfoAttribute)}");
+
+            Info info = (Info)infoAttr;
+
+            return info;
+        }
     }
 }

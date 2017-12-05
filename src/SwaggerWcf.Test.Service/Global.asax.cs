@@ -18,6 +18,7 @@ namespace SwaggerWcf.Test.Service
             RouteTable.Routes.Add(new ServiceRoute("v1/rest", new WebServiceHostFactory(), typeof(BookStore)));
             RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
 
+            /*
             var info = new Info
             {
                 Title = "Sample Service",
@@ -27,6 +28,7 @@ namespace SwaggerWcf.Test.Service
             };
 
             SwaggerWcfEndpoint.Configure(info);
+            */
         }
 
         private static List<string> FilterVisibleTags(string path, List<string> visibleTags)
