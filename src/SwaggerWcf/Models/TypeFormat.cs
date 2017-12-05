@@ -18,6 +18,6 @@
                                          Type == ParameterType.String && !string.Equals(Format, "stream");
 
         // possible that enum should be included in primitive type?
-        internal bool IsEnum => Type == ParameterType.String && Format == "enum";
+        internal bool IsEnum => Type == ParameterType.Integer && Format == "enum";
     }
 }

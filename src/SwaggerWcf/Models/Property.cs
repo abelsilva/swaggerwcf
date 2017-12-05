@@ -53,7 +53,7 @@ namespace SwaggerWcf.Models
 
         public bool UniqueItems { get; set; }
 
-        public List<string> Enum { get; set; }
+        public List<int> Enum { get; set; }
 
         public decimal MultipleOf { get; set; }
 
@@ -145,7 +145,7 @@ namespace SwaggerWcf.Models
             {
                 writer.WritePropertyName("enum");
                 writer.WriteStartArray();
-                foreach (string e in Enum)
+                foreach (int e in Enum)
                 {
                     writer.WriteValue(e);
                 }
