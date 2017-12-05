@@ -26,7 +26,7 @@ namespace SwaggerWcf.Test.Service.Data
         public Author Author { get; set; }
 
         [DataMember]
-        [Description("Book Language")]
+        [Description("Book Language: * English = 1 * Spanish = 2 * French = 3 * Chinese = 4")]
         public Language Language { get; set; }
 
         [DataMember]
