@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
 
 namespace SwaggerWcf.Models
 {
@@ -7,7 +8,15 @@ namespace SwaggerWcf.Models
     {
         public string Name { get; set; }
 
-        public string Url { get; set; }
+        public string Url
+        {
+            get => _url;
+            set => _url = Uri.TryCreate(value, UriKind.Absolute, out Uri _)
+                    ? value
+                    : throw new ArgumentException("Value must be in the format of a URL", nameof(Url));
+        }
+
+        private string _url;
 
         internal void Serialize(JsonWriter writer)
         {

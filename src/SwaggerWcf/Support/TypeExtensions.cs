@@ -38,6 +38,12 @@ namespace SwaggerWcf.Support
                 info.Contact = (InfoContact)contactAttr;
             }
 
+            var licenseAttr = typeInfo.GetCustomAttribute<SwaggerWcfLicenseInfoAttribute>();
+            if (licenseAttr != null)
+            {
+                info.License = (InfoLicense)licenseAttr;
+            }
+
             return info;
         }
     }
