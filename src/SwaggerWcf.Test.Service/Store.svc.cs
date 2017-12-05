@@ -9,7 +9,17 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [SwaggerWcf("/v1/rest")]
-    [SwaggerWcfServiceInfo("SampleService", "0.0.1")]
+    [SwaggerWcfServiceInfo(
+        title: "SampleService",
+        version: "0.0.1",
+        Description = "Sample Service to test SwaggerWCF",
+        TermsOfService = "Terms of Service"
+    )]
+    [SwaggerWcfContactInfo(
+        Name = "Abel Silva",
+        Url = "http://github.com/abelsilva",
+        Email = "no@e.mail"
+    )]
     public class BookStore : IStore
     {
         #region /books

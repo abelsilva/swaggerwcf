@@ -30,7 +30,13 @@ namespace SwaggerWcf.Support
             var infoAttr = typeInfo.GetCustomAttribute<SwaggerWcfServiceInfoAttribute>() ??
                 throw new ArgumentException($"{typeInfo.FullName} does not have {nameof(SwaggerWcfServiceInfoAttribute)}");
 
-            Info info = (Info)infoAttr;
+            var info = (Info)infoAttr;
+
+            var contactAttr = typeInfo.GetCustomAttribute<SwaggerWcfContactInfoAttribute>();
+            if (contactAttr != null)
+            {
+                info.Contact = (InfoContact)contactAttr;
+            }
 
             return info;
         }
