@@ -32,6 +32,8 @@ namespace SwaggerWcf
 
         internal static SecurityDefinitions SecurityDefinitions { get; private set; }
 
+        internal static string BasePath { get; private set; }
+
         private static Dictionary<string, string> SwaggerFiles { get; } = new Dictionary<string, string>();
 
         public static bool DisableSwaggerUI { get; set; }
@@ -42,10 +44,11 @@ namespace SwaggerWcf
         public static Func<string, List<string>, List<string>> FilterHiddenTags { get; set; } =
             (string path, List<string> hiddenTags) => hiddenTags;
 
-        public static void Configure(Info info, SecurityDefinitions securityDefinitions = null)
+        public static void Configure(Info info, SecurityDefinitions securityDefinitions = null, string basePath = null)
         {
             Info = info;
             SecurityDefinitions = securityDefinitions;
+            BasePath = basePath;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -60,6 +63,8 @@ namespace SwaggerWcf
                     service.Info = Info;
                 if (SecurityDefinitions != null)
                     service.SecurityDefinitions = SecurityDefinitions;
+                if (BasePath != null)
+                    service.BasePath = BasePath;
 
                 string swagger = Serializer.Process(service);
                 if (SwaggerFiles.ContainsKey(path) == false)
@@ -130,7 +135,9 @@ namespace SwaggerWcf
                 ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
                 : content;
 
-            Stream stream = Support.StaticContent.GetFile(filename, out string contentType, out long contentLength);
+            string contentType;
+            long contentLength;
+            Stream stream = Support.StaticContent.GetFile(filename, out contentType, out contentLength);
 
             if (stream == Stream.Null)
             {
