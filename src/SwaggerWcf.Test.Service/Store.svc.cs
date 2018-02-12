@@ -440,5 +440,13 @@ namespace SwaggerWcf.Test.Service
         }
 
         #endregion
+
+        #region Base
+        [SwaggerWcfTag("Base")]
+        public string TestService(string input)
+        {
+            return $"input = {input}. Now = {DateTime.Now}";
+        }
+        #endregion
     }
 }

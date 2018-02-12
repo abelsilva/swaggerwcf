@@ -9,7 +9,7 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
-    public interface IStore
+    public interface IStore : IBaseService
     {
         #region /books
 

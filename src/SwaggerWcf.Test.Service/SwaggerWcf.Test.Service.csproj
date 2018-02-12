@@ -23,6 +23,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,6 +73,7 @@
     <Compile Include="Data\Book.cs" />
     <Compile Include="Data\Language.cs" />
     <Compile Include="Data\Store.cs" />
+    <Compile Include="IBaseService.cs" />
     <Compile Include="Store.svc.cs">
       <DependentUpon>Store.svc</DependentUpon>
     </Compile>
@@ -80,6 +82,7 @@
     </Compile>
     <Compile Include="IStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WCF\WebServiceHostFactoryEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SwaggerWcf\SwaggerWcf.csproj">
