@@ -447,6 +447,12 @@ namespace SwaggerWcf.Test.Service
         {
             return $"input = {input}. Now = {DateTime.Now}";
         }
+
+        [SwaggerWcfTag("GenericBook")]
+        public Book Get(string id)
+        {
+            return new Book { Id = id };
+        }
         #endregion
     }
 }
