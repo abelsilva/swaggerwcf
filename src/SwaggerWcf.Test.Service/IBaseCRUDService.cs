@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
-    public interface IBaseService
+    public interface IBaseCRUDService<T>
     {
-        [SwaggerWcfPath("Test Service")]
+        [SwaggerWcfPath("Get")]
         [OperationContract]
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
-            UriTemplate = "testService?input={input}")]
-        string TestService(string input);
+            UriTemplate = "get/{id}")]
+        T Get(string id);
     }
 }

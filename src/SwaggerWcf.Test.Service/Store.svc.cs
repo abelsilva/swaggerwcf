@@ -9,7 +9,8 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [SwaggerWcf("/v1/rest")]
-    public class BookStore : IStore
+    [SwaggerWcfTag("BookStore")]
+    public class BookStore : BaseService<Book>, IStore
     {
         #region /books
 
@@ -443,13 +444,13 @@ namespace SwaggerWcf.Test.Service
 
         #region Base
         [SwaggerWcfTag("Base")]
-        public string TestService(string input)
+        public override string TestService(string input)
         {
-            return $"input = {input}. Now = {DateTime.Now}";
+            return base.TestService(input);
         }
 
         [SwaggerWcfTag("GenericBook")]
-        public Book Get(string id)
+        public override Book Get(string id)
         {
             return new Book { Id = id };
         }
