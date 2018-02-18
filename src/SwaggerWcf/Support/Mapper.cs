@@ -261,15 +261,8 @@ namespace SwaggerWcf.Support
                     });
                 }
 
-                // parameters - body
-                int bodyParameterCount = 0;
-                foreach (ParameterInfo parameter in parameters)
-                {
-                    if (GetInType(uriTemplate, parameter.Name) == InType.Body) bodyParameterCount++;
-                }
-
-
                 bool isGetRequest = httpMethod == "GET";
+                int bodyParameterCount = parameters.Where(p => GetInType(uriTemplate, p.Name) == InType.Body).Count();
                 TypeBuilder typeBuilder = null;
                 if (!wrappedRequest && !isGetRequest && bodyParameterCount > 1)
                 {
