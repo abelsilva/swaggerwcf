@@ -247,7 +247,7 @@ namespace SwaggerWcf.Support
                 // remove duplicates
                 headers = headers.GroupBy(h => h.Name).Select(g => g.First()).ToList();
 
-                // parameters - headers                
+                // parameters - headers
                 foreach (SwaggerWcfHeaderAttribute attr in headers)
                 {
                     operation.Parameters.Add(new ParameterPrimitive
