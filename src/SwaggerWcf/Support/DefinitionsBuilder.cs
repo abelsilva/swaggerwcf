@@ -262,12 +262,21 @@ namespace SwaggerWcf.Support
                 if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     propType = propType.GetEnumerableType();
 
+                string enumDescription = "";
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    prop.Enum.Add(GetEnumMemberValue(propType, enumName));
+                    int enumMemberValue = GetEnumMemberValue(propType, enumName);
+                    if (prop.Description != null) prop.Enum.Add(enumMemberValue);
+                    enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
                 }
-            }
+
+                if (prop.Description == null && enumDescription != "")
+                {
+                    prop.Title += " (enum)";
+                    prop.Description = enumDescription;
+                }
+            }            
 
             // Apply any options set in a [SwaggerWcfProperty]
             ApplyAttributeOptions(propertyInfo, prop);
