@@ -253,19 +253,27 @@ namespace SwaggerWcf.Support
                 }
             }
 
-            if (prop.TypeFormat.Type == ParameterType.Integer && prop.TypeFormat.Format == "enum")
+            if ((prop.TypeFormat.Type == ParameterType.Integer && prop.TypeFormat.Format == "enum") || (prop.TypeFormat.Type == ParameterType.Array && prop.Items.TypeFormat.Format == "enum"))
             {
                 prop.Enum = new List<int>();
 
                 Type propType = propertyInfo.PropertyType;
 
-                if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(List<>)))
                     propType = propType.GetEnumerableType();
 
+                string enumDescription = "";
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    prop.Enum.Add(GetEnumMemberValue(propType, enumName));
+                    int enumMemberValue = GetEnumMemberValue(propType, enumName);
+                    if (prop.Description != null) prop.Enum.Add(enumMemberValue);
+                    enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
+                }
+
+                if (prop.Description == null && enumDescription != "")
+                {
+                    prop.Description = enumDescription;
                 }
             }
 
@@ -324,7 +332,7 @@ namespace SwaggerWcf.Support
             ApplyIfValid(LastValidValue(attrs, a => a._UniqueItems), x => prop.UniqueItems = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf), x => prop.MultipleOf = x.Value);
         }
-        
+
         private static int GetEnumMemberValue(Type enumType, string enumName)
         {
             if (string.IsNullOrWhiteSpace(enumName))
