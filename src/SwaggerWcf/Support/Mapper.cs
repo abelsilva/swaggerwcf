@@ -263,10 +263,6 @@ namespace SwaggerWcf.Support
 
                 bool isGetRequest = httpMethod == "GET";
                 TypeBuilder typeBuilder = null;
-                if (!wrappedRequest && !isGetRequest && parameters.Length > 1)
-                {
-                    wrappedRequest = true;
-                }
                 if (wrappedRequest)
                 {
                     typeBuilder = new TypeBuilder(implementation.GetWrappedName(declaration));
