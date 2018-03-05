@@ -16,6 +16,7 @@ namespace SwaggerWcf.Test.Service
             SwaggerWcfEndpoint.FilterHiddenTags = FilterHiddenTags;
             SwaggerWcfEndpoint.DisableSwaggerUI = false;
 
+            RouteTable.Routes.Add(new ServiceRoute("v1/authors", new WebServiceHostFactoryEx(typeof(IAuthorService)), typeof(AuthorService)));
             RouteTable.Routes.Add(new ServiceRoute("v1/rest", new WebServiceHostFactoryEx(typeof(IStore)), typeof(BookStore)));
             RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
 

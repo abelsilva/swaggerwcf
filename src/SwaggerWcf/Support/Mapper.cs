@@ -288,7 +288,8 @@ namespace SwaggerWcf.Support
 
                 bool isGetRequest = httpMethod == "GET";
                 TypeBuilder typeBuilder = null;
-                if (!wrappedRequest && !isGetRequest && parameters.Length > 1)
+
+                if (!wrappedRequest && !isGetRequest && parameters.ToList().Where(p => GetInType(uriTemplate, p.Name) == InType.Body).Count() > 1)
                 {
                     wrappedRequest = true;
                 }
@@ -296,6 +297,8 @@ namespace SwaggerWcf.Support
                 {
                     typeBuilder = new TypeBuilder(implementation.GetWrappedName(declaration));
                 }
+
+                var declarationName = declaration.Name;
                 foreach (ParameterInfo parameter in parameters)
                 {
                     SwaggerWcfParameterAttribute settings =
@@ -340,6 +343,7 @@ namespace SwaggerWcf.Support
                     operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
                                                           definitionsTypesList, inType));
                 }
+
                 if (wrappedRequest)
                 {
                     TypeFormat typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);

@@ -19,5 +19,13 @@ namespace SwaggerWcf.Test.Service
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "testService?input={input}")]
         string TestService(string input);
+
+        [SwaggerWcfPath("Test Service")]
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "testServicePost?input={input}")]
+        string TestServicePost(string input, string postObj);
     }
 }

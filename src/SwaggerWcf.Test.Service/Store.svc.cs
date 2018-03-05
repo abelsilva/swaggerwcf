@@ -454,6 +454,24 @@ namespace SwaggerWcf.Test.Service
         {
             return new Book { Id = id };
         }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Create(Book item)
+        {
+            return item;
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Delete(string id)
+        {
+            return new Book { Id = id };
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Update(string id, Book item)
+        {
+            return new Book { Id = id };
+        }
         #endregion
     }
 }
