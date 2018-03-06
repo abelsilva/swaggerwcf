@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0"?>
 <package>
   <metadata>
-    <id>$title$</id>
+    <id>IwIn.SwaggerWcf</id>
     <version>$version$</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://raw.githubusercontent.com/abelsilva/swaggerwcf/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/abelsilva/swaggerwcf</projectUrl>
+    <projectUrl>https://github.com/SeeSharp7/swaggerwcf/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>fix for #128</releaseNotes>
