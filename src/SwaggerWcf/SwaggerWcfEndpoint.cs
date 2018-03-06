@@ -130,7 +130,9 @@ namespace SwaggerWcf
                 ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
                 : content;
 
-            Stream stream = Support.StaticContent.GetFile(filename, out string contentType, out long contentLength);
+            string contentType;
+            long contentLength;
+            Stream stream = Support.StaticContent.GetFile(filename, out contentType, out contentLength);
 
             if (stream == Stream.Null)
             {
