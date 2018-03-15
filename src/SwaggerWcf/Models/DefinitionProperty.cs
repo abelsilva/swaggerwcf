@@ -62,11 +62,6 @@ namespace SwaggerWcf.Models
             writer.WritePropertyName(Title);
             writer.WriteStartObject();
 
-            if (!string.IsNullOrWhiteSpace(Description))
-            {
-                writer.WritePropertyName("description");
-                writer.WriteValue(Description);
-            }
             if (TypeFormat.Type == ParameterType.Object)
             {
                 writer.WritePropertyName("$ref");
@@ -74,6 +69,12 @@ namespace SwaggerWcf.Models
             }
             else
             {
+                if (!string.IsNullOrWhiteSpace(Description))
+                {
+                    writer.WritePropertyName("description");
+                    writer.WriteValue(Description);
+                }
+
                 if (TypeFormat.Type != ParameterType.Unknown)
                 {
                     writer.WritePropertyName("type");
