@@ -123,19 +123,27 @@ namespace SwaggerWcf.Support
                 }
             }
 
-            if (prop.TypeFormat.Type == ParameterType.Integer && prop.TypeFormat.Format == "enum")
+            if ((prop.TypeFormat.Type == ParameterType.Integer && prop.TypeFormat.Format == "enum") || (prop.TypeFormat.Type == ParameterType.Array && prop.Items.TypeFormat.Format == "enum"))
             {
                 prop.Enum = new List<int>();
 
                 Type propType = propertyInfo.FieldType;
 
-                if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(List<>)))
                     propType = propType.GetEnumerableType();
 
+                string enumDescription = "";
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    prop.Enum.Add(DefinitionsBuilder.GetEnumMemberValue(propType, enumName));
+                    int enumMemberValue = DefinitionsBuilder.GetEnumMemberValue(propType, enumName);
+                    if (prop.Description != null) prop.Enum.Add(enumMemberValue);
+                    enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
+                }
+
+                if (prop.Description == null && enumDescription != "")
+                {
+                    prop.Description = enumDescription;
                 }
             }
 
