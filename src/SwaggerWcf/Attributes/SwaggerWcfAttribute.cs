@@ -13,7 +13,7 @@ namespace SwaggerWcf.Attributes
         /// the API is served directly under the host. The value MUST start with a leading slash (/). The
         /// basePath does not support path templating.
         /// </summary>
-        public string BasePath { get; set; }
+        public string ServicePath { get; set; }
 
         /// <summary>
         /// Export this service on Swagger file
@@ -28,7 +28,7 @@ namespace SwaggerWcf.Attributes
         /// <param name="servicePath">Service path</param>
         public SwaggerWcfAttribute(string servicePath)
         {
-            BasePath = servicePath.StartsWith("/") ? servicePath : $"/{servicePath}";
+            ServicePath = servicePath.StartsWith("/") ? servicePath : $"/{servicePath}";
         }
     }
 }
