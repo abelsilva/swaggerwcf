@@ -52,7 +52,7 @@ namespace SwaggerWcf
         internal static void Init(Func<string, Service> buildService)
         {
             string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
-            
+
             foreach (string path in paths)
             {
                 Service service = buildService(path);

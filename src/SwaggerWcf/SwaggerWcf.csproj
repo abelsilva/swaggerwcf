@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SwaggerWcfContactInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfLicenseInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfServiceInfoAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfRequestTypeAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfSecurityAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfContentTypesAttribute.cs" />

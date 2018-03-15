@@ -128,8 +128,13 @@ namespace SwaggerWcf.Support
                     if (da == null || hiddenTags.Any(ht => ht == ti.AsType().Name))
                         continue;
 
-                    Mapper mapper = new Mapper(hiddenTags, visibleTags);
+                    if (service.Info is null)
+                    {
+                        service.Info = ti.GetServiceInfo();
+                    }
 
+                    Mapper mapper = new Mapper(hiddenTags, visibleTags);
+                  
                     if (string.IsNullOrWhiteSpace(service.BasePath))
                         service.BasePath = da.ServicePath;
 
