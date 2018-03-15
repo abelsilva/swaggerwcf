@@ -90,6 +90,8 @@
     <Compile Include="Models\SecurityDefinitions.cs" />
     <Compile Include="Support\ListExtensions.cs" />
     <Compile Include="Support\TypeBuilder.cs" />
+    <Compile Include="Support\TypeFieldsProcessor.cs" />
+    <Compile Include="Support\TypePropertiesProcessor.cs" />
     <Compile Include="SwaggerWcfEndpoint.cs" />
     <Compile Include="ISwaggerWcfEndpoint.cs" />
     <Compile Include="Models\PathAction.cs" />
