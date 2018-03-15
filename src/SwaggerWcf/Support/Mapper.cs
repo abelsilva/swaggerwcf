@@ -25,17 +25,11 @@ namespace SwaggerWcf.Support
         internal readonly IEnumerable<string> HiddenTags;
         internal readonly IEnumerable<string> VisibleTags;
 
-        internal IEnumerable<Path> FindMethods(string basePath, Type markedType, IList<Type> definitionsTypesList)
+        internal IEnumerable<Path> FindMethods(Type markedType, IList<Type> definitionsTypesList)
         {
             bool addedSlash = false;
             List<Path> paths = new List<Path>();
             List<Tuple<string, PathAction>> pathActions = new List<Tuple<string, PathAction>>();
-
-            if (!basePath.EndsWith("/"))
-            {
-                addedSlash = true;
-                basePath = basePath + "/";
-            }
 
             List<Type> types;
             Type serviceType;
@@ -79,23 +73,21 @@ namespace SwaggerWcf.Support
                 }
             }
 
-            foreach (Tuple<string, PathAction> pathAction in pathActions)
+            foreach (var pathAction in pathActions)
             {
-                string path = basePath;
-                if (string.IsNullOrWhiteSpace(pathAction.Item1) && addedSlash)
-                    path = path.Substring(0, path.Length - 1);
+                var path = pathAction.Item1;
+                if (!path.StartsWith("/"))
+                    path = "/" + path;
 
-                GetPath(path, pathAction.Item1, paths).Actions.Add(pathAction.Item2);
+                GetPath(path, paths).Actions.Add(pathAction.Item2);
             }
 
             return paths;
         }
 
-        private Path GetPath(string basePath, string pathUrl, List<Path> paths)
+        private Path GetPath(string id, List<Path> paths)
         {
-            string id = ConcatPaths(basePath, pathUrl);
-
-            Path path = paths.FirstOrDefault(p => p.Id == id);
+            var path = paths.FirstOrDefault(p => p.Id == id);
             if (path == null)
             {
                 path = new Path
