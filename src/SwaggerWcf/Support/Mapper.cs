@@ -25,13 +25,12 @@ namespace SwaggerWcf.Support
         internal readonly IEnumerable<string> HiddenTags;
         internal readonly IEnumerable<string> VisibleTags;
 
-        internal IEnumerable<Path> FindMethods(Type markedType, IList<Type> definitionsTypesList)
+        internal IEnumerable<Path> FindMethods(Type markedType, IList<Type> definitionsTypesList, string basePath = null)
         {
-            bool addedSlash = false;
             List<Path> paths = new List<Path>();
             List<Tuple<string, PathAction>> pathActions = new List<Tuple<string, PathAction>>();
 
-            List<Type> types;
+            List <Type> types;
             Type serviceType;
             if (markedType.IsInterface)
             {
@@ -78,6 +77,9 @@ namespace SwaggerWcf.Support
                 var path = pathAction.Item1;
                 if (!path.StartsWith("/"))
                     path = "/" + path;
+
+                if (string.IsNullOrWhiteSpace(basePath) == false)
+                    path = basePath + path;
 
                 GetPath(path, paths).Actions.Add(pathAction.Item2);
             }
