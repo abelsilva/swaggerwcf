@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SwaggerWcfContactInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfLicenseInfoAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfServiceInfoAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfRequestTypeAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfSecurityAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfContentTypesAttribute.cs" />
@@ -90,6 +93,8 @@
     <Compile Include="Models\SecurityDefinitions.cs" />
     <Compile Include="Support\ListExtensions.cs" />
     <Compile Include="Support\TypeBuilder.cs" />
+    <Compile Include="Support\TypeFieldsProcessor.cs" />
+    <Compile Include="Support\TypePropertiesProcessor.cs" />
     <Compile Include="SwaggerWcfEndpoint.cs" />
     <Compile Include="ISwaggerWcfEndpoint.cs" />
     <Compile Include="Models\PathAction.cs" />

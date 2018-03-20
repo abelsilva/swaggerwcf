@@ -23,7 +23,7 @@ namespace SwaggerWcf.Models
 
         public List<string> Schemes { get; set; }
 
-	public List<Path> Paths { get; set; }
+        public List<Path> Paths { get; set; }
 
         public List<Definition> Definitions { get; set; }
 
@@ -50,7 +50,7 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("basePath");
                 writer.WriteValue(BasePath);
             }
-	    if (Schemes != null && Schemes.Any())
+            if (Schemes != null && Schemes.Any())
             {
                 writer.WritePropertyName("schemes");
                 writer.WriteStartArray();
