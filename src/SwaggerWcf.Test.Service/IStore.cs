@@ -9,10 +9,10 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
-    public interface IStore
+    public interface IStore : IBaseService, IBaseCRUDService<Book>
     {
+        /*
         #region /books
-
         [SwaggerWcfPath("Create book", "Create a book on the store")]
         // default Method for WebInvoke is POST
         [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Wrapped, //Method = "POST",
@@ -136,5 +136,6 @@ namespace SwaggerWcf.Test.Service
         void DeleteLanguage(string id);
 
         #endregion
+        */
     }
 }

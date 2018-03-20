@@ -9,6 +9,7 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [SwaggerWcf("/v1/rest")]
+    [SwaggerWcfTag("BookStore")]
     [SwaggerWcfServiceInfo(
         title: "SampleService",
         version: "0.0.1",
@@ -24,7 +25,7 @@ namespace SwaggerWcf.Test.Service
         name: "Apache License 2.0",
         Url = "https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE"
     )]
-    public class BookStore : IStore
+    public class BookStore : BaseService<Book>, IStore
     {
         #region /books
 
@@ -454,6 +455,38 @@ namespace SwaggerWcf.Test.Service
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region Base
+        [SwaggerWcfTag("Base")]
+        public override string TestService(string input)
+        {
+            return base.TestService(input);
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Get(string id)
+        {
+            return new Book { Id = id };
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Create(Book item)
+        {
+            return item;
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Delete(string id)
+        {
+            return new Book { Id = id };
+        }
+
+        [SwaggerWcfTag("GenericBook")]
+        public override Book Update(string id, Book item)
+        {
+            return new Book { Id = id };
+        }
         #endregion
     }
 }

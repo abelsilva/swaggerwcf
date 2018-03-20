@@ -69,10 +69,15 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorService.cs" />
+    <Compile Include="BaseService.cs" />
     <Compile Include="Data\Author.cs" />
     <Compile Include="Data\Book.cs" />
     <Compile Include="Data\Language.cs" />
     <Compile Include="Data\Store.cs" />
+    <Compile Include="IAuthorService.cs" />
+    <Compile Include="IBaseCRUDService.cs" />
+    <Compile Include="IBaseService.cs" />
     <Compile Include="Store.svc.cs">
       <DependentUpon>Store.svc</DependentUpon>
     </Compile>
@@ -81,12 +86,7 @@
     </Compile>
     <Compile Include="IStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SwaggerWcf\SwaggerWcf.csproj">
-      <Project>{0ad6efbc-412f-4c0e-8e0a-0faf28151b55}</Project>
-      <Name>SwaggerWcf</Name>
-    </ProjectReference>
+    <Compile Include="WCF\WebServiceHostFactoryEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.Debug.config">
@@ -95,6 +95,12 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SwaggerWcf\SwaggerWcf.csproj">
+      <Project>{0ad6efbc-412f-4c0e-8e0a-0faf28151b55}</Project>
+      <Name>SwaggerWcf</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
