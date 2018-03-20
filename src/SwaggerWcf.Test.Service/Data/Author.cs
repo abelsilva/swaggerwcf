@@ -5,11 +5,8 @@ namespace SwaggerWcf.Test.Service.Data
 {
     [DataContract]
     [SwaggerWcfDefinition("author")]
-    public class Author
+    public class Author : BaseEntity
     {
-        [DataMember]
-        public string Id { get; set; }
-
         [DataMember]
         public string Name { get; set; }
     }

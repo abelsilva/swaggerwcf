@@ -7,11 +7,11 @@ namespace SwaggerWcf.Test.Service.Data
     [DataContract]
     [Description("Book with title, first publish date, author and language")]
     [SwaggerWcfDefinition(ExternalDocsUrl = "http://en.wikipedia.org/wiki/Book", ExternalDocsDescription = "Description of a book")]
-    public class Book
+    public class Book : BaseEntity
     {
         [DataMember]
         [Description("Book ID")]
-        public string Id { get; set; }
+        public override string Id { get; set; }
 
         [DataMember]
         [Description("Book Title")]

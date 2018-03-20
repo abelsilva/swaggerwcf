@@ -25,7 +25,7 @@ namespace SwaggerWcf.Test.Service
         name: "Apache License 2.0",
         Url = "https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE"
     )]
-    public class BookStore : BaseService<Book>, IStore
+    public class BookStore : BaseCRUDService<Book>, IStore
     {
         #region /books
 
