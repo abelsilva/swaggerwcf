@@ -11,7 +11,6 @@ namespace SwaggerWcf.Test.Service
     [ServiceContract]
     public interface IStore : IBaseService, IBaseCRUDService<Book>
     {
-        /*
         #region /books
         [SwaggerWcfPath("Create book", "Create a book on the store")]
         // default Method for WebInvoke is POST
@@ -136,6 +135,5 @@ namespace SwaggerWcf.Test.Service
         void DeleteLanguage(string id);
 
         #endregion
-        */
     }
 }
