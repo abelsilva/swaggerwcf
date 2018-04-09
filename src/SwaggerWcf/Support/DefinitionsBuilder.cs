@@ -265,7 +265,15 @@ namespace SwaggerWcf.Support
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    prop.Enum.Add(GetEnumMemberValue(propType, enumName));
+                    var enumMemberValue = GetEnumMemberValue(propType, enumName);
+                    var enumMemberItem = Enum.Parse(propertyInfo.PropertyType, enumName, true);
+
+                    string enumMemberDescription = GetEnumDescription((Enum)enumMemberItem);
+                    enumMemberDescription = (string.IsNullOrWhiteSpace(enumMemberDescription)) ? "" : $"({enumMemberDescription})";
+
+                    prop.Description += $"{Environment.NewLine}* `{enumMemberValue}` - {enumName} {enumMemberDescription}";
+
+                    prop.Enum.Add(enumMemberValue);
                 }
             }
 
@@ -333,6 +341,20 @@ namespace SwaggerWcf.Support
             var underlyingType = Enum.GetUnderlyingType(enumType);
             var val = Convert.ChangeType(enumVal, underlyingType);
             return Convert.ToInt32(val);
+        }
+
+        private static string GetEnumDescription(Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes.Length > 0)
+            {
+                return attributes[0].Description;
+            }
+
+            return "";
         }
     }
 }
