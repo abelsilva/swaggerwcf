@@ -92,7 +92,9 @@ namespace SwaggerWcf.Support
             }
             else
             {
-                ProcessProperties(definitionType, schema, hiddenTags, typesStack);
+                schema.Properties = new List<DefinitionProperty>();
+                TypePropertiesProcessor.ProcessProperties(definitionType, schema, hiddenTags, typesStack);
+                TypeFieldsProcessor.ProcessFields(definitionType, schema, hiddenTags, typesStack);
             }
 
             return new Definition
@@ -126,54 +128,6 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private static void ProcessProperties(Type definitionType, DefinitionSchema schema, IList<string> hiddenTags,
-                                              Stack<Type> typesStack)
-        {
-            PropertyInfo[] properties = definitionType.GetProperties();
-            schema.Properties = new List<DefinitionProperty>();
-
-            foreach (PropertyInfo propertyInfo in properties)
-            {
-                DefinitionProperty prop = ProcessProperty(propertyInfo, hiddenTags, typesStack);
-
-                if (prop == null)
-                    continue;
-
-                if (prop.TypeFormat.Type == ParameterType.Array)
-                {
-                    Type propType = propertyInfo.PropertyType;
-
-                    Type t = propType.GetElementType() ?? GetEnumerableType(propType);
-
-                    if (t != null)
-                    {
-                        //prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, HttpUtility.HtmlEncode(t.FullName));
-                        prop.TypeFormat = new TypeFormat(prop.TypeFormat.Type, null);
-
-                        TypeFormat st = Helpers.MapSwaggerType(t);
-                        if (st.Type == ParameterType.Array || st.Type == ParameterType.Object)
-                        {
-                            prop.Items.TypeFormat = new TypeFormat(ParameterType.Unknown, null);
-                            prop.Items.Ref = t.GetModelName();
-                        }
-                        else
-                        {
-                            prop.Items.TypeFormat = st;
-                        }
-                    }
-                }
-
-                if (prop.Required)
-                {
-                    if (schema.Required == null)
-                        schema.Required = new List<string>();
-
-                    schema.Required.Add(prop.Title);
-                }
-                schema.Properties.Add(prop);
-            }
-        }
-
         public static Type GetEnumerableType(Type type)
         {
             if (type == null)
@@ -189,6 +143,7 @@ namespace SwaggerWcf.Support
             return iface == null ? null : GetEnumerableType(iface);
         }
 
+<<<<<<< HEAD
         private static DefinitionProperty ProcessProperty(PropertyInfo propertyInfo, IList<string> hiddenTags,
                                                           Stack<Type> typesStack)
         {
@@ -283,6 +238,8 @@ namespace SwaggerWcf.Support
             return prop;
         }
 
+=======
+>>>>>>> 89fa176ac88b9e2a6c46288a7b985e8560a8fc39
         private static T LastValidValue<T>(IEnumerable<SwaggerWcfPropertyAttribute> attrs,
                                            Func<SwaggerWcfPropertyAttribute, T> getter)
         {
@@ -297,7 +254,7 @@ namespace SwaggerWcf.Support
             }
         }
 
-        private static void ApplyAttributeOptions(PropertyInfo propertyInfo, DefinitionProperty prop)
+        public static void ApplyAttributeOptions(PropertyInfo propertyInfo, DefinitionProperty prop)
         {
             // Use the DataContract [DefaultValue] as the default, by default
             var defAttr = propertyInfo.GetCustomAttributes<DefaultValueAttribute>().LastOrDefault();
@@ -312,7 +269,29 @@ namespace SwaggerWcf.Support
             {
                 return;
             }
+            ApplyAttributeOptions(attrs, prop);
+        }
 
+        public static void ApplyAttributeOptions(FieldInfo fieldInfo, DefinitionProperty prop)
+        {
+            // Use the DataContract [DefaultValue] as the default, by default
+            var defAttr = fieldInfo.GetCustomAttributes<DefaultValueAttribute>().LastOrDefault();
+            if (defAttr != null)
+            {
+                prop.Default = defAttr.Value.ToString();
+            }
+
+            // Apply any [SwaggerWcfProperty]s in order.
+            var attrs = fieldInfo.GetCustomAttributes<SwaggerWcfPropertyAttribute>().ToList();
+            if (!attrs.Any())
+            {
+                return;
+            }
+            ApplyAttributeOptions(attrs, prop);
+        }
+
+        public static void ApplyAttributeOptions(IEnumerable<SwaggerWcfPropertyAttribute> attrs, DefinitionProperty prop)
+        {
             ApplyIfValid(LastValidValue(attrs, a => a.Title), x => prop.Title = x);
             ApplyIfValid(LastValidValue(attrs, a => a.Description), x => prop.Description = x);
             ApplyIfValid(LastValidValue(attrs, a => a._Required), x => prop.Required = x.Value);
@@ -333,7 +312,7 @@ namespace SwaggerWcf.Support
             ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf), x => prop.MultipleOf = x.Value);
         }
         
-        private static int GetEnumMemberValue(Type enumType, string enumName)
+        public static int GetEnumMemberValue(Type enumType, string enumName)
         {
             if (string.IsNullOrWhiteSpace(enumName))
                 return 0;
