@@ -151,7 +151,7 @@ namespace SwaggerWcf.Support
 
                 if (prop.Description != null && enumDescription != "")
                 {
-                    prop.Description += enumDescription;
+                    prop.Description += $":{Environment.NewLine}{enumDescription}";
                 }
             }
 

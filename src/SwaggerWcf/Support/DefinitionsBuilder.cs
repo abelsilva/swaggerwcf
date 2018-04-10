@@ -93,7 +93,7 @@ namespace SwaggerWcf.Support
 
                 if (schema.Description != null && enumDescription != "")
                 {
-                    schema.Description += enumDescription;
+                    schema.Description += $":{Environment.NewLine}{enumDescription}";
                 }
             }
             else if (schema.TypeFormat.Type == ParameterType.Array)
