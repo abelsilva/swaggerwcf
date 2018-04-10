@@ -141,9 +141,9 @@ namespace SwaggerWcf.Support
                     enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
                 }
 
-                if (prop.Description == null && enumDescription != "")
+                if (enumDescription != "")
                 {
-                    prop.Description = enumDescription;
+                    prop.Description += $"\r\n\r\n{enumDescription}";
                 }
             }
 
