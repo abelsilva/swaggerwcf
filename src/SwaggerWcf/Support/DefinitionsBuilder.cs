@@ -74,10 +74,26 @@ namespace SwaggerWcf.Support
                 if (propType.IsGenericType && propType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     propType = propType.GetEnumerableType();
 
+                string enumDescription = "";
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
-                    schema.Enum.Add(GetEnumMemberValue(propType, enumName));
+                    var enumMemberValue = DefinitionsBuilder.GetEnumMemberValue(propType, enumName);
+                    var enumMemberItem = Enum.Parse(propType, enumName, true);
+
+                    string enumMemberDescription = DefinitionsBuilder.GetEnumDescription((Enum)enumMemberItem);
+                    enumMemberDescription = (string.IsNullOrWhiteSpace(enumMemberDescription)) ? "" : $"({enumMemberDescription})";
+
+                    if (schema.Description != null)
+                    {
+                        enumDescription += $"{Environment.NewLine}* `{enumMemberValue}` - {enumName} {enumMemberDescription}";
+                        schema.Enum.Add(enumMemberValue);
+                    }
+                }
+
+                if (schema.Description != null && enumDescription != "")
+                {
+                    schema.Description += $":{Environment.NewLine}{enumDescription}";
                 }
             }
             else if (schema.TypeFormat.Type == ParameterType.Array)
@@ -223,6 +239,20 @@ namespace SwaggerWcf.Support
             var underlyingType = Enum.GetUnderlyingType(enumType);
             var val = Convert.ChangeType(enumVal, underlyingType);
             return Convert.ToInt32(val);
+        }
+
+        public static string GetEnumDescription(Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes.Length > 0)
+            {
+                return attributes[0].Description;
+            }
+
+            return "";
         }
     }
 }
