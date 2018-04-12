@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SwaggerWcf.Attributes;
 
@@ -11,6 +12,7 @@ namespace SwaggerWcf.Test.Service.Data
     {
         [DataMember]
         [Description("Book ID")]
+        [RegularExpression("[\\w\\d]*")]
         public string Id { get; set; }
 
         [DataMember]
