@@ -4,7 +4,6 @@ using System.ServiceModel.Activation;
 using System.Web;
 using System.Web.Routing;
 using SwaggerWcf.Models;
-using SwaggerWcf.Test.Service.WCF;
 
 namespace SwaggerWcf.Test.Service
 {
@@ -16,8 +15,12 @@ namespace SwaggerWcf.Test.Service
             SwaggerWcfEndpoint.FilterHiddenTags = FilterHiddenTags;
             SwaggerWcfEndpoint.DisableSwaggerUI = false;
 
-            RouteTable.Routes.Add(new ServiceRoute("v1/authors", new WebServiceHostFactoryEx(typeof(IAuthorService)), typeof(AuthorService)));
-            RouteTable.Routes.Add(new ServiceRoute("v1/rest", new WebServiceHostFactoryEx(typeof(IStore)), typeof(BookStore)));
+            // route with a simple class
+            RouteTable.Routes.Add(new ServiceRoute("v1/rest", new WebServiceHostFactory(), typeof(BookStore)));
+
+            // route with inherited methods on a base class
+            RouteTable.Routes.Add(new ServiceRoute("v1/authors", new WebServiceHostFactory(), typeof(AuthorService)));
+            
             RouteTable.Routes.Add(new ServiceRoute("api-docs", new WebServiceHostFactory(), typeof(SwaggerWcfEndpoint)));
         }
 

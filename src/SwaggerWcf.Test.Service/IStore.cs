@@ -9,7 +9,7 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [ServiceContract]
-    public interface IStore : IBaseService, IBaseCRUDService<Book>
+    public interface IStore
     {
         #region /books
         [SwaggerWcfPath("Create book", "Create a book on the store")]

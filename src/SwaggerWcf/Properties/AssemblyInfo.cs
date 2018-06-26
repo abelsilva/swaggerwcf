@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("SwaggerWcf")]
 [assembly: AssemblyDescription("Swagger for WCF")]
-[assembly: AssemblyCompany("lifra")]
+[assembly: AssemblyCompany("abelsilva")]
 [assembly: AssemblyProduct("SwaggerWcf")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3ad5bbc8-ab87-4cc9-99c2-1fc6ffeb4cdd")]
+[assembly: Guid("d2eeaa63-60e5-4fda-8b62-e05dc8be8b5f")]
 
 // Version information for an assembly consists of the following four values:
 //
