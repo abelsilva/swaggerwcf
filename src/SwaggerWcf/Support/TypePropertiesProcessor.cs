@@ -136,14 +136,17 @@ namespace SwaggerWcf.Support
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
+                    var enumMemberItem = Enum.Parse(propType, enumName, true);
+                    string enumMemberDescription = DefinitionsBuilder.GetEnumDescription((Enum)enumMemberItem);
+                    enumMemberDescription = (string.IsNullOrWhiteSpace(enumMemberDescription)) ? "" : $"({enumMemberDescription})";
                     int enumMemberValue = DefinitionsBuilder.GetEnumMemberValue(propType, enumName);
                     if (prop.Description != null) prop.Enum.Add(enumMemberValue);
-                    enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
+                    enumDescription += $"    {enumName}{System.Web.HttpUtility.HtmlEncode(" = ")}{enumMemberValue} {enumMemberDescription}\r\n";
                 }
 
-                if (prop.Description == null && enumDescription != "")
+                if (enumDescription != "")
                 {
-                    prop.Description = enumDescription;
+                    prop.Description += $"\r\n\r\n{enumDescription}";
                 }
             }
 
