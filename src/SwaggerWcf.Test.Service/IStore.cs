@@ -12,7 +12,6 @@ namespace SwaggerWcf.Test.Service
     public interface IStore
     {
         #region /books
-
         [SwaggerWcfPath("Create book", "Create a book on the store")]
         // default Method for WebInvoke is POST
         [WebInvoke(UriTemplate = "/books", BodyStyle = WebMessageBodyStyle.Wrapped, //Method = "POST",

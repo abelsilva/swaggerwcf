@@ -9,6 +9,7 @@ using SwaggerWcf.Test.Service.Data;
 namespace SwaggerWcf.Test.Service
 {
     [SwaggerWcf("/v1/rest")]
+    [SwaggerWcfTag("BookStore")]
     [SwaggerWcfServiceInfo(
         title: "SampleService",
         version: "0.0.1",

@@ -65,6 +65,17 @@ namespace SwaggerWcf.Support
                 {
                     InterfaceMapping map = serviceType.GetInterfaceMap(i);
                     pathActions.AddRange(GetActions(map.TargetMethods, map.InterfaceMethods, definitionsTypesList));
+
+                    //Nested Interface
+                    var baseInterfaces = i.GetInterfaces();
+                    if (baseInterfaces != null)
+                    {
+                        foreach (var baseInterface in baseInterfaces)
+                        {
+                            var _map = serviceType.GetInterfaceMap(baseInterface);
+                            pathActions.AddRange(GetActions(_map.TargetMethods, _map.InterfaceMethods, definitionsTypesList));
+                        }
+                    }
                 }
                 else
                 {
@@ -130,6 +141,7 @@ namespace SwaggerWcf.Support
                     implementation.GetCustomAttributes<SwaggerWcfTagAttribute>().ToList();
                 methodTags =
                     methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
+
                 methodTags = methodTags.Distinct().ToList();
 
                 if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
@@ -266,6 +278,8 @@ namespace SwaggerWcf.Support
                 {
                     typeBuilder = new TypeBuilder(implementation.GetWrappedName(declaration));
                 }
+
+                var declarationName = declaration.Name;
                 foreach (ParameterInfo parameter in parameters)
                 {
                     SwaggerWcfParameterAttribute settings =
@@ -310,6 +324,7 @@ namespace SwaggerWcf.Support
                     operation.Parameters.Add(GetParameter(typeFormat, declaration, implementation, parameter, settings, uriTemplate, wrappedRequest,
                                                           definitionsTypesList, inType));
                 }
+
                 if (wrappedRequest)
                 {
                     TypeFormat typeFormat = Helpers.MapSwaggerType(typeBuilder.Type, definitionsTypesList);
