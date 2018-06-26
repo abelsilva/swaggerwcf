@@ -96,9 +96,9 @@ namespace SwaggerWcf.Support
             if (descriptionAttribute != null)
                 prop.Description = descriptionAttribute.Description;
 
-            RegularExpressionAttribute regularExpressionAttribute = propertyInfo.GetCustomAttribute<RegularExpressionAttribute>();
-            if (regularExpressionAttribute != null)
-                prop.Pattern = regularExpressionAttribute.Pattern;
+            SwaggerWcfRegexAttribute regexAttr = propertyInfo.GetCustomAttribute<SwaggerWcfRegexAttribute>();
+            if (regexAttr != null)
+                prop.Pattern = regexAttr.Regex;
 
             prop.TypeFormat = typeFormat;
 
