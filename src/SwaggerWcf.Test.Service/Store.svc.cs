@@ -31,10 +31,20 @@ namespace SwaggerWcf.Test.Service
 
         [SwaggerWcfTag("Books")]
         [SwaggerWcfHeader("clientId", false, "Client ID", "000")]
-        [SwaggerWcfResponse(HttpStatusCode.Created, "Book created, value in the response body with id updated")]
-        [SwaggerWcfResponse(HttpStatusCode.BadRequest, "Bad request", true)]
+        [SwaggerWcfResponse(HttpStatusCode.Created,
+                            "Book created, value in the response body with id updated",
+                            ExampleMimeType = "application/json",
+                            ExampleContent = "{\"Author\": {\"Id\": \"1dacefd76d3f443d802d326dba990ab0\",\"Name\": \"Miguel de Cervantes\"},\"FirstPublished\": 1605,\"Id\": \"017b1d907db64a868cb5d2c4d47d6077\",\"Language\": 2,\"Title\":\"Don Quixote\"}")]
+        [SwaggerWcfResponse(HttpStatusCode.BadRequest,
+                            "Bad request",
+                            true,
+                            ExampleMimeType = "application/json",
+                            ExampleContent = "{\"error:\": \"error description\"}")]
         [SwaggerWcfResponse(HttpStatusCode.InternalServerError,
-            "Internal error (can be forced using ERROR_500 as book title)", true)]
+                            "Internal error (can be forced using ERROR_500 as book title)",
+                            true,
+                            ExampleMimeType = "application/json",
+                            ExampleContent = "{\"error:\": \"error description\"}")]
         public Book CreateBook(Book value)
         {
             WebOperationContext woc = WebOperationContext.Current;

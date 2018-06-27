@@ -719,7 +719,20 @@ namespace SwaggerWcf.Support
                 Code = ra.Code,
                 Description = ra.Description,
                 Schema = s,
-                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
+                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null,
+                Example = GetExample(ra)
+            };
+        }
+
+        private Example GetExample(SwaggerWcfResponseAttribute ra)
+        {
+            if (string.IsNullOrWhiteSpace(ra.ExampleContent))
+                return null;
+
+            return new Example
+            {
+                MimeType = ra.ExampleMimeType,
+                Content = ra.ExampleContent
             };
         }
 

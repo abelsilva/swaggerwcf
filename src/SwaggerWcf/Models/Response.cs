@@ -41,6 +41,15 @@ namespace SwaggerWcf.Models
                 writer.WriteEndObject();
             }
 
+            if (Example != null)
+            {
+                writer.WritePropertyName("examples");
+                writer.WriteStartObject();
+                writer.WritePropertyName(Example.MimeType);
+                writer.WriteRawValue(Example.Content);
+                writer.WriteEndObject();
+            }
+
             if (Headers != null && Headers.Any())
             {
                 writer.WritePropertyName("headers");
