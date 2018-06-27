@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -94,6 +95,10 @@ namespace SwaggerWcf.Support
             DescriptionAttribute descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
             if (descriptionAttribute != null)
                 prop.Description = descriptionAttribute.Description;
+
+            SwaggerWcfRegexAttribute regexAttr = propertyInfo.GetCustomAttribute<SwaggerWcfRegexAttribute>();
+            if (regexAttr != null)
+                prop.Pattern = regexAttr.Regex;
 
             prop.TypeFormat = typeFormat;
 

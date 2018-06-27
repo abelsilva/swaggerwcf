@@ -11,6 +11,7 @@ namespace SwaggerWcf.Test.Service.Data
     {
         [DataMember]
         [Description("Book ID")]
+        [SwaggerWcfRegex("[\\w\\d]*")]
         public string Id { get; set; }
 
         [DataMember]
