@@ -129,7 +129,8 @@ namespace SwaggerWcf.Support
 
                 Type propType = propertyInfo.PropertyType;
 
-                if (propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(List<>)))
+                if ((propType.IsArray && propType.GetElementType().IsEnum) ||
+                    propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(List<>)))
                     propType = propType.GetEnumerableType();
 
                 string enumDescription = "";
