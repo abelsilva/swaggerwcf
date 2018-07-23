@@ -54,7 +54,7 @@ namespace SwaggerWcf
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal static void Init(Func<string, Service> buildService)
         {
-            string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).ToArray();
+            string[] paths = GetAllPaths().Where(p => !SwaggerFiles.Keys.Contains(p)).Distinct().ToArray();
 
             foreach (string path in paths)
             {
