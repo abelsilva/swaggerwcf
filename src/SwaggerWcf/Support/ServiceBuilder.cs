@@ -117,7 +117,7 @@ namespace SwaggerWcf.Support
             {
                 var da = ti.GetCustomAttribute<SwaggerWcfAttribute>();
 
-                if (service.Info is null)
+                if (service.Info == null)
                     service.Info = ti.GetServiceInfo();
 
                 var mapper = new Mapper(hiddenTags, visibleTags);

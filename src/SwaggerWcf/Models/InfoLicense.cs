@@ -10,10 +10,19 @@ namespace SwaggerWcf.Models
 
         public string Url
         {
-            get => _url;
-            set => _url = Uri.TryCreate(value, UriKind.Absolute, out Uri _)
-                    ? value
-                    : throw new ArgumentException("Value must be in the format of a URL", nameof(Url));
+            get { return _url; }
+            set
+            {
+                Uri _ = null;
+                if (Uri.TryCreate(value, UriKind.Absolute, out _))
+                {
+                    _url = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be in the format of a URL", nameof(Url));
+                }
+            }
         }
 
         private string _url;
