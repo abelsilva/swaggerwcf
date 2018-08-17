@@ -126,6 +126,14 @@ namespace SwaggerWcf.Support
                 if (!string.IsNullOrWhiteSpace(definitionAttr.ModelName))
                     schema.Name = definitionAttr.ModelName;
             }
+
+            DataContractAttribute dataContractAttr =
+                definitionType.GetCustomAttribute<DataContractAttribute>();
+            if (dataContractAttr != null)
+            {
+                schema.XmlName = dataContractAttr.Name;
+                schema.XmlNamespace = dataContractAttr.Namespace;
+            }
         }
 
         public static Type GetEnumerableType(Type type)
@@ -214,7 +222,7 @@ namespace SwaggerWcf.Support
             ApplyIfValid(LastValidValue(attrs, a => a._UniqueItems), x => prop.UniqueItems = x.Value);
             ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf), x => prop.MultipleOf = x.Value);
         }
-        
+
         public static int GetEnumMemberValue(Type enumType, string enumName)
         {
             if (string.IsNullOrWhiteSpace(enumName))

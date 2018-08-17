@@ -19,6 +19,8 @@ namespace SwaggerWcf.Models
 
         public string Title { get; set; }
 
+        public string XmlName { get; set; }
+
         public string Description { get; set; }
 
         public bool Required { get; set; }
@@ -166,6 +168,15 @@ namespace SwaggerWcf.Models
                     writer.WritePropertyName("multipleOf");
                     writer.WriteValue(MultipleOf);
                 }
+            }
+
+            if(!string.IsNullOrEmpty(XmlName))
+            {
+                writer.WritePropertyName("xml");
+                writer.WriteStartObject();
+                writer.WritePropertyName("name");
+                writer.WriteValue(XmlName);
+                writer.WriteEndObject();
             }
 
             writer.WriteEndObject();

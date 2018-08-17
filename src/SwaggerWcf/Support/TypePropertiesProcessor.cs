@@ -73,32 +73,7 @@ namespace SwaggerWcf.Support
 
             DefinitionProperty prop = new DefinitionProperty { Title = propertyInfo.Name };
 
-            DataMemberAttribute dataMemberAttribute = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
-            if (dataMemberAttribute != null)
-            {
-                if (!string.IsNullOrEmpty(dataMemberAttribute.Name))
-                    prop.Title = dataMemberAttribute.Name;
-
-                prop.Required = dataMemberAttribute.IsRequired;
-            }
-
-            // Special case - if it came out required, but we unwrapped a null-able type,
-            // then it's necessarily not required.  Ideally this would only set the default,
-            // but we can't tell the difference between an explicit declaration of
-            // IsRequired =false on the DataMember attribute and no declaration at all.
-            if (prop.Required && propertyInfo.PropertyType.IsGenericType &&
-                propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                prop.Required = false;
-            }
-
-            DescriptionAttribute descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
-            if (descriptionAttribute != null)
-                prop.Description = descriptionAttribute.Description;
-
-            SwaggerWcfRegexAttribute regexAttr = propertyInfo.GetCustomAttribute<SwaggerWcfRegexAttribute>();
-            if (regexAttr != null)
-                prop.Pattern = regexAttr.Regex;
+            ProcessTypePropertyAttributes(propertyInfo, prop);
 
             prop.TypeFormat = typeFormat;
 
@@ -161,5 +136,33 @@ namespace SwaggerWcf.Support
             return prop;
         }
 
+        private static void ProcessTypePropertyAttributes(PropertyInfo propertyInfo, DefinitionProperty prop)
+        {
+            DataMemberAttribute dataMemberAttribute =
+                propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+            if (dataMemberAttribute != null)
+            {
+                prop.Required = dataMemberAttribute.IsRequired;
+                prop.XmlName = dataMemberAttribute.Name;
+            }
+
+            // Special case - if it came out required, but we unwrapped a null-able type,
+            // then it's necessarily not required.  Ideally this would only set the default,
+            // but we can't tell the difference between an explicit declaration of
+            // IsRequired =false on the DataMember attribute and no declaration at all.
+            if (prop.Required && propertyInfo.PropertyType.IsGenericType &&
+                propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                prop.Required = false;
+            }
+
+            DescriptionAttribute descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
+            if (descriptionAttribute != null)
+                prop.Description = descriptionAttribute.Description;
+
+            SwaggerWcfRegexAttribute regexAttr = propertyInfo.GetCustomAttribute<SwaggerWcfRegexAttribute>();
+            if (regexAttr != null)
+                prop.Pattern = regexAttr.Regex;
+        }
     }
 }

@@ -12,6 +12,10 @@ namespace SwaggerWcf.Models
 
         public string Name { get; set; }
 
+        public string XmlName { get; set; }
+
+        public string XmlNamespace { get; set; }
+
         public string Description { get; set; }
 
         public Schema ParentSchema { get; set; } //TODO: Composition and Polymorphism Support
@@ -98,6 +102,8 @@ namespace SwaggerWcf.Models
                 writer.WritePropertyName("$ref");
                 writer.WriteValue(string.Format("#/definitions/{0}", Ref));
             }
+
+            SerializeXmlProperties(writer);
         }
 
         private void SerializeRequired(JsonWriter writer)
@@ -135,6 +141,48 @@ namespace SwaggerWcf.Models
                 }
                 writer.WriteEndObject();
             }
+        }
+
+        private void SerializeXmlProperties(JsonWriter writer)
+        {
+            writer.WritePropertyName("xml");
+            writer.WriteStartObject();
+            if (string.IsNullOrEmpty(XmlName))
+            {
+                var strs = Name.Split('.');
+                var str = strs[strs.Length - 1];
+                writer.WritePropertyName("name");
+                writer.WriteValue(str);
+            }
+            else
+            {
+                writer.WritePropertyName("name");
+                writer.WriteValue(XmlName);
+            }
+
+            if (XmlNamespace == string.Empty)
+            {
+                writer.WritePropertyName("namespace");
+                writer.WriteValue(string.Empty);
+            }
+            else if (XmlNamespace == null)
+            {
+                string defaultNS = "http://schemas.datacontract.org/2004/07";
+                int index = Name.LastIndexOf('.');
+                if (index > 0)
+                {
+                    defaultNS += "/" + Name.Substring(0, index);
+                }
+                writer.WritePropertyName("namespace");
+                writer.WriteValue(defaultNS);
+            }
+            else
+            {
+                writer.WritePropertyName("namespace");
+                writer.WriteValue(XmlNamespace);
+            }
+
+            writer.WriteEndObject();
         }
     }
 }
