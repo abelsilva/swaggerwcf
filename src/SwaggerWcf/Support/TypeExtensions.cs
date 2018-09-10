@@ -27,7 +27,10 @@ namespace SwaggerWcf.Support
 
         internal static Info GetServiceInfo(this TypeInfo typeInfo)
         {
-            var infoAttr = typeInfo.GetCustomAttribute<SwaggerWcfServiceInfoAttribute>() ??
+            var infoAttr = typeInfo.GetCustomAttribute<SwaggerWcfServiceInfoAttribute>();
+            if (infoAttr == null && SwaggerWcfEndpoint.Info != null)
+                return SwaggerWcfEndpoint.Info;
+            else if (infoAttr == null && SwaggerWcfEndpoint.Info == null)
                 throw new ArgumentException($"{typeInfo.FullName} does not have {nameof(SwaggerWcfServiceInfoAttribute)}");
 
             var info = (Info)infoAttr;
