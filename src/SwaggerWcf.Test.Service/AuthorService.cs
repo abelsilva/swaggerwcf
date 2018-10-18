@@ -24,30 +24,7 @@ namespace SwaggerWcf.Test.Service
         name: "Apache License 2.0",
         Url = "https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE"
     )]
-    public class AuthorService : BaseService<Author>, IAuthorService
+    public class AuthorService : BaseCRUDService<Author>, IAuthorService
     {
-        [SwaggerWcfTag("GenericAuthor")]
-        public override Author Get(string id)
-        {
-            return new Author { Id = id };
-        }
-
-        [SwaggerWcfTag("GenericAuthor")]
-        public override Author Create(Author item)
-        {
-            return item;
-        }
-
-        [SwaggerWcfTag("GenericAuthor")]
-        public override Author Update(string id, Author item)
-        {
-            return new Author { Id = id };
-        }
-
-        [SwaggerWcfTag("GenericAuthor")]
-        public override Author Delete(string id)
-        {
-            return new Author { Id = id };
-        }
     }
 }

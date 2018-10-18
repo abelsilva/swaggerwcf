@@ -6,13 +6,8 @@ using System.Web;
 
 namespace SwaggerWcf.Test.Service
 {
-    public abstract class BaseService<T> : IBaseService, IBaseCRUDService<T>
+    public abstract class BaseService<T> : IBaseService
     {
-        public abstract T Create(T item);
-        public abstract T Delete(string id);
-        public abstract T Get(string id);
-        public abstract T Update(string id, T item);
-
         public virtual string TestService(string input)
         {
             return $"input = {input}. Now = {DateTime.Now}";

@@ -72,10 +72,12 @@
     <Compile Include="AuthorService.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="Data\Author.cs" />
+    <Compile Include="Data\BaseEntity.cs" />
     <Compile Include="Data\Book.cs" />
     <Compile Include="Data\Language.cs" />
     <Compile Include="Data\Store.cs" />
     <Compile Include="IAuthorService.cs" />
+    <Compile Include="BaseCRUDService.cs" />
     <Compile Include="IBaseCRUDService.cs" />
     <Compile Include="IBaseService.cs" />
     <Compile Include="Store.svc.cs">

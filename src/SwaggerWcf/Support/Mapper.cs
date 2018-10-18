@@ -65,17 +65,6 @@ namespace SwaggerWcf.Support
                 {
                     InterfaceMapping map = serviceType.GetInterfaceMap(i);
                     pathActions.AddRange(GetActions(map.TargetMethods, map.InterfaceMethods, definitionsTypesList));
-
-                    //Nested Interface
-                    var baseInterfaces = i.GetInterfaces();
-                    if (baseInterfaces != null)
-                    {
-                        foreach (var baseInterface in baseInterfaces)
-                        {
-                            var _map = serviceType.GetInterfaceMap(baseInterface);
-                            pathActions.AddRange(GetActions(_map.TargetMethods, _map.InterfaceMethods, definitionsTypesList));
-                        }
-                    }
                 }
                 else
                 {
