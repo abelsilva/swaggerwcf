@@ -131,21 +131,8 @@ namespace SwaggerWcf.Support
                 methodTags =
                     methodTags.Concat(declaration.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
 
-                //add methods of DeclaringType
-                if (implementation.DeclaringType != null)
-                    methodTags = methodTags.Concat(implementation.DeclaringType.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
-                if (declaration.DeclaringType != null)
-                    methodTags = methodTags.Concat(declaration.DeclaringType.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
-
-                //add methods of ReflectedType
-                if (implementation.ReflectedType != null)
-                    methodTags = methodTags.Concat(implementation.ReflectedType.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
-                if (declaration.ReflectedType != null)
-                    methodTags = methodTags.Concat(declaration.ReflectedType.GetCustomAttributes<SwaggerWcfTagAttribute>()).ToList();
-
                 methodTags = methodTags.Distinct().ToList();
 
-                
                 if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                     continue;
 
@@ -721,7 +708,20 @@ namespace SwaggerWcf.Support
                 Code = ra.Code,
                 Description = ra.Description,
                 Schema = s,
-                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null
+                Headers = (ra.Headers != null) ? ra.Headers.ToList() : null,
+                Example = GetExample(ra)
+            };
+        }
+
+        private Example GetExample(SwaggerWcfResponseAttribute ra)
+        {
+            if (string.IsNullOrWhiteSpace(ra.ExampleContent))
+                return null;
+
+            return new Example
+            {
+                MimeType = ra.ExampleMimeType,
+                Content = ra.ExampleContent
             };
         }
 

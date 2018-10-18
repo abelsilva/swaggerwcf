@@ -16,14 +16,20 @@ namespace SwaggerWcf.Attributes
         /// <param name="description">Result description</param>
         /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
+        /// <param name="responseTypeOverride">Optional response Type override</param>
+        /// <param name="exampleMimeType">Optional Response Example MIME Type</param>
+        /// <param name="exampleContent">Optional Response Example Content</param>
         public SwaggerWcfResponseAttribute(string code, string description = null, bool emptyResponseOverride = false,
-            string[] headers = null, Type responseTypeOverride = null)
+            string[] headers = null, Type responseTypeOverride = null,
+            string exampleMimeType = null, string exampleContent = null)
         {
             Code = code;
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
             ResponseTypeOverride = responseTypeOverride;
+            ExampleMimeType = exampleMimeType;
+            ExampleContent = exampleContent;
         }
 
         /// <summary>
@@ -33,16 +39,23 @@ namespace SwaggerWcf.Attributes
         /// <param name="description">Result description</param>
         /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
+        /// <param name="responseTypeOverride">Optional response Type override</param>
+        /// <param name="exampleMimeType">Optional Response Example MIME Type</param>
+        /// <param name="exampleContent">Optional Response Example Content</param>
         public SwaggerWcfResponseAttribute(HttpStatusCode code, string description = null,
             bool emptyResponseOverride = false,
             string[] headers = null,
-            Type responseTypeOverride = null)
+            Type responseTypeOverride = null,
+            string exampleMimeType = null,
+            string exampleContent = null)
         {
             Code = ((int) code).ToString();
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
             ResponseTypeOverride = responseTypeOverride;
+            ExampleMimeType = exampleMimeType;
+            ExampleContent = exampleContent;
         }
 
         /// <summary>
@@ -52,14 +65,20 @@ namespace SwaggerWcf.Attributes
         /// <param name="description">Result description</param>
         /// <param name="emptyResponseOverride">Result has empty response body (override default response type)</param>
         /// <param name="headers">Optional HTTP headers returned</param>
+        /// <param name="responseTypeOverride">Optional response Type override</param>
+        /// <param name="exampleMimeType">Optional Response Example MIME Type</param>
+        /// <param name="exampleContent">Optional Response Example Content</param>
         public SwaggerWcfResponseAttribute(int code, string description = null, bool emptyResponseOverride = false,
-            string[] headers = null, Type responseTypeOverride = null)
+            string[] headers = null, Type responseTypeOverride = null,
+            string exampleMimeType = null, string exampleContent = null)
         {
             Code = code.ToString();
             Description = description;
             EmptyResponseOverride = emptyResponseOverride;
             Headers = headers;
             ResponseTypeOverride = responseTypeOverride;
+            ExampleMimeType = exampleMimeType;
+            ExampleContent = exampleContent;
         }
 
         /// <summary>
@@ -83,6 +102,16 @@ namespace SwaggerWcf.Attributes
         public string[] Headers { get; set; }
 
         /// <summary>
+        ///     Example MIME Type
+        /// </summary>
+        public string ExampleMimeType { get; set; }
+
+        /// <summary>
+        ///     Example Content
+        /// </summary>
+        public string ExampleContent { get; set; }
+
+        /// <summary>
         ///     Override response type
         /// </summary>
         public Type ResponseTypeOverride { get; set; }
@@ -96,7 +125,9 @@ namespace SwaggerWcf.Attributes
                        string.Equals(Description, other.Description) &&
                        EmptyResponseOverride == other.EmptyResponseOverride &&
                        Equals(Headers, other.Headers) &&
-                       ResponseTypeOverride == other.ResponseTypeOverride;
+                       ResponseTypeOverride == other.ResponseTypeOverride &&
+                       ExampleMimeType == other.ExampleMimeType &&
+                       ExampleContent == other.ExampleContent;
             }
             return base.Equals(obj);
         }
@@ -111,6 +142,8 @@ namespace SwaggerWcf.Attributes
                 hashCode = (hashCode * 397) ^ EmptyResponseOverride.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Headers != null ? Headers.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ResponseTypeOverride != null ? ResponseTypeOverride.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ ExampleMimeType?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ ExampleContent?.GetHashCode() ?? 0;
                 return hashCode;
             }
         }

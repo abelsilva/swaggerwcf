@@ -11,6 +11,7 @@ namespace SwaggerWcf.Test.Service.Data
     {
         [DataMember]
         [Description("Book ID")]
+        [SwaggerWcfRegex("[\\w\\d]*")]
         public override string Id { get; set; }
 
         [DataMember]
@@ -26,7 +27,7 @@ namespace SwaggerWcf.Test.Service.Data
         public Author Author { get; set; }
 
         [DataMember]
-        [Description("Book Language: * English = 1 * Spanish = 2 * French = 3 * Chinese = 4")]
+        [Description("Book Language")]
         public Language Language { get; set; }
 
         [DataMember]

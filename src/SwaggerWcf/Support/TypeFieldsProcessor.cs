@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -95,6 +96,10 @@ namespace SwaggerWcf.Support
             if (descriptionAttribute != null)
                 prop.Description = descriptionAttribute.Description;
 
+            SwaggerWcfRegexAttribute regexAttr = propertyInfo.GetCustomAttribute<SwaggerWcfRegexAttribute>();
+            if (regexAttr != null)
+                prop.Pattern = regexAttr.Regex;
+
             prop.TypeFormat = typeFormat;
 
             if (prop.TypeFormat.Type == ParameterType.Object)
@@ -136,14 +141,17 @@ namespace SwaggerWcf.Support
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();
                 foreach (string enumName in listOfEnumNames)
                 {
+                    var enumMemberItem = Enum.Parse(propType, enumName, true);
+                    string enumMemberDescription = DefinitionsBuilder.GetEnumDescription((Enum)enumMemberItem);
+                    enumMemberDescription = (string.IsNullOrWhiteSpace(enumMemberDescription)) ? "" : $"({enumMemberDescription})";
                     int enumMemberValue = DefinitionsBuilder.GetEnumMemberValue(propType, enumName);
                     if (prop.Description != null) prop.Enum.Add(enumMemberValue);
-                    enumDescription += "    " + enumName + System.Web.HttpUtility.HtmlEncode(" = ") + enumMemberValue + "\r\n";
+                    enumDescription += $"    {enumName}{System.Web.HttpUtility.HtmlEncode(" = ")}{enumMemberValue} {enumMemberDescription}\r\n";
                 }
 
-                if (prop.Description == null && enumDescription != "")
+                if (enumDescription != "")
                 {
-                    prop.Description = enumDescription;
+                    prop.Description += $"\r\n\r\n{enumDescription}";
                 }
             }
 
