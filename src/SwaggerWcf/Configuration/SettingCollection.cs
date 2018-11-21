@@ -3,7 +3,7 @@ using System.Configuration;
 
 namespace SwaggerWcf.Configuration
 {
-    [ConfigurationCollection(typeof(TagElement), AddItemName = "setting")]
+    [ConfigurationCollection(typeof(SettingElement), AddItemName = "setting")]
     public class SettingCollection : ConfigurationElementCollection
     {
         protected override ConfigurationElement CreateNewElement()

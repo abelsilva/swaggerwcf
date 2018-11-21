@@ -20,7 +20,15 @@ namespace SwaggerWcf.Support
 
             foreach (PropertyInfo propertyInfo in properties)
             {
-                DefinitionProperty prop = ProcessProperty(propertyInfo, hiddenTags, typesStack);
+                DefinitionProperty prop = null;
+                try
+                {
+                    prop = ProcessProperty(propertyInfo, hiddenTags, typesStack);
+                }
+                catch
+                {
+                    continue;
+                }
 
                 if (prop == null)
                     continue;
@@ -134,8 +142,8 @@ namespace SwaggerWcf.Support
 
                 Type propType = propertyInfo.PropertyType;
 
-                if (propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(List<>)))
-                    propType = propType.GetEnumerableType();
+                if (propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(Nullable<>) || propType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                    propType = propType.GenericTypeArguments.FirstOrDefault() ?? propType.GetEnumerableType();
 
                 string enumDescription = "";
                 List<string> listOfEnumNames = propType.GetEnumNames().ToList();

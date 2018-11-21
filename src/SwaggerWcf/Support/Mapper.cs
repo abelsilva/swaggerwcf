@@ -144,7 +144,8 @@ namespace SwaggerWcf.Support
 
                 methodTags = methodTags.Distinct().ToList();
 
-                if (methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
+                if ((methodTags.Count == 0 && HiddenTags.Contains("default"))
+                    || methodTags.Select(t => t.TagName).Any(HiddenTags.Contains))
                     continue;
 
                 //if the method is marked Hidden anywhere, skip it
