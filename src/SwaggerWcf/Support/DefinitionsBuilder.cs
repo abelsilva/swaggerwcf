@@ -67,7 +67,7 @@ namespace SwaggerWcf.Support
 
             if (schema.TypeFormat.Type == ParameterType.Integer && schema.TypeFormat.Format == "enum")
             {
-                schema.Enum = new List<int>();
+                schema.Enum = new List<string>();
 
                 Type propType = definitionType;
 
@@ -215,14 +215,14 @@ namespace SwaggerWcf.Support
             ApplyIfValid(LastValidValue(attrs, a => a._MultipleOf), x => prop.MultipleOf = x.Value);
         }
         
-        public static int GetEnumMemberValue(Type enumType, string enumName)
+        public static string GetEnumMemberValue(Type enumType, string enumName)
         {
             if (string.IsNullOrWhiteSpace(enumName))
-                return 0;
+                return "";
             var enumVal = Enum.Parse(enumType, enumName, true);
             var underlyingType = Enum.GetUnderlyingType(enumType);
-            var val = Convert.ChangeType(enumVal, underlyingType);
-            return Convert.ToInt32(val);
+            var val = enumName;//Convert.ChangeType(enumVal, underlyingType);
+            return val;
         }
 
         public static string GetEnumDescription(Enum value)

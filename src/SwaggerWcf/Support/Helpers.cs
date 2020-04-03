@@ -95,7 +95,7 @@ namespace SwaggerWcf.Support
             //it's an enum, use string as the property type and enum values will be serialized later
             if (type.IsEnum)
             {
-                return new TypeFormat(ParameterType.Integer, "enum");
+                return new TypeFormat(ParameterType.String, "enum");
             }
 
             //it's a collection/array, so it will use the swagger "container" syntax
