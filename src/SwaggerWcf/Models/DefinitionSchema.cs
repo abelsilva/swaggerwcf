@@ -22,7 +22,7 @@ namespace SwaggerWcf.Models
 
         public List<DefinitionProperty> Properties { get; set; }
 
-        public List<int> Enum { get; set; }
+        public List<string> Enum { get; set; }
 
         public void Serialize(JsonWriter writer)
         {
@@ -86,7 +86,7 @@ namespace SwaggerWcf.Models
                 {
                     writer.WritePropertyName("enum");
                     writer.WriteStartArray();
-                    foreach (int e in Enum)
+                    foreach (string e in Enum)
                     {
                         writer.WriteValue(e);
                     }
