@@ -228,7 +228,9 @@ namespace SwaggerWcf.Support
         public static string GetEnumDescription(Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
-
+            if (fi == null)
+                return string.Empty;
+            
             DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
             if (attributes.Length > 0)
