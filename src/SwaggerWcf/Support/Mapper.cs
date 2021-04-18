@@ -36,10 +36,20 @@ namespace SwaggerWcf.Support
             {
                 //search for service impl type
                 var allTypes = AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .SelectMany(s => s.GetTypes())
-                    .Where(type => markedType.IsAssignableFrom(type) && !type.IsInterface)
-                    .ToList();
+                  .GetAssemblies()
+                  .SelectMany(s => {
+                    //avoids an exception when there is a broken reference somewhere in the assembly reference tree
+                    //for example if a base type or the type of an return value is located in another missing assembly
+                    try { 
+                      return s.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex) {
+                      //as fallback microsoft provides all other types (which were loaded sucessfully) on this way:
+                      return ex.Types.Where(t => t != null);
+                    }
+                  })
+                  .Where(type => markedType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                  .ToList();
 
                 serviceType = allTypes.Except(allTypes.Select(type => type.BaseType)).Single();
 
