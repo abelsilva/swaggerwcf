@@ -1,22 +1,20 @@
-<h1 align="left">
-SwaggerWcf&nbsp;<a href="https://www.nuget.org/packages/SwaggerWcf">
-        <img src="http://img.shields.io/nuget/v/SwaggerWcf.svg?style=flat" alt="nuget status">
-    </a>
-</h1>
+# KornSW.SwaggerWcf (fork)
+
+To **understand why i'm publishing this fork on NuGet.org: read [here](##sorry for forking again...)**
 
 Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
 
 With an API described in Swagger you can use multiple Swagger tools like client generators, see [swagger-codegen](https://github.com/swagger-api/swagger-codegen) for more details.
 
-This project has started as a fork from [superstator/Swaggeratr](https://github.com/superstator/Swaggeratr) to implement version 2.0 of Swagger.
+This project is a fork of [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) which has started as a fork from [superstator/Swaggeratr](https://github.com/superstator/Swaggeratr) to implement version 2.0 of Swagger.
 
 ## Getting Started
 
-### Step 1: Install SwaggerWcf package
+### Step 1: Install KornSW.SwaggerWcf package (fork)
 
 ```
 
-Install-Package SwaggerWcf
+Install-Package KornSW.SwaggerWcf
 
 ```
 
@@ -280,4 +278,11 @@ To mark a property as optional or required, use the `IsRequired` parameter on th
 
 ## How to Improve It
 
-Fork this project [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) and submit pull requests.
+Fork this project [KornSW/swaggerwcf](https://github.com/KornSW/swaggerwcf) and submit pull requests.
+
+## sorry for forking again...
+
+Since pull requests and issues are not processed within the origin repo [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) i was forced to do further bug-fixing by my own and in addition to that i need full compatibility to .NET 5 / core!
+
+I hope, that the origin repo will come back to live - because then i could revet to it...
+

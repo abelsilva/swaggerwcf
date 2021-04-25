@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>KornSW.SwaggerWcf</id>
+    <version>1.2.16-localbuild</version>
+    <title>KornSW.SwaggerWcf (fork)</title>
+    <authors>KornSW (feat. abelsilva)</authors>
+    <owners>KornSW (feat. abelsilva)</owners>
+    <copyright>KornSW (feat. abelsilva)</copyright>
+    <description>Swagger for WCF (fork by KornSW)</description>
+    <tags>swagger wcf .net core c# openapi</tags>
+    <!-- https://spdx.org/licenses/ -->
+    <license type="expression">Apache-2.0</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <icon>PackageIcon.png</icon>
+    <projectUrl>https://github.com/KornSW/swaggerwcf</projectUrl>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6">
+        <dependency id="Newtonsoft.Json" version="[13.0.1,13.9999]" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#from-a-convention-based-working-directory -->
+    <file src="PackageIcon.png" target="" />
+    <!-- .NET 4.6.1 -->
+    <file src="(Stage)\Bin\net46\SwaggerWcf.dll" target="lib/net46" />
+    <file src="(Stage)\Bin\net46\SwaggerWcf.xml" target="lib/net46" />
+    <file src="(Stage)\Bin\net46\SwaggerWcf.pdb" target="lib/net46" />
+  </files>
+</package>
