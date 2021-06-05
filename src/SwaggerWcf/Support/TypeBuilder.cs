@@ -69,6 +69,12 @@ namespace SwaggerWcf.Support
 
         private static void CreateProperty(System.Reflection.Emit.TypeBuilder tb, string propertyName, Type propertyType, bool required)
         {
+
+            if (propertyType.IsByRef) {
+              //avoids an exception in code below when by ref parameters are used
+              propertyType = propertyType.GetElementType();
+            }
+
             FieldBuilder fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
             PropertyBuilder propertyBuilder = tb.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);

@@ -153,3 +153,5 @@ $RECYCLE.BIN/
 
 # custom entries
 /src/SampleService/obj
+/(Vendor)/NuGet/
+/(Stage)/

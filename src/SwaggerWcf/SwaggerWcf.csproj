@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -9,31 +9,33 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SwaggerWcf</RootNamespace>
     <AssemblyName>SwaggerWcf</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\%28Stage%29\Bin\net46\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\%28Stage%29\Bin\net46\SwaggerWcf.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\%28Stage%29\Bin\net46\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\%28Stage%29\Bin\net46\SwaggerWcf.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\(Vendor)\NuGet\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -56,74 +58,73 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SwaggerWcfAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfContactInfoAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfRegexAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfLicenseInfoAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfServiceInfoAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfRequestTypeAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfSecurityAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfContentTypesAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfDefinitionAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfHeaderAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
-    <Compile Include="Support\EnumerableExtensions.cs" />
-    <Compile Include="Support\MethodInfoExtensions.cs" />
-    <Compile Include="Models\SecurityAuthorization.cs" />
-    <Compile Include="Models\DefinitionSchema.cs" />
-    <Compile Include="Models\DefinitionProperty.cs" />
-    <Compile Include="Models\InType.cs" />
     <Compile Include="Attributes\SwaggerWcfHiddenAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfPathAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfLicenseInfoAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfParameterAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfPathAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfPropertyAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfRegexAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfRequestTypeAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfResponseAttribute.cs" />
-    <Compile Include="Attributes\SwaggerWcfAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfReturnTypeAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfSecurityAttribute.cs" />
+    <Compile Include="Attributes\SwaggerWcfServiceInfoAttribute.cs" />
     <Compile Include="Attributes\SwaggerWcfTagAttribute.cs" />
     <Compile Include="Configuration\SettingCollection.cs" />
     <Compile Include="Configuration\SettingElement.cs" />
     <Compile Include="Configuration\SwaggerWcfSection.cs" />
     <Compile Include="Configuration\TagCollection.cs" />
     <Compile Include="Configuration\TagElement.cs" />
+    <Compile Include="ISwaggerWcfEndpoint.cs" />
     <Compile Include="Models\CollectionFormat.cs" />
     <Compile Include="Models\Definition.cs" />
+    <Compile Include="Models\DefinitionProperty.cs" />
+    <Compile Include="Models\DefinitionSchema.cs" />
     <Compile Include="Models\Example.cs" />
     <Compile Include="Models\ExternalDocumentation.cs" />
-    <Compile Include="Models\InfoLicense.cs" />
-    <Compile Include="Models\InfoContact.cs" />
     <Compile Include="Models\Info.cs" />
-    <Compile Include="Models\SecurityDefinitions.cs" />
-    <Compile Include="Support\ListExtensions.cs" />
-    <Compile Include="Support\TypeBuilder.cs" />
-    <Compile Include="Support\TypeFieldsProcessor.cs" />
-    <Compile Include="Support\TypePropertiesProcessor.cs" />
-    <Compile Include="SwaggerWcfEndpoint.cs" />
-    <Compile Include="ISwaggerWcfEndpoint.cs" />
-    <Compile Include="Models\PathAction.cs" />
-    <Compile Include="Support\Mapper.cs" />
-    <Compile Include="Models\ParameterSchema.cs" />
-    <Compile Include="Models\ParameterPrimitive.cs" />
+    <Compile Include="Models\InfoContact.cs" />
+    <Compile Include="Models\InfoLicense.cs" />
+    <Compile Include="Models\InType.cs" />
+    <Compile Include="Models\ParameterBase.cs" />
     <Compile Include="Models\ParameterItems.cs" />
+    <Compile Include="Models\ParameterPrimitive.cs" />
+    <Compile Include="Models\ParameterSchema.cs" />
     <Compile Include="Models\ParameterType.cs" />
     <Compile Include="Models\Path.cs" />
-    <Compile Include="Models\ParameterBase.cs" />
+    <Compile Include="Models\PathAction.cs" />
     <Compile Include="Models\Property.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Models\Schema.cs" />
+    <Compile Include="Models\SecurityAuthorization.cs" />
+    <Compile Include="Models\SecurityDefinitions.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\TypeFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Support\Helpers.cs" />
-    <Compile Include="Support\Serializer.cs" />
     <Compile Include="Support\DefinitionsBuilder.cs" />
+    <Compile Include="Support\EnumerableExtensions.cs" />
+    <Compile Include="Support\Helpers.cs" />
+    <Compile Include="Support\ListExtensions.cs" />
+    <Compile Include="Support\Mapper.cs" />
+    <Compile Include="Support\MethodInfoExtensions.cs" />
+    <Compile Include="Support\Serializer.cs" />
     <Compile Include="Support\ServiceBuilder.cs" />
     <Compile Include="Support\StaticContent.cs" />
+    <Compile Include="Support\TypeBuilder.cs" />
     <Compile Include="Support\TypeExtensions.cs" />
+    <Compile Include="Support\TypeFieldsProcessor.cs" />
+    <Compile Include="Support\TypePropertiesProcessor.cs" />
+    <Compile Include="SwaggerWcfEndpoint.cs" />
     <Compile Include="SwaggerWcfEndpointGeneric.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="www\swagger-ui.zip" />
     <None Include="packages.config" />
-    <None Include="SwaggerWcf.nuspec" />
+    <EmbeddedResource Include="www\swagger-ui.zip" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
