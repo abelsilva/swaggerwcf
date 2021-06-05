@@ -1,6 +1,6 @@
 # KornSW.SwaggerWcf (fork)
 
-To **understand why i'm publishing this fork on NuGet.org: read [here](##sorry for forking again...)**
+To **understand why i'm publishing this fork on NuGet.org: read [here](##sorry-for-forking-again)**
 
 Generates [Swagger](http://swagger.io/) (2.0) for WCF services and also provides [swagger-ui](https://github.com/swagger-api/swagger-ui).
 
@@ -282,7 +282,7 @@ Fork this project [KornSW/swaggerwcf](https://github.com/KornSW/swaggerwcf) and 
 
 ## sorry for forking again...
 
-Since pull requests and issues are not processed within the origin repo [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) i was forced to do further bug-fixing by my own and in addition to that i need full compatibility to .NET 5 / core!
+Since pull requests and issues are not processed within the origin repo [abelsilva/swaggerwcf](https://github.com/abelsilva/swaggerwcf) i was forced to do further bug-fixing by my own!
 
 I hope, that the origin repo will come back to live - because then i could revet to it...
 
