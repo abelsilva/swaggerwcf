@@ -110,7 +110,8 @@ Add the following to your config file and change the values accordingly
     <setting name="InfoContactUrl" value="http://github.com/abelsilva" />
     <setting name="InfoContactEmail" value="no@e.mail" />
     <setting name="InfoLicenseUrl" value="https://github.com/abelsilva/SwaggerWCF/blob/master/LICENSE" />
-    <setting name="InfoLicenseName" value="Apache License" />
+    <setting name="InfoLicenseName" value="Apache License" />          
+    <setting name="Host" value="localhost:8888" />  <!--API interface url-->
   </settings>
 </swaggerwcf>
 ```
